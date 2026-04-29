@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik Pro Elite v15</title>
+    <title>Logistik Pro Elite v16</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,7 +19,7 @@
         body { margin: 0; background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); overflow-x: hidden; }
 
         .header { background: var(--dark); color: white; padding: 40px 25px 60px; border-radius: 0 0 40px 40px; position: sticky; top: 0; z-index: 100; }
-        .header h1 { margin: 0; font-size: 22px; font-weight: 800; max-width: 65%; line-height: 1.2; }
+        .header h1 { margin: 0; font-size: 22px; font-weight: 800; }
         
         .top-nav { position: absolute; top: 35px; right: 20px; display: flex; gap: 10px; z-index: 110; }
         .nav-btn { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255, 255, 255, 0.1); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -35,7 +35,8 @@
         .stat-card b { font-size: 13px; font-weight: 800; color: var(--dark); }
 
         .detail-area { background: #fff; margin: 10px 20px; padding: 15px; border-radius: 20px; border: 1px solid #e2e8f0; }
-        .detail-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #f1f5f9; font-size: 12px; font-weight: 700; }
+        .detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed #f1f5f9; font-size: 12px; font-weight: 700; }
+        .detail-row span:last-child { text-align: right; max-width: 60%; color: var(--primary); word-break: break-all; }
 
         .progress-area { margin: 15px 20px; }
         .pb-bg { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
@@ -46,24 +47,13 @@
         .btn-filter.active { background: var(--dark); color: white; border-color: var(--dark); }
 
         .card { background: white; border-radius: 22px; padding: 20px; margin: 12px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
+        .total-pill { background: #f1f5f9; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; color: var(--dark); }
         .btn-action { border: none; border-radius: 12px; font-weight: 700; cursor: pointer; padding: 12px; font-size: 11px; display: flex; align-items: center; justify-content: center; width: 100%; }
-        
-        .badge-p { background: #f1f5f9; padding: 2px 8px; border-radius: 6px; font-size: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="page-home" class="page active">
-        <div class="header"><h1>Logistik Control</h1><p id="h-status" style="opacity:0.6; font-size:12px">Menghubungkan...</p></div>
-        <div style="padding:40px 25px">
-            <button class="btn-filter" style="width:100%; padding:22px; margin-bottom:15px; font-size:15px" onclick="openLogin('admin')">💼 Admin Kantor</button>
-            <button class="btn-filter" style="width:100%; padding:22px; margin-bottom:15px; font-size:15px" onclick="openLogin('pemorsian')">🍳 Tim Pemorsian</button>
-            <button class="btn-filter" style="width:100%; padding:22px; margin-bottom:15px; font-size:15px" onclick="openLogin('mobil1')">🚚 Supir Mobil 1</button>
-            <button class="btn-filter" style="width:100%; padding:22px; margin-bottom:15px; font-size:15px" onclick="openLogin('mobil2')">🚚 Supir Mobil 2</button>
-        </div>
-    </div>
-
-    <div id="page-pemorsian" class="page">
+    <div id="page-pemorsian" class="page active">
         <div class="header">
             <h1>Pemorsian</h1><p style="opacity:0.6; font-size:12px">Dashboard Produksi</p>
             <div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div>
@@ -76,9 +66,18 @@
         </div>
 
         <div class="detail-area">
-            <div class="detail-row"><span>TOTAL PK</span><span id="det-pk">0 Ikat + 0</span></div>
-            <div class="detail-row"><span>TOTAL PB</span><span id="det-pb">0 Ikat + 0</span></div>
-            <div class="detail-row" style="border:none"><span>TOTAL TENDIK</span><span id="det-td">0 Porsi</span></div>
+            <div class="detail-row">
+                <span>TOTAL PK</span>
+                <span id="det-pk">0 Ikat</span>
+            </div>
+            <div class="detail-row">
+                <span>TOTAL PB</span>
+                <span id="det-pb">0 Ikat</span>
+            </div>
+            <div class="detail-row" style="border:none">
+                <span>TOTAL TENDIK</span>
+                <span id="det-td">0 Porsi</span>
+            </div>
         </div>
 
         <div class="progress-area">
@@ -94,135 +93,104 @@
             <button class="btn-filter" id="pf-m2" onclick="setFilterP('Mobil 2')">MOBIL 2</button>
         </div>
 
-        <div style="margin:0 20px 15px"><input type="text" id="p-search" placeholder="Cari nama sekolah..." class="btn-filter" style="width:100%; text-align:left; padding-left:15px; color:black" oninput="renderPemorsian()"></div>
-
         <div id="list-pemorsian"></div>
     </div>
 
-    <div id="page-admin" class="page">
-        <div class="header"><h1>Admin Panel</h1><div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div></div>
-        <div id="list-admin" style="margin-top:20px"></div>
-    </div>
-    
-    <div id="page-mobil" class="page">
-        <div class="header"><h1 id="mb-head">Mobil</h1><div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div></div>
-        <div id="list-mobil" style="margin-top:20px"></div>
-    </div>
-
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxKTFPwPDoh-wNDPnkde0IqxiLGGLux_rPSBQaVCy0kbtaXPWkOE7RWoW8IgWXD2s0v/exec";
-        const PINS = { admin:"1111", pemorsian:"2222", mobil1:"3331", mobil2:"3332" };
-        let schools = [];
-        let currentRole = "", currentMobil = "", filterP = "all";
+        // Simulasi data berdasarkan gambar yang Anda berikan
+        let schools = [
+            { id: "1", nama: "POSYANDU MELATI 2", mobil: "Mobil 1", pk: 25, pb: 50, tendik: 17, status: "pending", islibur: false },
+            { id: "2", nama: "PAUD PELITA", mobil: "Mobil 1", pk: 9, pb: 0, tendik: 4, status: "pending", islibur: false },
+            { id: "3", nama: "SDN 3 MUARA", mobil: "Mobil 2", pk: 254, pb: 256, tendik: 12, status: "pending", islibur: false },
+            { id: "4", nama: "HABABA", mobil: "Mobil 2", pk: 245, pb: 245, tendik: 34, status: "pending", islibur: false }
+        ];
 
-        async function fetchSchools() {
-            try {
-                const res = await fetch(WEB_APP_URL);
-                const data = await res.json();
-                schools = data.map(s => ({
-                    ...s, pk: parseInt(s.pk)||0, pb: parseInt(s.pb)||0, tendik: parseInt(s.tendik)||0,
-                    status: String(s.status||"pending").trim().toLowerCase(),
-                    islibur: String(s.islibur).trim().toUpperCase() === "TRUE"
-                }));
-                document.getElementById('h-status').innerText = "Koneksi Stabil";
-                renderAll();
-            } catch(e) { document.getElementById('h-status').innerText = "Offline Mode"; }
-        }
+        let filterP = "all";
 
         function renderPemorsian() {
             const list = document.getElementById('list-pemorsian');
-            const search = document.getElementById('p-search').value.toUpperCase();
             list.innerHTML = "";
             
-            // Variabel Hitung Dashboard
-            let tTotal=0, tReady=0, tPend=0, tPK=0, tPB=0, tTD=0;
-            let tS=0, dS=0; // Sekolah
+            let tTotal=0, tReady=0, tPend=0, tTD=0;
+            let tS=0, dS=0;
+            
+            // Variabel penampung ikat dan array sisa
+            let sumPkIkat = 0, sisaPkArr = [];
+            let sumPbIkat = 0, sisaPbArr = [];
 
             schools.forEach(s => {
                 if(s.islibur) return;
-
                 tS++;
-                const porsiSekolah = s.pk + s.pb + s.tendik;
-                tTotal += porsiSekolah;
+                const totalSekolah = s.pk + s.pb + s.tendik;
+                tTotal += totalSekolah;
 
                 if(s.status !== 'pending') {
-                    tReady += porsiSekolah;
+                    tReady += totalSekolah;
                     dS++;
                 } else {
-                    tPend += porsiSekolah;
-                    // Hanya hitung akumulasi detail untuk yang BELUM dikirim agar dapur fokus pada sisa kerja
-                    tPK += s.pk; tPB += s.pb; tTD += s.tendik;
-                }
+                    tPend += totalSekolah;
+                    tTD += s.tendik;
+                    
+                    // Hitung ikat & sisa per sekolah
+                    let pkI = Math.floor(s.pk/5), pkS = s.pk%5;
+                    let pbI = Math.floor(s.pb/5), pbS = s.pb%5;
+                    
+                    sumPkIkat += pkI;
+                    if(pkS > 0) sisaPkArr.push("+" + pkS);
+                    
+                    sumPbIkat += pbI;
+                    if(pbS > 0) sisaPbArr.push("+" + pbS);
 
-                // Render Card (Hanya yang pending & sesuai filter)
-                if(s.status === 'pending' && s.nama.includes(search) && (filterP === 'all' || s.mobil === filterP)) {
-                    const pkI = Math.floor(s.pk/5), pkS = s.pk%5;
-                    const pbI = Math.floor(s.pb/5), pbS = s.pb%5;
-
-                    list.innerHTML += `<div class="card">
-                        <div style="display:flex; justify-content:space-between; align-items:start">
-                            <h3>${s.nama}</h3>
-                            <span class="badge-p">${s.mobil}</span>
-                        </div>
-                        <div style="margin: 15px 0; border-left:4px solid var(--primary); padding-left:12px">
-                            <p style="margin:4px 0; font-size:14px; font-weight:800">PK: <span style="color:var(--primary)">${pkI} IKAT + ${pkS}</span></p>
-                            <p style="margin:4px 0; font-size:14px; font-weight:800">PB: <span style="color:var(--primary)">${pbI} IKAT + ${pbS}</span></p>
-                            <p style="margin:4px 0; font-size:11px; opacity:0.6">Tendik: ${s.tendik}</p>
-                        </div>
-                        <button class="btn-action" style="background:var(--success); color:white" onclick="updateStatus('${s.id}','ready')">SIAP KIRIM</button>
-                    </div>`;
+                    // Render Card
+                    if(filterP === 'all' || s.mobil === filterP) {
+                        list.innerHTML += `
+                        <div class="card">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+                                <h3 style="margin:0; font-size:15px">${s.nama}</h3>
+                                <span class="total-pill">Total: ${totalSekolah}</span>
+                            </div>
+                            <div style="margin-bottom:15px; border-left:4px solid var(--primary); padding-left:12px">
+                                <p style="margin:4px 0; font-size:13px; font-weight:800">PK: ${pkI} IKAT + ${pkS}</p>
+                                <p style="margin:4px 0; font-size:13px; font-weight:800">PB: ${pbI} IKAT + ${pbS}</p>
+                                <p style="margin:4px 0; font-size:11px; opacity:0.6">Tendik: ${s.tendik}</p>
+                            </div>
+                            <button class="btn-action" style="background:var(--success); color:white" onclick="updateStatus('${s.id}')">SIAP KIRIM</button>
+                        </div>`;
+                    }
                 }
             });
 
-            // Update Dashboard Atas
+            // Update Dashboard
             document.getElementById('p-total-all').innerText = tTotal;
             document.getElementById('p-total-ready').innerText = tReady;
             document.getElementById('p-total-pending').innerText = tPend;
 
-            // Rincian Akumulasi (Sisa tetap dijumlahkan tanpa dijadikan ikat baru)
-            document.getElementById('det-pk').innerText = `${Math.floor(tPK/5)} Ikat + ${tPK%5}`;
-            document.getElementById('det-pb').innerText = `${Math.floor(tPB/5)} Ikat + ${tPB%5}`;
+            // Update Detail (Sisa terurai)
+            document.getElementById('det-pk').innerText = `${sumPkIkat} Ikat ${sisaPkArr.join("")}`;
+            document.getElementById('det-pb').innerText = `${sumPbIkat} Ikat ${sisaPbArr.join("")}`;
             document.getElementById('det-td').innerText = `${tTD} Porsi`;
 
-            // Progress Bar
-            document.getElementById('p-count-text').innerText = `${dS}/${tS} Sekolah`;
+            // Progress
             let pct = tS>0 ? Math.round((dS/tS)*100) : 0;
+            document.getElementById('p-count-text').innerText = `${dS}/${tS} Sekolah`;
             document.getElementById('p-percent').innerText = pct + "%";
             document.getElementById('p-pb').style.width = pct + "%";
         }
 
         function setFilterP(m) {
             filterP = m;
-            document.querySelectorAll('#page-pemorsian .btn-filter').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
             renderPemorsian();
         }
 
-        // --- Fungsi Pendukung Sama Dengan Sebelumnya ---
-        async function updateStatus(id, stat) {
+        function updateStatus(id) {
             const s = schools.find(x => x.id === id);
-            if(s) { s.status = stat; renderAll(); }
-            await fetch(WEB_APP_URL, {method:"POST", body:JSON.stringify({action:"update", id, status:stat})});
+            if(s) s.status = 'ready';
+            renderPemorsian();
         }
 
-        function openLogin(r) { currentRole = r; document.getElementById('page-home').style.display='none'; verifyLoginDirect(); }
-        
-        function verifyLoginDirect() {
-            // Untuk simulasi cepat, langsung arahkan (nanti bisa tambah modal PIN lagi)
-            if(currentRole === 'admin') navigate('admin');
-            else if(currentRole === 'pemorsian') navigate('pemorsian');
-            else { currentMobil = (currentRole === 'mobil1') ? 'Mobil 1' : 'Mobil 2'; document.getElementById('mb-head').innerText = currentMobil; navigate('mobil'); }
-        }
-
-        function navigate(p) {
-            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-            document.getElementById('page-'+p).classList.add('active');
-        }
-
-        function renderAdmin() { /* Implementasi render admin sama seperti v14 */ }
-        function renderMobil() { /* Implementasi render mobil sama seperti v14 */ }
-        function renderAll() { renderAdmin(); renderPemorsian(); renderMobil(); }
-        window.onload = fetchSchools;
+        window.onload = renderPemorsian;
     </script>
 </body>
 </html>
