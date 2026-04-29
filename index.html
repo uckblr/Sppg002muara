@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik Pro Elite v10</title>
+    <title>Logistik Pro Elite v11</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -26,7 +26,6 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* STATISTICS & PROGRESS */
         .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: -30px 20px 10px; position: relative; z-index: 101; }
         .stat-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
         .stat-card small { display: block; color: #64748b; font-size: 10px; font-weight: 800; margin-bottom: 4px; }
@@ -37,7 +36,6 @@
         .pb-bg { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
         .pb-fill { height: 100%; background: var(--grad); width: 0%; transition: 0.5s; }
 
-        /* FILTER & SEARCH */
         .filter-row { display: flex; gap: 8px; margin: 0 20px 12px; }
         .btn-filter { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; font-weight: 700; font-size: 11px; color: #64748b; cursor: pointer; }
         .btn-filter.active { background: var(--dark); color: white; border-color: var(--dark); }
@@ -45,7 +43,6 @@
         .search-box { margin: 0 20px 20px; }
         .input-search { width: 100%; padding: 14px 18px; border-radius: 15px; border: 2px solid #f1f5f9; background: white; font-family: inherit; font-weight: 600; font-size: 13px; }
 
-        /* CARDS */
         .card { background: white; border-radius: 22px; padding: 20px; margin: 12px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; position: relative; }
         .card h3 { margin: 0 0 10px; font-size: 16px; font-weight: 800; text-transform: uppercase; padding-right: 30px; }
         .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; background: #f8fafc; border: 1px solid #f1f5f9; color: #64748b; margin-right: 4px; }
@@ -55,12 +52,10 @@
         .btn-libur { background: #f1f5f9; color: #64748b; }
         .btn-hapus { background: #fee2e2; color: var(--danger); }
 
-        /* MODALS */
         .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .modal { background: white; padding: 30px; border-radius: 30px; width: 100%; max-width: 400px; text-align: center; }
         .input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #f1f5f9; background: #f8fafc; font-family: inherit; font-weight: 600; margin-bottom: 15px; }
 
-        /* NAVBAR */
         .navbar { position: fixed; bottom: 25px; left: 20px; right: 20px; background: var(--dark); height: 75px; border-radius: 25px; display: none; align-items: center; justify-content: space-around; z-index: 900; }
         .nav-item { color: #64748b; text-align: center; cursor: pointer; font-size: 10px; font-weight: 700; }
         .nav-item.active { color: white; }
@@ -133,7 +128,7 @@
     </nav>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz2nYXe1e8CZGrkyOs279hMleUFFgcpPQu1eNRHZbMf1WPdncdAV1BNHOBfVrdHhWj3/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxKTFPwPDoh-wNDPnkde0IqxiLGGLux_rPSBQaVCy0kbtaXPWkOE7RWoW8IgWXD2s0v/exec";
         const PINS = { admin:"1111", pemorsian:"2222", mobil1:"3331", mobil2:"3332" };
         let schools = [];
         let currentRole = "";
@@ -180,7 +175,7 @@
                         </div>
                         <div style="display:flex; gap:8px">
                             <button class="btn-action btn-libur" onclick="updateLibur(${i})">${s.islibur?'AKTIFKAN':'SET LIBUR'}</button>
-                            <button class="btn-action btn-hapus" onclick="hapusSekolah('${s.nama}')">HAPUS</button>
+                            <button class="btn-action btn-hapus" onclick="hapusSekolah('${s.id}')">HAPUS</button>
                         </div>
                     </div>`;
                 }
@@ -222,13 +217,31 @@
             const pb = parseInt(document.getElementById('in-pb').value) || 0;
             const td = parseInt(document.getElementById('in-tendik').value) || 0;
             const action = (editIndex !== null) ? "editData" : "addData";
-            const oldNama = (editIndex !== null) ? schools[editIndex].nama : "";
+            const targetId = (editIndex !== null) ? schools[editIndex].id : "";
 
             if(editIndex !== null) schools[editIndex] = { ...schools[editIndex], nama, mobil, pk, pb, tendik:td };
-            else schools.push({ nama, mobil, pk, pb, tendik:td, status:'pending', islibur:false });
+            else schools.push({ id: Date.now().toString(), nama, mobil, pk, pb, tendik:td, status:'pending', islibur:false });
 
             renderAll(); closeModal();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action, oldNama, nama, mobil, pk, pb, tendik:td, status:'pending', islibur:false}) });
+            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action, id: targetId, nama, mobil, pk, pb, tendik:td}) });
+        }
+
+        async function updateStatus(id, stat) {
+            const s = schools.find(x => x.id === id);
+            if(s) { s.status = stat; renderAll(); }
+            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", id, status:stat}) });
+        }
+
+        async function updateLibur(i) {
+            const s = schools[i];
+            s.islibur = !s.islibur; renderAll();
+            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", id:s.id, islibur:s.islibur}) });
+        }
+
+        async function hapusSekolah(id) {
+            if(!confirm("Hapus?")) return;
+            schools = schools.filter(s => s.id !== id); renderAll();
+            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"delete", id}) });
         }
 
         function verifyLogin() {
@@ -260,7 +273,7 @@
             const list = document.getElementById('list-pemorsian'); list.innerHTML = "";
             schools.filter(s => !s.islibur && s.status === 'pending').forEach(s => {
                 const total = s.pk+s.pb+s.tendik;
-                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><p style="font-weight:800; color:var(--primary)">${Math.floor(total/5)} IKAT + ${total%5} SISA</p><button class="btn-action" style="background:var(--success); color:white; width:100%" onclick="updateStatus('${s.nama}','ready')">SIAP KIRIM</button></div>`;
+                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><p style="font-weight:800; color:var(--primary)">${Math.floor(total/5)} IKAT + ${total%5} SISA</p><button class="btn-action" style="background:var(--success); color:white; width:100%" onclick="updateStatus('${s.id}','ready')">SIAP KIRIM</button></div>`;
             });
         }
 
@@ -268,25 +281,8 @@
             const list = document.getElementById('list-mobil'); list.innerHTML = "";
             schools.filter(s => s.mobil === currentMobil && !s.islibur).forEach(s => {
                 const isReady = s.status === 'ready';
-                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><button class="btn-action" style="width:100%; color:white; background:${isReady?'var(--primary)':'#ccc'}" ${!isReady?'disabled':''} onclick="updateStatus('${s.nama}','done')">${s.status==='done'?'✓ TERKIRIM':'KONFIRMASI TIBA'}</button></div>`;
+                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><button class="btn-action" style="width:100%; color:white; background:${isReady?'var(--primary)':'#ccc'}" ${!isReady?'disabled':''} onclick="updateStatus('${s.id}','done')">${s.status==='done'?'✓ TERKIRIM':'KONFIRMASI TIBA'}</button></div>`;
             });
-        }
-
-        async function updateStatus(nama, stat) {
-            const s = schools.find(x => x.nama === nama);
-            s.status = stat; renderAll();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", nama, status:stat}) });
-        }
-
-        async function updateLibur(i) {
-            schools[i].islibur = !schools[i].islibur; renderAll();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", nama:schools[i].nama, islibur:schools[i].islibur}) });
-        }
-
-        async function hapusSekolah(nama) {
-            if(!confirm("Hapus?")) return;
-            schools = schools.filter(s => s.nama !== nama); renderAll();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"delete", nama}) });
         }
 
         function openLogin(r) { currentRole = r; document.getElementById('modal-overlay').style.display = 'flex'; document.getElementById('login-modal').style.display = 'block'; }
