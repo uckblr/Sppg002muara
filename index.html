@@ -13,7 +13,6 @@
             --danger: #ef4444;
             --success: #10b981;
             --bg: #f8fafc;
-            --radius: 24px;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
@@ -52,13 +51,12 @@
         .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; background: #f1f5f9; margin-right: 5px; display: inline-block; margin-bottom: 5px; }
 
         .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal { background: white; padding: 30px; border-radius: 30px; width: 100%; max-width: 400px; text-align: center; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal { background: white; padding: 30px; border-radius: 30px; width: 100%; max-width: 400px; text-align: center; }
 
-        #undo-toast { position: fixed; bottom: 100px; left: 20px; right: 20px; background: var(--dark); color: white; padding: 15px; border-radius: 15px; display: none; justify-content: space-between; align-items: center; z-index: 2000; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        #undo-toast { position: fixed; bottom: 100px; left: 20px; right: 20px; background: var(--dark); color: white; padding: 15px; border-radius: 15px; display: none; justify-content: space-between; align-items: center; z-index: 2000; }
 
         .navbar { position: fixed; bottom: 25px; left: 20px; right: 20px; background: var(--dark); height: 75px; border-radius: 25px; display: none; align-items: center; justify-content: space-around; z-index: 900; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .nav-item { color: #64748b; text-align: center; cursor: pointer; font-size: 10px; font-weight: 700; transition: 0.3s; }
+        .nav-item { color: #64748b; text-align: center; cursor: pointer; font-size: 10px; font-weight: 700; }
         .nav-item.active { color: white; }
     </style>
 </head>
@@ -95,10 +93,7 @@
     </div>
 
     <div id="page-home" class="page active">
-        <div class="header">
-            <h1>Logistik Control</h1>
-            <p>Pilih peran Anda untuk masuk</p>
-        </div>
+        <div class="header"><h1>Logistik Control</h1><p>Pilih peran Anda untuk masuk</p></div>
         <div style="padding:40px 25px">
             <button class="btn btn-role" onclick="openLogin('admin')">💼 Admin Kantor</button>
             <button class="btn btn-role" onclick="openLogin('pemorsian')">🍳 Tim Pemorsian</button>
@@ -120,16 +115,7 @@
 
     <div id="page-pemorsian" class="page">
         <div class="header"><h1>Bagian Pemorsian</h1><p id="pm-info">Status: Menunggu Sekolah</p></div>
-        <div class="stats-container">
-            <div class="stat-card" style="grid-column: span 2">
-                <small>PORSI TERSEDIA (MANUAL)</small>
-                <div style="display:flex; gap:10px; margin-top:5px">
-                    <input type="number" id="manual-stok" class="input" style="margin:0" placeholder="0">
-                    <button class="btn btn-primary" style="width:100px" onclick="updateStok()">SET</button>
-                </div>
-            </div>
-        </div>
-        <div id="list-pemorsian"></div>
+        <div id="list-pemorsian" style="margin-top:20px"></div>
     </div>
 
     <div id="page-mobil" class="page">
@@ -153,13 +139,20 @@
         let undoAction = null;
         let undoTimer = null;
 
-        // FETCH DATA
         async function fetchSchools() {
             try {
                 const res = await fetch(WEB_APP_URL);
-                schools = await res.json();
+                const data = await res.json();
+                // FIX LOGIKA ISLIBUR: Paksa ke false jika data dari sheet tidak jelas
+                schools = data.map(s => ({
+                    ...s,
+                    pk: parseInt(s.pk) || 0,
+                    pb: parseInt(s.pb) || 0,
+                    tendik: parseInt(s.tendik) || 0,
+                    islibur: (s.islibur === true || s.islibur === "TRUE" || s.islibur === "true")
+                }));
                 renderAll();
-            } catch(e) { console.error("Database belum siap."); }
+            } catch(e) { console.log("Gagal ambil data."); }
         }
 
         function renderAll() {
@@ -168,7 +161,6 @@
             renderMobil();
         }
 
-        // NAVIGATION
         function navigate(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.getElementById('page-'+p).classList.add('active');
@@ -192,20 +184,20 @@
                     navigate('mobil'); 
                 }
             } else alert("PIN SALAH");
+            document.getElementById('pin-input').value = "";
         }
 
-        // ADMIN FUNCTIONS
         function renderAdmin(q = "") {
             const list = document.getElementById('list-admin');
             list.innerHTML = "";
             let tP=0, done=0;
-            const act = schools.filter(s => !s.islibur);
+            const act = schools.filter(s => s.islibur === false);
             act.forEach(s => { tP += (s.pk+s.pb+s.tendik); if(s.status==='done') done++; });
 
             schools.forEach((s, i) => {
                 if(s.nama.includes(q.toUpperCase())) {
                     list.innerHTML += `
-                    <div class="card" style="${s.islibur ? 'opacity:0.5' : ''}">
+                    <div class="card" style="${s.islibur ? 'opacity:0.5; background:#f1f5f9' : ''}">
                         <h3>${s.nama}</h3>
                         <span class="badge">PK: ${s.pk}</span><span class="badge">PB: ${s.pb}</span><span class="badge">TD: ${s.tendik}</span>
                         <div style="margin-top:12px; display:flex; gap:8px">
@@ -217,7 +209,7 @@
             });
             document.getElementById('st-total').innerText = tP;
             document.getElementById('st-done').innerText = `${done}/${act.length}`;
-            document.getElementById('pb-admin').style.width = (done/act.length*100)+"%";
+            document.getElementById('pb-admin').style.width = act.length ? (done/act.length*100)+"%" : "0%";
         }
 
         function openForm() { document.getElementById('modal-overlay').style.display='flex'; document.getElementById('form-modal').style.display='block'; }
@@ -225,27 +217,38 @@
         async function saveSchool() {
             const n = document.getElementById('in-nama').value;
             if(!n) return;
-            const payload = { nama:n, mobil:document.getElementById('in-mobil').value, pk:parseInt(document.getElementById('in-pk').value)||0, pb:parseInt(document.getElementById('in-pb').value)||0, tendik:parseInt(document.getElementById('in-tendik').value)||0 };
+            const payload = { 
+                nama:n.toUpperCase(), 
+                mobil:document.getElementById('in-mobil').value, 
+                pk:parseInt(document.getElementById('in-pk').value)||0, 
+                pb:parseInt(document.getElementById('in-pb').value)||0, 
+                tendik:parseInt(document.getElementById('in-tendik').value)||0,
+                status: 'pending',
+                islibur: false // Fix: Pastikan selalu false saat simpan baru
+            };
             
-            // Optimistic UI
-            schools.push({...payload, status:'pending', islibur:false});
+            schools.push(payload);
             renderAll();
             closeModal();
 
-            // Clear inputs
             document.getElementById('in-nama').value = "";
-            document.getElementById('in-pk').value = "";
-            document.getElementById('in-pb').value = "";
-            document.getElementById('in-tendik').value = "";
+            document.getElementById('in-pk').value = ""; document.getElementById('in-pb').value = ""; document.getElementById('in-tendik').value = "";
 
             await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"addData", ...payload}) });
         }
 
-        // PEMORSIAN LOGIC
         function renderPemorsian() {
             const list = document.getElementById('list-pemorsian');
             list.innerHTML = "";
-            schools.filter(s => !s.islibur && s.status !== 'done').forEach(s => {
+            // FIX FILTER: Hanya tampilkan yang BENAR-BENAR tidak libur
+            const data = schools.filter(s => s.islibur === false && s.status === 'pending');
+            
+            if(data.length === 0) {
+                list.innerHTML = "<p style='text-align:center; opacity:0.5; padding:20px;'>Tidak ada data porsi aktif.</p>";
+                return;
+            }
+
+            data.forEach(s => {
                 const total = s.pk+s.pb+s.tendik;
                 const ikat = Math.floor(total/5);
                 const sisa = total%5;
@@ -254,7 +257,7 @@
                     <div style="display:flex; justify-content:space-between"><h3>${s.nama}</h3><span class="badge">${s.mobil}</span></div>
                     <p style="font-weight:800; color:var(--primary)">${ikat} IKAT + ${sisa} SISA (${total} Porsi)</p>
                     <div style="display:flex; gap:8px">
-                        <button class="btn" style="flex:1; background:#f1f5f9; padding:12px" onclick="setInfo('${s.nama}',${ikat},${sisa})">SIAPKAN</button>
+                        <button class="btn" style="flex:1; background:#f1f5f9; padding:12px" onclick="setInfo('${s.nama}',${ikat},${sisa})">LIHAT</button>
                         <button class="btn btn-primary" style="flex:1; background:var(--success)" onclick="updateStatus('${s.nama}','ready')">SIAP KIRIM</button>
                     </div>
                 </div>`;
@@ -263,12 +266,10 @@
 
         function setInfo(n, i, s) { document.getElementById('pm-info').innerText = `${n}: ${i} Ikat + ${s}`; }
 
-        // MOBIL LOGIC
         function renderMobil() {
             const list = document.getElementById('list-mobil');
             list.innerHTML = "";
-            const data = schools.filter(s => s.mobil === currentMobil && !s.islibur);
-            if(data.length===0) list.innerHTML = "<p style='text-align:center; opacity:0.4; margin-top:40px'>Belum ada data sekolah.</p>";
+            const data = schools.filter(s => s.mobil === currentMobil && s.islibur === false);
             data.forEach(s => {
                 const isReady = s.status === 'ready';
                 list.innerHTML += `
@@ -282,10 +283,9 @@
             });
         }
 
-        // HELPERS
         function updateStatus(nama, stat) {
             const time = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
-            createUndo(`Update status ${nama}...`, () => {
+            createUndo(`Update ${nama}...`, () => {
                 const s = schools.find(x => x.nama === nama);
                 s.status = stat;
                 if(stat==='done') s.donetime = time;
@@ -303,7 +303,7 @@
 
         function delSchool(i) {
             const n = schools[i].nama;
-            createUndo(`Menghapus ${n}...`, () => {
+            createUndo(`Hapus ${n}...`, () => {
                 schools.splice(i, 1);
                 renderAll();
                 fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"delete", nama:n}) });
