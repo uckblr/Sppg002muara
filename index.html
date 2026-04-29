@@ -304,26 +304,3 @@
     </script>
 </body>
 </html>
-            } else alert("PIN Salah!");
-        }
-
-        function navigate(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-' + pageId).classList.add('active');
-        }
-
-        function setFilterP(m) { filterP = m; document.querySelectorAll('#page-pemorsian .btn-filter').forEach(b => b.classList.remove('active')); event.currentTarget.classList.add('active'); renderPemorsian(); }
-        
-        function renderMobil() {
-            const list = document.getElementById('list-mobil'); list.innerHTML = "";
-            schools.filter(s => s.mobil === currentMobil && !s.islibur).forEach(s => {
-                const isReady = s.status === 'ready', isDone = s.status === 'done';
-                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><button class="btn-action" style="color:white; background:${isDone?'#10b981':(isReady?'#4f46e5':'#cbd5e1')}" ${!isReady||isDone?'disabled':''} onclick="updateStatus('${s.id}','done')">${isDone?'✓ TERKIRIM':(isReady?'KONFIRMASI TIBA':'MENUNGGU')}</button></div>`;
-            });
-        }
-
-        function renderAll() { renderAdmin(); renderPemorsian(); renderMobil(); }
-        window.onload = fetchSchools;
-    </script>
-</body>
-</html>
