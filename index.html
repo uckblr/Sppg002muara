@@ -350,6 +350,12 @@
         function setFilterP(m) { filterP=m; event.target.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active')); event.target.classList.add('active'); renderPemorsian(); }
         function renderAll() { renderAdmin(); renderPemorsian(); renderMobil(); }
         window.onload = fetchSchools;
+    
+        // SINKRONISASI REAL-TIME: Update data setiap 1 detik agar antar perangkat langsung berubah
+        setInterval(() => {
+            fetchSchools();
+        }, 1000); 
+    
     </script>
 </body>
 </html>
