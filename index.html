@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik Pro Elite v16</title>
+    <title>Logistik Pro Elite v17</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,17 +18,20 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); overflow-x: hidden; }
 
+        /* HEADER */
         .header { background: var(--dark); color: white; padding: 40px 25px 60px; border-radius: 0 0 40px 40px; position: sticky; top: 0; z-index: 100; }
-        .header h1 { margin: 0; font-size: 22px; font-weight: 800; }
+        .header h1 { margin: 0; font-size: 22px; font-weight: 800; line-height: 1.2; }
         
         .top-nav { position: absolute; top: 35px; right: 20px; display: flex; gap: 10px; z-index: 110; }
-        .nav-btn { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255, 255, 255, 0.1); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .nav-btn { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255, 255, 255, 0.1); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .nav-btn:active { transform: scale(0.9); }
 
+        /* PAGES */
         .page { display: none; padding-bottom: 50px; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* DASHBOARD STYLE */
+        /* DASHBOARD PRODUKSI */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: -30px 20px 10px; position: relative; z-index: 101; }
         .stat-card { background: white; padding: 12px; border-radius: 18px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; text-align: center; }
         .stat-card small { display: block; color: #64748b; font-size: 8px; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; }
@@ -36,7 +39,7 @@
 
         .detail-area { background: #fff; margin: 10px 20px; padding: 15px; border-radius: 20px; border: 1px solid #e2e8f0; }
         .detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed #f1f5f9; font-size: 12px; font-weight: 700; }
-        .detail-row span:last-child { text-align: right; max-width: 60%; color: var(--primary); word-break: break-all; }
+        .detail-row span:last-child { text-align: right; max-width: 65%; color: var(--primary); word-break: break-all; line-height: 1.4; }
 
         .progress-area { margin: 15px 20px; }
         .pb-bg { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
@@ -46,38 +49,55 @@
         .btn-filter { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; font-weight: 700; font-size: 10px; color: #64748b; cursor: pointer; }
         .btn-filter.active { background: var(--dark); color: white; border-color: var(--dark); }
 
+        /* CARDS */
         .card { background: white; border-radius: 22px; padding: 20px; margin: 12px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
         .total-pill { background: #f1f5f9; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; color: var(--dark); }
-        .btn-action { border: none; border-radius: 12px; font-weight: 700; cursor: pointer; padding: 12px; font-size: 11px; display: flex; align-items: center; justify-content: center; width: 100%; }
+        .btn-action { border: none; border-radius: 12px; font-weight: 700; cursor: pointer; padding: 12px; font-size: 11px; display: flex; align-items: center; justify-content: center; width: 100%; transition: 0.2s; }
+        .btn-action:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* MODAL */
+        .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .modal { background: white; padding: 30px; border-radius: 30px; width: 100%; max-width: 400px; text-align: center; }
+        .input-pin { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #f1f5f9; background: #f8fafc; text-align: center; letter-spacing: 10px; font-size: 24px; font-weight: 800; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-    <div id="page-pemorsian" class="page active">
+    <div id="modal-overlay" class="overlay">
+        <div id="login-modal" class="modal">
+            <h3 style="margin-top:0">🔑 Verifikasi Akses</h3>
+            <input type="password" id="pin-input" class="input-pin" maxlength="4" placeholder="••••">
+            <button class="btn-action" style="background:var(--grad); color:white; padding:18px; font-size:14px" onclick="verifyLogin()">MASUK</button>
+            <button onclick="closeModal()" style="background:none; border:none; margin-top:15px; color:#94a3b8; font-weight:700">BATAL</button>
+        </div>
+    </div>
+
+    <div id="page-home" class="page active">
+        <div class="header"><h1>Logistik Control</h1><p id="h-status" style="opacity:0.6; font-size:12px; margin-top:5px">Menghubungkan...</p></div>
+        <div style="padding:40px 25px">
+            <button class="btn-filter" style="width:100%; padding:22px; margin-bottom:15px; font-size:15px; border:1px solid #e2e8f0" onclick="openLogin('admin')">💼 Admin Kantor</button>
+            <button class="btn-filter" style="width:100%; padding:22px; margin-bottom:15px; font-size:15px; border:1px solid #e2e8f0" onclick="openLogin('pemorsian')">🍳 Tim Pemorsian</button>
+            <button class="btn-filter" style="width:100%; padding:22px; margin-bottom:15px; font-size:15px; border:1px solid #e2e8f0" onclick="openLogin('mobil1')">🚚 Supir Mobil 1</button>
+            <button class="btn-filter" style="width:100%; padding:22px; margin-bottom:15px; font-size:15px; border:1px solid #e2e8f0" onclick="openLogin('mobil2')">🚚 Supir Mobil 2</button>
+        </div>
+    </div>
+
+    <div id="page-pemorsian" class="page">
         <div class="header">
-            <h1>Pemorsian</h1><p style="opacity:0.6; font-size:12px">Dashboard Produksi</p>
+            <h1>Pemorsian</h1><p style="opacity:0.6; font-size:12px; margin-top:5px">Unit Produksi Dapur</p>
             <div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div>
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card"><small>TOTAL TARGET</small><b id="p-total-all">0</b></div>
+            <div class="stat-card"><small>TARGET PORSI</small><b id="p-total-all">0</b></div>
             <div class="stat-card"><small>SIAP/DONE</small><b id="p-total-ready" style="color:var(--success)">0</b></div>
             <div class="stat-card"><small>SISA ANTRE</small><b id="p-total-pending" style="color:var(--danger)">0</b></div>
         </div>
 
         <div class="detail-area">
-            <div class="detail-row">
-                <span>TOTAL PK</span>
-                <span id="det-pk">0 Ikat</span>
-            </div>
-            <div class="detail-row">
-                <span>TOTAL PB</span>
-                <span id="det-pb">0 Ikat</span>
-            </div>
-            <div class="detail-row" style="border:none">
-                <span>TOTAL TENDIK</span>
-                <span id="det-td">0 Porsi</span>
-            </div>
+            <div class="detail-row"><span>TOTAL PK</span><span id="det-pk">0 Ikat</span></div>
+            <div class="detail-row"><span>TOTAL PB</span><span id="det-pb">0 Ikat</span></div>
+            <div class="detail-row" style="border:none"><span>TOTAL TENDIK</span><span id="det-td">0 Porsi</span></div>
         </div>
 
         <div class="progress-area">
@@ -96,27 +116,33 @@
         <div id="list-pemorsian"></div>
     </div>
 
-    <script>
-        // Simulasi data berdasarkan gambar yang Anda berikan
-        let schools = [
-            { id: "1", nama: "POSYANDU MELATI 2", mobil: "Mobil 1", pk: 25, pb: 50, tendik: 17, status: "pending", islibur: false },
-            { id: "2", nama: "PAUD PELITA", mobil: "Mobil 1", pk: 9, pb: 0, tendik: 4, status: "pending", islibur: false },
-            { id: "3", nama: "SDN 3 MUARA", mobil: "Mobil 2", pk: 254, pb: 256, tendik: 12, status: "pending", islibur: false },
-            { id: "4", nama: "HABABA", mobil: "Mobil 2", pk: 245, pb: 245, tendik: 34, status: "pending", islibur: false }
-        ];
+    <div id="page-admin" class="page"><div class="header"><h1>Admin Panel</h1><div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div></div><div id="list-admin"></div></div>
+    <div id="page-mobil" class="page"><div class="header"><h1 id="mb-head">Mobil</h1><div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div></div><div id="list-mobil"></div></div>
 
-        let filterP = "all";
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxKTFPwPDoh-wNDPnkde0IqxiLGGLux_rPSBQaVCy0kbtaXPWkOE7RWoW8IgWXD2s0v/exec";
+        const PINS = { admin:"1111", pemorsian:"2222", mobil1:"3331", mobil2:"3332" };
+        let schools = [];
+        let currentRole = "", filterP = "all", currentMobil = "";
+
+        async function fetchSchools() {
+            try {
+                const res = await fetch(WEB_APP_URL);
+                const data = await res.json();
+                schools = data.map(s => ({
+                    ...s, pk: parseInt(s.pk)||0, pb: parseInt(s.pb)||0, tendik: parseInt(s.tendik)||0,
+                    status: String(s.status||"pending").trim().toLowerCase(),
+                    islibur: String(s.islibur).trim().toUpperCase() === "TRUE"
+                }));
+                document.getElementById('h-status').innerText = "Koneksi Stabil";
+                renderAll();
+            } catch(e) { document.getElementById('h-status').innerText = "Mode Offline"; }
+        }
 
         function renderPemorsian() {
-            const list = document.getElementById('list-pemorsian');
-            list.innerHTML = "";
-            
-            let tTotal=0, tReady=0, tPend=0, tTD=0;
-            let tS=0, dS=0;
-            
-            // Variabel penampung ikat dan array sisa
-            let sumPkIkat = 0, sisaPkArr = [];
-            let sumPbIkat = 0, sisaPbArr = [];
+            const list = document.getElementById('list-pemorsian'); list.innerHTML = "";
+            let tTotal=0, tReady=0, tPend=0, tTD=0, tS=0, dS=0;
+            let sumPkIkat=0, sisaPkArr=[], sumPbIkat=0, sisaPbArr=[];
 
             schools.forEach(s => {
                 if(s.islibur) return;
@@ -125,72 +151,77 @@
                 tTotal += totalSekolah;
 
                 if(s.status !== 'pending') {
-                    tReady += totalSekolah;
-                    dS++;
+                    tReady += totalSekolah; dS++;
                 } else {
-                    tPend += totalSekolah;
-                    tTD += s.tendik;
-                    
-                    // Hitung ikat & sisa per sekolah
+                    tPend += totalSekolah; tTD += s.tendik;
                     let pkI = Math.floor(s.pk/5), pkS = s.pk%5;
                     let pbI = Math.floor(s.pb/5), pbS = s.pb%5;
-                    
-                    sumPkIkat += pkI;
-                    if(pkS > 0) sisaPkArr.push("+" + pkS);
-                    
-                    sumPbIkat += pbI;
-                    if(pbS > 0) sisaPbArr.push("+" + pbS);
+                    sumPkIkat += pkI; if(pkS > 0) sisaPkArr.push("+" + pkS);
+                    sumPbIkat += pbI; if(pbS > 0) sisaPbArr.push("+" + pbS);
 
-                    // Render Card
                     if(filterP === 'all' || s.mobil === filterP) {
-                        list.innerHTML += `
-                        <div class="card">
+                        list.innerHTML += `<div class="card">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
                                 <h3 style="margin:0; font-size:15px">${s.nama}</h3>
                                 <span class="total-pill">Total: ${totalSekolah}</span>
                             </div>
-                            <div style="margin-bottom:15px; border-left:4px solid var(--primary); padding-left:12px">
-                                <p style="margin:4px 0; font-size:13px; font-weight:800">PK: ${pkI} IKAT + ${pkS}</p>
-                                <p style="margin:4px 0; font-size:13px; font-weight:800">PB: ${pbI} IKAT + ${pbS}</p>
+                            <div style="border-left:4px solid var(--primary); padding-left:12px; margin-bottom:15px">
+                                <p style="margin:4px 0; font-size:14px; font-weight:800">PK: ${pkI} IKAT + ${pkS}</p>
+                                <p style="margin:4px 0; font-size:14px; font-weight:800">PB: ${pbI} IKAT + ${pbS}</p>
                                 <p style="margin:4px 0; font-size:11px; opacity:0.6">Tendik: ${s.tendik}</p>
                             </div>
-                            <button class="btn-action" style="background:var(--success); color:white" onclick="updateStatus('${s.id}')">SIAP KIRIM</button>
+                            <button class="btn-action" style="background:var(--success); color:white" onclick="updateStatus('${s.id}','ready')">KONFIRMASI SELESAI</button>
                         </div>`;
                     }
                 }
             });
 
-            // Update Dashboard
             document.getElementById('p-total-all').innerText = tTotal;
             document.getElementById('p-total-ready').innerText = tReady;
             document.getElementById('p-total-pending').innerText = tPend;
-
-            // Update Detail (Sisa terurai)
             document.getElementById('det-pk').innerText = `${sumPkIkat} Ikat ${sisaPkArr.join("")}`;
             document.getElementById('det-pb').innerText = `${sumPbIkat} Ikat ${sisaPbArr.join("")}`;
             document.getElementById('det-td').innerText = `${tTD} Porsi`;
 
-            // Progress
             let pct = tS>0 ? Math.round((dS/tS)*100) : 0;
-            document.getElementById('p-count-text').innerText = `${dS}/${tS} Sekolah`;
+            document.getElementById('p-count-text').innerText = `${dS}/${tS} Selesai`;
             document.getElementById('p-percent').innerText = pct + "%";
             document.getElementById('p-pb').style.width = pct + "%";
         }
 
-        function setFilterP(m) {
-            filterP = m;
-            document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            renderPemorsian();
-        }
-
-        function updateStatus(id) {
+        async function updateStatus(id, stat) {
             const s = schools.find(x => x.id === id);
-            if(s) s.status = 'ready';
-            renderPemorsian();
+            if(s) { s.status = stat; renderAll(); }
+            await fetch(WEB_APP_URL, {method:"POST", body:JSON.stringify({action:"update", id, status:stat})});
         }
 
-        window.onload = renderPemorsian;
+        function openLogin(role) { currentRole = role; document.getElementById('modal-overlay').style.display='flex'; }
+        function closeModal() { document.getElementById('modal-overlay').style.display='none'; document.getElementById('pin-input').value=""; }
+        
+        function verifyLogin() {
+            const input = document.getElementById('pin-input').value;
+            if(input === PINS[currentRole]) {
+                closeModal();
+                navigate(currentRole === 'admin' ? 'admin' : (currentRole === 'pemorsian' ? 'pemorsian' : 'mobil'));
+                if(currentRole.includes('mobil')) {
+                    currentMobil = (currentRole==='mobil1')?'Mobil 1':'Mobil 2';
+                    document.getElementById('mb-head').innerText = currentMobil;
+                    renderMobil();
+                }
+            } else { alert("PIN Salah!"); }
+        }
+
+        function navigate(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+        }
+
+        function setFilterP(m) { filterP = m; document.querySelectorAll('#page-pemorsian .btn-filter').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderPemorsian(); }
+        
+        function renderAdmin() { /* ... kode render admin ... */ }
+        function renderMobil() { /* ... kode render mobil ... */ }
+        function renderAll() { renderPemorsian(); renderAdmin(); renderMobil(); }
+        window.onload = fetchSchools;
     </script>
 </body>
 </html>
