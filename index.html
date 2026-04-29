@@ -3,39 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik App Premium</title>
+    <title>Logistik App Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="container">
         <div id="headerArea"></div>
-
         <div id="mainContent"></div>
     </div>
 
     <div id="inputModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-top:0; text-align:center;">Input Data Baru</h3>
+            <h3 style="margin:0 0 20px; text-align:center; font-weight:800;">Input Data Baru</h3>
+            
             <div class="input-group">
-                <label>Nama Sekolah</label>
+                <label>NAMA SEKOLAH</label>
                 <input type="text" id="sekolahNama" placeholder="Masukkan nama sekolah...">
             </div>
+
             <div class="input-group">
-                <label>Pilih Mobil</label>
+                <label>ALOKASI MOBIL</label>
                 <select id="mobilPilih">
                     <option value="Mobil 1">Mobil 1</option>
                     <option value="Mobil 2">Mobil 2</option>
                 </select>
             </div>
+
+            <div class="input-row-label">RINCIAN PORSI (IKAT / SISA)</div>
             <div class="input-grid">
-                <div><label>PK Ikat</label><input type="number" id="pki" value="0"></div>
-                <div><label>PK Sisa</label><input type="number" id="pks" value="0"></div>
-                <div><label>PB Ikat</label><input type="number" id="pbi" value="0"></div>
-                <div><label>PB Sisa</label><input type="number" id="pbs" value="0"></div>
+                <div class="grid-box">
+                    <span>PK Ikat</span>
+                    <input type="number" id="pki" value="0" onclick="this.select()">
+                </div>
+                <div class="grid-box">
+                    <span>PK Sisa</span>
+                    <input type="number" id="pks" value="0" onclick="this.select()">
+                </div>
+                <div class="grid-box">
+                    <span>PB Ikat</span>
+                    <input type="number" id="pbi" value="0" onclick="this.select()">
+                </div>
+                <div class="grid-box">
+                    <span>PB Sisa</span>
+                    <input type="number" id="pbs" value="0" onclick="this.select()">
+                </div>
             </div>
-            <button class="btn-role admin" style="margin-top:20px" onclick="tambahData()">Simpan ke Cloud</button>
-            <button class="btn-cancel" onclick="tutupModal()">Batal</button>
+
+            <button class="btn-save-cloud" onclick="tambahData()">SIMPAN KE CLOUD</button>
+            <button class="btn-cancel" onclick="tutupModal()">BATAL</button>
         </div>
     </div>
 
