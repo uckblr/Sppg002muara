@@ -1,4 +1,4 @@
-const CLOUD_URL = "https://script.google.com/macros/s/AKfycbxaUThKB7mGR4YgNJgTaliHGE7EjG5OFJROTA9EoXEYWCKYRlVBjqKUPp-Aw4Vll5hh/exec";
+const CLOUD_URL = "URL_WEB_APP_ANDA"; // Masukkan URL Anda di sini
 
 let data = [];
 let roleSekarang = localStorage.getItem("user_role") || "pilih";
@@ -9,8 +9,8 @@ const hitungPorsi = (i, s) => (parseInt(i) || 0) * 5 + (parseInt(s) || 0);
 async function simpanKeCloud() {
     try {
         await fetch(CLOUD_URL, { method: 'POST', body: JSON.stringify(data) });
-        render();
-    } catch (e) { alert("Gagal koneksi internet"); }
+        tarikDataCloud();
+    } catch (e) { alert("Koneksi gagal"); }
 }
 
 async function tarikDataCloud() {
@@ -18,28 +18,52 @@ async function tarikDataCloud() {
         let res = await fetch(CLOUD_URL);
         data = await res.json();
         render();
-    } catch (e) { console.log("Gagal tarik data"); }
+    } catch (e) { console.log("Offline"); }
 }
 
 function render() {
     const container = document.getElementById("listContainer");
-    
+    const statsArea = document.getElementById("statsArea");
+    const nav = document.getElementById("mainNav");
+    const plusBtn = document.getElementById("plusButton");
+
+    // 1. JIKA BELUM PILIH ROLE
     if (roleSekarang === "pilih") {
-        renderPilihRole();
+        statsArea.innerHTML = "";
+        nav.style.display = "none";
+        container.innerHTML = `
+            <div style="text-align:center; padding: 40px 0 10px;">
+                <h2 style="margin-bottom:10px; font-weight:800;">Logistik App</h2>
+                <p style="color:#64748b; font-size:14px; padding:0 20px;">Silakan pilih mode akses untuk masuk ke sistem distribusi</p>
+            </div>
+            <div class="role-container">
+                <button class="btn-role admin" onclick="setRole('admin')">💼 ADMIN (KANTOR)</button>
+                <button class="btn-role" onclick="setRole('dapur')">🍳 TIM PEMORSIAN</button>
+                <button class="btn-role" onclick="setRole('supir', 'Mobil 1')">🚚 SUPIR MOBIL 1</button>
+                <button class="btn-role" onclick="setRole('supir', 'Mobil 2')">🚚 SUPIR MOBIL 2</button>
+            </div>
+        `;
         return;
     }
 
-    // Tampilan Header Mode
-    container.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <div>
-                <small style="color:#64748b; text-transform:uppercase; font-weight:bold">Mode Akses</small>
-                <div style="font-weight:800; font-size:18px;">${roleSekarang.toUpperCase()} ${mobilUser}</div>
+    // 2. JIKA SUDAH PILIH ROLE
+    nav.style.display = "flex";
+    if (roleSekarang === "admin") {
+        plusBtn.style.display = "flex";
+        let sisa = data.filter(x => x.status !== 'done').length;
+        statsArea.innerHTML = `
+            <div class="dashboard">
+                <div class="stat"><span>Sisa</span><h2>${sisa}</h2></div>
+                <div class="stat"><span>Total</span><h2>${data.length}</h2></div>
             </div>
-            <button onclick="logout()" style="background:#f1f5f9; border:none; padding:8px 12px; border-radius:10px; font-weight:bold; color:#ef4444; font-size:12px;">GANTI</button>
-        </div>
-    `;
+        `;
+    } else {
+        plusBtn.style.display = "none";
+        statsArea.innerHTML = `<div style="padding:15px; background:white; border-radius:15px; margin-bottom:15px; font-weight:bold; text-align:center;">MODE: ${roleSekarang.toUpperCase()} ${mobilUser}</div>`;
+    }
 
+    // Render List
+    container.innerHTML = "";
     let filtered = data;
     if (roleSekarang === "supir") {
         filtered = data.filter(d => d.mobil === mobilUser && d.status !== 'pending');
@@ -47,47 +71,22 @@ function render() {
 
     filtered.forEach((d, idx) => {
         let oriIdx = data.findIndex(x => x === d);
-        let tombolAction = "";
-        
-        if (roleSekarang === "dapur" && d.status === 'pending') {
-            tombolAction = `<button class="btn-ready" onclick="ubahStatus(${oriIdx}, 'ready')">SIAP DIKIRIM ✅</button>`;
-        } else if (roleSekarang === "supir" && d.status === 'ready') {
-            tombolAction = `<button class="btn-done" onclick="ubahStatus(${oriIdx}, 'done')">SUDAH SAMPAI 📍</button>`;
-        } else if (roleSekarang === "admin") {
-            tombolAction = `<button class="btn-delete" onclick="hapusData(${oriIdx})">HAPUS DATA</button>`;
-        }
+        let action = "";
+        if (roleSekarang === "dapur" && d.status === 'pending') action = `<button class="btn-ready" onclick="ubahStatus(${oriIdx}, 'ready')">SIAP KIRIM ✅</button>`;
+        if (roleSekarang === "supir" && d.status === 'ready') action = `<button class="btn-done" onclick="ubahStatus(${oriIdx}, 'done')">SELESAI ANTAR 📍</button>`;
+        if (roleSekarang === "admin") action = `<button class="btn-delete" onclick="hapusData(${oriIdx})">HAPUS</button>`;
 
         container.innerHTML += `
             <div class="item ${d.status}">
                 <span class="item-title">${d.nama}</span>
-                <div class="item-sub">${d.mobil} | PK: ${hitungPorsi(d.pk_val.i, d.pk_val.s)} | PB: ${hitungPorsi(d.pb_val.i, d.pb_val.s)}</div>
-                <div style="margin-top:10px; font-size:11px; font-weight:bold; color:#94a3b8">STATUS: ${d.status.toUpperCase()}</div>
-                ${tombolAction}
+                <div class="item-sub">${d.mobil} | Total: ${d.total} Porsi</div>
+                ${action}
             </div>
         `;
     });
-
-    if(roleSekarang === "admin") {
-        document.getElementById("totalSisa").innerText = data.filter(x => x.status !== 'done').length;
-        document.getElementById("totalTarget").innerText = data.length;
-    }
 }
 
-function renderPilihRole() {
-    document.getElementById("listContainer").innerHTML = `
-        <div style="text-align:center; padding: 40px 0 20px;">
-            <h2 style="margin-bottom:10px; font-weight:800;">Logistik App</h2>
-            <p style="color:#64748b; font-size:14px;">Silakan pilih mode akses untuk masuk ke sistem distribusi</p>
-        </div>
-        <div class="role-container">
-            <button class="btn-role admin" onclick="setRole('admin')">💼 ADMIN (KANTOR)</button>
-            <button class="btn-role" onclick="setRole('dapur')">🍳 TIM PEMORSIAN</button>
-            <button class="btn-role" onclick="setRole('supir', 'Mobil 1')">🚚 SUPIR MOBIL 1</button>
-            <button class="btn-role" onclick="setRole('supir', 'Mobil 2')">🚚 SUPIR MOBIL 2</button>
-        </div>
-    `;
-}
-
+/* FUNGSI CONTROL */
 function setRole(r, m = "") {
     roleSekarang = r;
     mobilUser = m;
@@ -107,17 +106,25 @@ function ubahStatus(i, s) {
 }
 
 function hapusData(i) {
-    if(confirm("Hapus data sekolah ini?")) {
-        data.splice(i, 1);
-        simpanKeCloud();
-    }
+    if(confirm("Hapus?")) { data.splice(i, 1); simpanKeCloud(); }
 }
 
-// Tambah data (Hanya bisa dipanggil lewat fungsi yang ada di index.html)
+function bukaModal() { document.getElementById("inputModal").style.display = "flex"; }
+function tutupModal() { document.getElementById("inputModal").style.display = "none"; }
+
 function tambahData() {
-    // Logika tambah data sekolah oleh Admin
-    // Pastikan Anda memiliki Modal Input di index.html seperti kode sebelumnya
+    const nama = document.getElementById("sekolahNama").value;
+    if(!nama) return;
+    let pki = document.getElementById("pki").value, pks = document.getElementById("pks").value;
+    let pbi = document.getElementById("pbi").value, pbs = document.getElementById("pbs").value;
+    let tot = hitungPorsi(pki, pks) + hitungPorsi(pbi, pbs);
+
+    data.push({
+        nama: nama, mobil: document.getElementById("mobilPilih").value,
+        status: 'pending', pk_val: {i:pki, s:pks}, pb_val: {i:pbi, s:pbs}, total: tot
+    });
+    tutupModal();
+    simpanKeCloud();
 }
 
 tarikDataCloud();
-setInterval(tarikDataCloud, 15000); // Sinkron otomatis tiap 15 detik
