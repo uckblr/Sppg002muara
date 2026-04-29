@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik Pro Elite v11</title>
+    <title>Logistik Pro Elite v12</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,11 +18,25 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); overflow-x: hidden; }
 
+        /* HEADER & NAVIGASI ATAS */
         .header { background: var(--dark); color: white; padding: 40px 25px 60px; border-radius: 0 0 40px 40px; position: sticky; top: 0; z-index: 100; }
-        .header h1 { margin: 0; font-size: 24px; font-weight: 800; }
+        .header h1 { margin: 0; font-size: 24px; font-weight: 800; max-width: 70%; }
         .header p { margin: 5px 0 0; opacity: 0.6; font-size: 12px; }
 
-        .page { display: none; padding-bottom: 120px; animation: fadeIn 0.3s ease; }
+        .top-nav { position: absolute; top: 35px; right: 20px; display: flex; gap: 10px; z-index: 110; }
+        .nav-btn { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px); 
+            color: white; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            width: 42px; height: 42px; border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; font-size: 18px; transition: 0.2s;
+        }
+        .nav-btn:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.2); }
+
+        /* LAYOUT & CARDS */
+        .page { display: none; padding-bottom: 50px; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -52,13 +66,10 @@
         .btn-libur { background: #f1f5f9; color: #64748b; }
         .btn-hapus { background: #fee2e2; color: var(--danger); }
 
+        /* MODALS */
         .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .modal { background: white; padding: 30px; border-radius: 30px; width: 100%; max-width: 400px; text-align: center; }
         .input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #f1f5f9; background: #f8fafc; font-family: inherit; font-weight: 600; margin-bottom: 15px; }
-
-        .navbar { position: fixed; bottom: 25px; left: 20px; right: 20px; background: var(--dark); height: 75px; border-radius: 25px; display: none; align-items: center; justify-content: space-around; z-index: 900; }
-        .nav-item { color: #64748b; text-align: center; cursor: pointer; font-size: 10px; font-weight: 700; }
-        .nav-item.active { color: white; }
     </style>
 </head>
 <body>
@@ -83,13 +94,13 @@
                 <div><small style="font-size:10px">PB</small><input type="number" id="in-pb" class="input"></div>
                 <div><small style="font-size:10px">TD</small><input type="number" id="in-tendik" class="input"></div>
             </div>
-            <button class="btn-action" style="background:var(--grad); color:white; width:100%; font-size:14px; padding:18px" onclick="handleSave()">SIMPAN PERUBAHAN</button>
+            <button class="btn-action" style="background:var(--grad); color:white; width:100%; font-size:14px; padding:18px" onclick="handleSave()">SIMPAN</button>
             <button onclick="closeModal()" style="background:none; border:none; margin-top:15px; color:#94a3b8; font-weight:700">TUTUP</button>
         </div>
     </div>
 
     <div id="page-home" class="page active">
-        <div class="header"><h1>Logistik Control</h1><p id="h-status">Sinkronisasi Data...</p></div>
+        <div class="header"><h1>Logistik Control</h1><p id="h-status">Menghubungkan...</p></div>
         <div style="padding:40px 25px">
             <button class="btn-filter" style="width:100%; padding:22px; margin-bottom:15px; font-size:15px; border:1px solid #e2e8f0" onclick="openLogin('admin')">💼 Admin Kantor</button>
             <button class="btn-filter" style="width:100%; padding:22px; margin-bottom:15px; font-size:15px; border:1px solid #e2e8f0" onclick="openLogin('pemorsian')">🍳 Tim Pemorsian</button>
@@ -99,33 +110,45 @@
     </div>
 
     <div id="page-admin" class="page">
-        <div class="header"><h1>Admin Panel</h1><p id="a-status">Data Sekolah</p></div>
+        <div class="header">
+            <h1>Admin Panel</h1><p id="a-status">Kelola Data</p>
+            <div class="top-nav">
+                <div class="nav-btn" onclick="location.reload()">🏠</div>
+                <div class="nav-btn" onclick="openFormAdd()">➕</div>
+            </div>
+        </div>
         <div class="stats-container">
             <div class="stat-card"><small>TOTAL PORSI</small><b id="st-total">0</b></div>
             <div class="stat-card"><small>TERKIRIM</small><b id="st-done-porsi">0</b></div>
         </div>
         <div class="progress-area">
-            <div class="progress-text"><span id="st-count-text">0 selesai</span><span id="st-percent">0%</span></div>
+            <div class="progress-text"><span id="st-count-text">0 Selesai</span><span id="st-percent">0%</span></div>
             <div class="pb-bg"><div id="pb-fill" class="pb-fill"></div></div>
         </div>
         <div class="filter-row">
             <button class="btn-filter active" id="f-all" onclick="filterMobil('all')">SEMUA</button>
-            <button class="btn-filter" id="f-m1" onclick="filterMobil('Mobil 1')">MOBIL 1</button>
-            <button class="btn-filter" id="f-m2" onclick="filterMobil('Mobil 2')">MOBIL 2</button>
+            <button class="btn-filter" id="f-m1" onclick="filterMobil('Mobil 1')">M1</button>
+            <button class="btn-filter" id="f-m2" onclick="filterMobil('Mobil 2')">M2</button>
         </div>
         <div class="search-box"><input type="text" id="admin-search" class="input-search" placeholder="Cari sekolah..." oninput="renderAdmin()"></div>
         <div id="list-admin"></div>
     </div>
 
-    <div id="page-pemorsian" class="page"><div class="header"><h1>Pemorsian</h1></div><div id="list-pemorsian"></div></div>
+    <div id="page-pemorsian" class="page">
+        <div class="header">
+            <h1>Pemorsian</h1><p>Daftar Antrean</p>
+            <div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div>
+        </div>
+        <div id="list-pemorsian"></div>
+    </div>
 
-    <div id="page-mobil" class="page"><div class="header"><h1 id="mb-head">Mobil</h1></div><div id="list-mobil"></div></div>
-
-    <nav class="navbar" id="nav">
-        <div class="nav-item active" onclick="navigate('admin')">🏠<span>UTAMA</span></div>
-        <div class="nav-item" onclick="openFormAdd()">➕<span>TAMBAH</span></div>
-        <div class="nav-item" onclick="location.reload()">🚪<span>EXIT</span></div>
-    </nav>
+    <div id="page-mobil" class="page">
+        <div class="header">
+            <h1 id="mb-head">Mobil</h1><p>Status Pengiriman</p>
+            <div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div>
+        </div>
+        <div id="list-mobil"></div>
+    </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxKTFPwPDoh-wNDPnkde0IqxiLGGLux_rPSBQaVCy0kbtaXPWkOE7RWoW8IgWXD2s0v/exec";
@@ -146,11 +169,9 @@
                     status: String(s.status || "pending").trim().toLowerCase(),
                     islibur: String(s.islibur).trim().toUpperCase() === "TRUE"
                 }));
-                document.getElementById('h-status').innerText = "Koneksi Terhubung";
+                document.getElementById('h-status').innerText = "Koneksi Stabil";
                 renderAll();
-            } catch(e) { 
-                document.getElementById('h-status').innerText = "Gagal memuat data.";
-            }
+            } catch(e) { document.getElementById('h-status').innerText = "Gagal memuat data."; }
         }
 
         function renderAdmin() {
@@ -226,6 +247,16 @@
             await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action, id: targetId, nama, mobil, pk, pb, tendik:td}) });
         }
 
+        function verifyLogin() {
+            if(document.getElementById('pin-input').value === PINS[currentRole]) {
+                closeModal();
+                if(currentRole === 'admin') navigate('admin');
+                else if(currentRole === 'pemorsian') navigate('pemorsian');
+                else { currentMobil = (currentRole === 'mobil1') ? 'Mobil 1' : 'Mobil 2'; document.getElementById('mb-head').innerText = currentMobil; navigate('mobil'); }
+            } else alert("PIN SALAH");
+            document.getElementById('pin-input').value = "";
+        }
+
         async function updateStatus(id, stat) {
             const s = schools.find(x => x.id === id);
             if(s) { s.status = stat; renderAll(); }
@@ -239,25 +270,14 @@
         }
 
         async function hapusSekolah(id) {
-            if(!confirm("Hapus?")) return;
+            if(!confirm("Hapus sekolah?")) return;
             schools = schools.filter(s => s.id !== id); renderAll();
             await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"delete", id}) });
-        }
-
-        function verifyLogin() {
-            if(document.getElementById('pin-input').value === PINS[currentRole]) {
-                closeModal();
-                if(currentRole === 'admin') navigate('admin');
-                else if(currentRole === 'pemorsian') navigate('pemorsian');
-                else { currentMobil = (currentRole === 'mobil1') ? 'Mobil 1' : 'Mobil 2'; document.getElementById('mb-head').innerText = currentMobil; navigate('mobil'); }
-            } else alert("PIN SALAH");
-            document.getElementById('pin-input').value = "";
         }
 
         function navigate(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.getElementById('page-'+p).classList.add('active');
-            document.getElementById('nav').style.display = (p === 'admin') ? 'flex' : 'none';
         }
 
         function filterMobil(m) {
@@ -281,7 +301,8 @@
             const list = document.getElementById('list-mobil'); list.innerHTML = "";
             schools.filter(s => s.mobil === currentMobil && !s.islibur).forEach(s => {
                 const isReady = s.status === 'ready';
-                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><button class="btn-action" style="width:100%; color:white; background:${isReady?'var(--primary)':'#ccc'}" ${!isReady?'disabled':''} onclick="updateStatus('${s.id}','done')">${s.status==='done'?'✓ TERKIRIM':'KONFIRMASI TIBA'}</button></div>`;
+                const isDone = s.status === 'done';
+                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><button class="btn-action" style="width:100%; color:white; background:${isDone ? var(--success) : (isReady ? var(--primary) : '#ccc')}" ${!isReady || isDone ? 'disabled' : ''} onclick="updateStatus('${s.id}','done')">${isDone ? '✓ TERKIRIM' : (isReady ? 'KONFIRMASI TIBA' : 'BELUM SIAP')}</button></div>`;
             });
         }
 
