@@ -3,183 +3,618 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik Pro v2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
+    <title>Logistik Pro Elite v3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --p-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --primary: #4f46e5;
+            --primary-grad: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
             --dark: #0f172a;
-            --bg: #f8fafc;
-            --text: #1e293b;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        
         body { 
-            margin: 0; background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: var(--text); padding-bottom: 120px;
+            margin: 0; background: var(--bg); color: var(--text-main); 
+            font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden;
+            line-height: 1.5;
         }
 
-        header {
-            background: var(--dark); color: white; padding: 40px 25px 50px;
-            border-radius: 0 0 40px 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        header h1 { margin: 0; font-size: 26px; font-weight: 800; }
-        header p { margin: 5px 0 0; opacity: 0.6; font-size: 14px; }
+        /* --- Animasi --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        .page { display: none; animation: fadeIn 0.4s ease; padding-bottom: 120px; }
+        .page.active { display: block; }
 
-        /* Menu Utama */
-        .role-container { padding: 25px 20px; display: flex; flex-direction: column; gap: 15px; }
+        /* --- Header & Stats --- */
+        .header {
+            background: var(--dark); color: white; padding: 40px 25px 60px;
+            border-radius: 0 0 40px 40px; position: sticky; top: 0; z-index: 100;
+        }
+        .header h1 { margin: 0; font-size: 24px; font-weight: 800; }
+        .header p { margin: 5px 0 0; opacity: 0.6; font-size: 13px; }
+
+        .stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            margin-top: -30px; padding: 0 20px;
+        }
+        .stat-card {
+            background: var(--card); padding: 15px; border-radius: var(--radius-md);
+            box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.05);
+        }
+        .stat-card small { display: block; color: var(--text-sub); font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+        .stat-card span { font-size: 18px; font-weight: 800; color: var(--dark); }
+
+        /* --- Progress Bar --- */
+        .progress-container { background: #e2e8f0; height: 8px; border-radius: 10px; margin: 15px 20px; overflow: hidden; }
+        .progress-bar { background: var(--primary-grad); height: 100%; width: 0%; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* --- Buttons & Inputs --- */
+        .btn {
+            border: none; border-radius: var(--radius-md); font-weight: 700;
+            cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn:active { transform: scale(0.92); }
+        .btn-primary { background: var(--primary-grad); color: white; padding: 16px; width: 100%; }
         .btn-role {
-            background: white; padding: 20px 24px; border-radius: 22px; 
-            border: 1px solid #f1f5f9; display: flex; align-items: center; 
-            gap: 18px; font-weight: 700; cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); transition: 0.2s;
+            background: var(--card); padding: 22px; width: 100%; 
+            margin-bottom: 12px; justify-content: flex-start; font-size: 16px;
+            box-shadow: var(--shadow); border: 1px solid #f1f5f9;
         }
-        .btn-role:active { transform: scale(0.95); background: #f1f5f9; }
-        .role-icon {
-            font-size: 24px; width: 50px; height: 50px; background: #f8fafc;
-            display: flex; align-items: center; justify-content: center; border-radius: 15px;
+        .btn-icon { width: 45px; height: 45px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 13px; color: var(--text-sub); padding-left: 5px; }
+        .input {
+            width: 100%; padding: 15px; border-radius: 14px; border: 2px solid #f1f5f9;
+            background: #f8fafc; font-size: 15px; font-family: inherit; font-weight: 600;
+        }
+        .input:focus { border-color: var(--primary); background: white; }
+
+        /* --- Search Bar --- */
+        .search-box { padding: 0 20px; margin: 20px 0; }
+        .search-input { 
+            width: 100%; padding: 14px 20px; border-radius: 30px; 
+            border: none; background: white; box-shadow: var(--shadow);
+            font-size: 14px; font-weight: 600;
         }
 
-        /* Modal Overlay */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(10px); display: none; align-items: center; 
-            justify-content: center; z-index: 9999; padding: 20px;
+        /* --- Data Cards --- */
+        .card-list { padding: 0 20px; }
+        .item-card {
+            background: var(--card); border-radius: var(--radius-md); padding: 18px;
+            margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid #f1f5f9;
+            animation: fadeIn 0.3s ease; position: relative;
         }
-        .modal-card { 
-            background: white; border-radius: 30px; padding: 30px; 
-            width: 100%; max-width: 400px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .item-card.libur { opacity: 0.5; filter: grayscale(1); }
+        .item-card h3 { margin: 0 0 10px; font-size: 16px; font-weight: 800; color: var(--dark); }
+        
+        .porsi-badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; background: #f1f5f9; }
+        .badge-total { background: var(--dark); color: white; }
+        
+        .card-actions { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #f1f5f9; }
+        .btn-sm { padding: 8px 12px; font-size: 12px; border-radius: 10px; flex: 1; }
 
-        /* Form Inputs */
-        .premium-input {
-            width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #f1f5f9;
-            background: #f8fafc; font-size: 16px; margin-bottom: 15px; outline: none;
-            font-family: inherit;
+        /* --- Modal & Popups --- */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px); z-index: 1000; display: none;
+            align-items: flex-end; justify-content: center;
         }
-        .premium-input:focus { border-color: #4f46e5; background: white; }
-
-        .btn-action {
-            width: 100%; padding: 16px; border-radius: 15px; border: none;
-            background: var(--dark); color: white; font-weight: 800; cursor: pointer;
+        .modal {
+            background: white; width: 100%; max-width: 450px;
+            border-radius: 30px 30px 0 0; padding: 30px 25px;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Navbar */
+        /* --- Undo Toast --- */
+        #undo-toast {
+            position: fixed; bottom: 100px; left: 20px; right: 20px;
+            background: var(--dark); color: white; padding: 15px 20px;
+            border-radius: 16px; display: none; align-items: center; justify-content: space-between;
+            z-index: 2000; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        #undo-toast button { background: var(--primary); border: none; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+
+        /* --- Navbar --- */
         .navbar {
             position: fixed; bottom: 25px; left: 20px; right: 20px;
             background: var(--dark); height: 75px; border-radius: 25px;
             display: none; align-items: center; justify-content: space-around;
+            z-index: 900; box-shadow: 0 15px 30px rgba(0,0,0,0.3);
         }
-        .nav-item { color: #94a3b8; text-align: center; font-size: 22px; cursor: pointer; }
-        .nav-item span { display: block; font-size: 10px; margin-top: 4px; }
-        .nav-plus {
-            width: 60px; height: 60px; background: var(--p-gradient); color: white;
-            border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; margin-top: -50px; border: 5px solid var(--bg);
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4);
-        }
+        .nav-item { color: #64748b; text-align: center; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: white; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 2px; }
+        .nav-item span { font-size: 10px; font-weight: 700; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1 id="headerTitle">Logistik Control</h1>
-        <p id="headerSub">Silakan masuk untuk akses fitur</p>
-    </header>
-
-    <main id="mainContent">
-        </main>
-
-    <div id="pinModal" class="modal-overlay">
-        <div class="modal-card">
-            <h3>🔐 Verifikasi PIN</h3>
-            <input type="password" id="pinInput" class="premium-input" style="text-align:center; letter-spacing:10px;" placeholder="••••" maxlength="4">
-            <button class="btn-action" onclick="checkPin()">MASUK</button>
-            <button onclick="closeModals()" style="background:none; border:none; color:#94a3b8; margin-top:15px; cursor:pointer;">BATAL</button>
-        </div>
+    <div id="undo-toast">
+        <span id="undo-msg">Aksi berhasil dilakukan</span>
+        <button onclick="executeUndo()">UNDO (<span id="undo-timer">5</span>s)</button>
     </div>
 
-    <div id="formModal" class="modal-overlay">
-        <div class="modal-card">
-            <h3 style="margin-top:0">🏫 Tambah Sekolah</h3>
-            <input type="text" id="fNama" class="premium-input" placeholder="Nama Sekolah/Posyandu">
-            <select id="fMobil" class="premium-input">
-                <option value="Mobil 1">Mobil 1</option>
-                <option value="Mobil 2">Mobil 2</option>
-            </select>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <input type="number" id="fPK" class="premium-input" placeholder="Jml PK">
-                <input type="number" id="fPB" class="premium-input" placeholder="Jml PB">
+    <div id="modal-overlay" class="overlay">
+        <div id="login-modal" class="modal" style="display:none">
+            <h2 style="margin-top:0">Keamanan PIN</h2>
+            <p style="color:var(--text-sub); font-size:14px; margin-bottom:20px">Masukkan 4 digit PIN untuk akses peran ini.</p>
+            <div class="input-group">
+                <input type="password" id="pin-input" class="input" style="text-align:center; letter-spacing:15px; font-size:24px" maxlength="4" placeholder="••••">
             </div>
-            <button class="btn-action" style="background:var(--p-gradient)" onclick="submitData()">SIMPAN DATA</button>
-            <button onclick="closeModals()" style="background:none; border:none; color:#94a3b8; margin-top:15px; cursor:pointer;">BATAL</button>
+            <button class="btn btn-primary" onclick="verifyLogin()">VERIFIKASI PIN</button>
+            <button class="btn" style="width:100%; margin-top:10px" onclick="closeModal()">BATAL</button>
+        </div>
+
+        <div id="form-modal" class="modal" style="display:none">
+            <h2 id="form-title" style="margin-top:0">Tambah Sekolah</h2>
+            <div class="input-group">
+                <label>NAMA SEKOLAH</label>
+                <input type="text" id="sk-nama" class="input" placeholder="Contoh: SD NEGERI 01" oninput="this.value = this.value.toUpperCase()">
+            </div>
+            <div class="input-group">
+                <label>ALOKASI MOBIL</label>
+                <select id="sk-mobil" class="input">
+                    <option value="Mobil 1">Mobil 1</option>
+                    <option value="Mobil 2">Mobil 2</option>
+                </select>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px">
+                <div class="input-group">
+                    <label>PORSI PK</label>
+                    <input type="number" id="sk-pk" class="input" value="0">
+                </div>
+                <div class="input-group">
+                    <label>PORSI PB</label>
+                    <input type="number" id="sk-pb" class="input" value="0">
+                </div>
+                <div class="input-group">
+                    <label>TENDIK</label>
+                    <input type="number" id="sk-tendik" class="input" value="0">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveSchool()">SIMPAN DATA</button>
+            <button class="btn" style="width:100%; margin-top:10px" onclick="closeModal()">BATAL</button>
         </div>
     </div>
 
-    <nav class="navbar" id="bottomNav">
-        <div class="nav-item" onclick="location.reload()">🏠<span>Beranda</span></div>
-        <div class="nav-plus" onclick="openForm()">+</div>
-        <div class="nav-item" onclick="location.reload()" style="color:#f43f5e">🚪<span>Keluar</span></div>
+    <div id="page-home" class="page active">
+        <div class="header">
+            <h1>Logistik Control</h1>
+            <p>Pilih peran Anda untuk melanjutkan</p>
+        </div>
+        <div class="role-container" style="padding:40px 25px">
+            <button class="btn btn-role" onclick="openLogin('admin')"><div class="btn-icon">💼</div>Admin Kantor</button>
+            <button class="btn btn-role" onclick="openLogin('pemorsian')"><div class="btn-icon">🍳</div>Tim Pemorsian</button>
+            <button class="btn btn-role" onclick="openLogin('mobil1')"><div class="btn-icon">🚚</div>Mobil 1</button>
+            <button class="btn btn-role" onclick="openLogin('mobil2')"><div class="btn-icon">🚚</div>Mobil 2</button>
+        </div>
+    </div>
+
+    <div id="page-admin" class="page">
+        <div class="header">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <h1>Dashboard Admin</h1>
+                <button class="btn" style="background:rgba(255,255,255,0.1); color:white; padding:8px 15px; font-size:12px; border-radius:12px" onclick="logout()">LOGOUT</button>
+            </div>
+            <p>Kontrol data sekolah dan pengiriman</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card"><small>TOTAL SEKOLAH</small><span id="stat-sk">0</span></div>
+            <div class="stat-card"><small>TOTAL PORSI</small><span id="stat-porsi">0</span></div>
+            <div class="stat-card"><small>DONE / PENDING</small><span id="stat-done">0 / 0</span></div>
+            <div class="stat-card" style="background:var(--primary); color:white">
+                <small style="color:rgba(255,255,255,0.7)">PORSI SIAP (DP)</small>
+                <span id="stat-ready-dapur" style="color:white">0</span>
+            </div>
+        </div>
+
+        <div class="progress-container"><div id="admin-pb" class="progress-bar"></div></div>
+
+        <div class="search-box">
+            <input type="text" id="admin-search" class="search-input" placeholder="Cari nama sekolah..." oninput="renderSchools()">
+        </div>
+
+        <div class="card-list" id="admin-list"></div>
+    </div>
+
+    <div id="page-pemorsian" class="page">
+        <div class="header">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <h1>Tim Pemorsian</h1>
+                <button class="btn" style="background:rgba(255,255,255,0.1); color:white; padding:8px 15px; font-size:12px" onclick="logout()">LOGOUT</button>
+            </div>
+            <p>Kelola porsi yang sedang disiapkan</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" style="grid-column: span 2">
+                <small>FORM INPUT PORSI TERSEDIA (MANUAL)</small>
+                <div style="display:flex; gap:10px; margin-top:5px">
+                    <input type="number" id="manual-ready" class="input" style="padding:10px" placeholder="Masukkan angka porsi">
+                    <button class="btn btn-primary" style="width:auto; padding:0 20px" onclick="updateManualReady()">UPDATE</button>
+                </div>
+            </div>
+            <div class="stat-card"><small>SEDANG DISIAPKAN</small><span id="pm-cur-prep">Pilih Sekolah</span></div>
+            <div class="stat-card"><small>ESTIMASI IKAT</small><span id="pm-ikat">0 Ikat + 0</span></div>
+        </div>
+
+        <div class="progress-container"><div id="pm-pb" class="progress-bar"></div></div>
+        
+        <div class="card-list" id="pm-list" style="margin-top:20px"></div>
+    </div>
+
+    <div id="page-mobil" class="page">
+        <div class="header">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <h1 id="mobil-title">Dashboard Mobil</h1>
+                <button class="btn" style="background:rgba(255,255,255,0.1); color:white; padding:8px 15px; font-size:12px" onclick="logout()">LOGOUT</button>
+            </div>
+            <p>Daftar pengiriman hari ini</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><small>TOTAL TARGET</small><span id="mb-total">0</span></div>
+            <div class="stat-card"><small>SELESAI</small><span id="mb-done">0</span></div>
+        </div>
+
+        <div class="progress-container"><div id="mb-pb" class="progress-bar"></div></div>
+        <div class="card-list" id="mb-list" style="margin-top:20px"></div>
+    </div>
+
+    <nav class="navbar" id="main-nav">
+        <div class="nav-item active" onclick="navigate('admin')">🏠<span>Dashboard</span></div>
+        <div class="nav-item" onclick="openFormModal()">➕<span>Tambah</span></div>
+        <div class="nav-item" onclick="logout()">🚪<span>Logout</span></div>
     </nav>
 
     <script>
-        const PINS = { admin: "1111", dapur: "2222", supir1: "3331", supir2: "3332" };
-        let userRole = "";
+        // --- DATA & STATE ---
+        let schools = JSON.parse(localStorage.getItem('schools')) || [];
+        let manualReadyCount = localStorage.getItem('manualReady') || 0;
+        let lastRole = "";
+        let currentMobil = "";
+        let undoStack = null;
+        let undoTimeout = null;
 
-        function initMenu() {
-            document.getElementById("mainContent").innerHTML = `
-                <div class="role-container">
-                    <div class="btn-role" onclick="openPin('admin')"><div class="role-icon">💼</div>Admin Kantor</div>
-                    <div class="btn-role" onclick="openPin('dapur')"><div class="role-icon">🍳</div>Tim Dapur</div>
-                    <div class="btn-role" onclick="openPin('supir1')"><div class="role-icon">🚚</div>Mobil 1</div>
-                    <div class="btn-role" onclick="openPin('supir2')"><div class="role-icon">🚚</div>Mobil 2</div>
-                </div>`;
+        const PINS = { admin: "1111", pemorsian: "2222", mobil1: "3331", mobil2: "3332" };
+
+        // --- CORE FUNCTIONS ---
+
+        function init() {
+            checkDailyReset();
+            renderSchools();
         }
 
-        function openPin(role) {
-            userRole = role;
-            document.getElementById("pinModal").style.display = "flex";
-            document.getElementById("pinInput").value = "";
-        }
+        // Auto Reset jam 03:00 pagi
+        function checkDailyReset() {
+            const now = new Date();
+            const lastReset = localStorage.getItem('lastResetDate');
+            const today = now.toDateString();
 
-        function checkPin() {
-            const input = document.getElementById("pinInput").value;
-            if (input === PINS[userRole]) {
-                closeModals();
-                document.getElementById("headerTitle").innerText = "Dashboard " + userRole.toUpperCase();
-                document.getElementById("headerSub").innerText = "Koneksi Database Aktif";
-                document.getElementById("bottomNav").style.display = "flex";
-                document.getElementById("mainContent").innerHTML = `<div style="padding:40px; text-align:center; opacity:0.5">Memuat Data Pengiriman...</div>`;
-            } else {
-                alert("PIN Salah!");
+            if (lastReset !== today && now.getHours() >= 3) {
+                schools = schools.map(s => ({
+                    ...s,
+                    status: 'pending',
+                    isLibur: false,
+                    readyTime: null,
+                    doneTime: null
+                }));
+                localStorage.setItem('lastResetDate', today);
+                saveData();
             }
         }
 
-        function openForm() {
-            if (userRole !== 'admin') {
-                alert("Hanya Admin yang boleh menambah data!");
-                return;
-            }
-            document.getElementById("formModal").style.display = "flex";
+        function saveData() {
+            localStorage.setItem('schools', JSON.stringify(schools));
+            localStorage.setItem('manualReady', manualReadyCount);
+            renderSchools();
         }
 
-        function closeModals() {
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-        }
-
-        function submitData() {
-            const nama = document.getElementById("fNama").value;
-            if(!nama) return alert("Nama sekolah harus diisi!");
+        // --- NAVIGATION & LOGIN ---
+        function navigate(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
             
-            // Logika simpan Anda di sini (Fetch ke Google Sheets)
-            alert("Data " + nama + " berhasil dikirim ke server!");
-            closeModals();
+            if (pageId === 'admin') document.getElementById('main-nav').style.display = 'flex';
+            else document.getElementById('main-nav').style.display = 'none';
+            
+            renderSchools();
         }
 
-        window.onload = initMenu;
+        function openLogin(role) {
+            lastRole = role;
+            document.getElementById('modal-overlay').style.display = 'flex';
+            document.getElementById('login-modal').style.display = 'block';
+            document.getElementById('pin-input').value = "";
+            document.getElementById('pin-input').focus();
+        }
+
+        function verifyLogin() {
+            const pin = document.getElementById('pin-input').value;
+            if (pin === PINS[lastRole]) {
+                closeModal();
+                if (lastRole === 'admin') navigate('admin');
+                else if (lastRole === 'pemorsian') navigate('pemorsian');
+                else if (lastRole.includes('mobil')) {
+                    currentMobil = lastRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2';
+                    document.getElementById('mobil-title').innerText = currentMobil;
+                    navigate('mobil');
+                }
+            } else {
+                alert("PIN SALAH!");
+            }
+        }
+
+        function logout() {
+            if(confirm("Yakin ingin keluar?")) navigate('home');
+        }
+
+        // --- MODAL & FORM ---
+        function openFormModal(index = null) {
+            document.getElementById('modal-overlay').style.display = 'flex';
+            document.getElementById('form-modal').style.display = 'block';
+            document.getElementById('form-title').innerText = index !== null ? "Edit Sekolah" : "Tambah Sekolah";
+            
+            if (index !== null) {
+                const s = schools[index];
+                document.getElementById('sk-nama').value = s.nama;
+                document.getElementById('sk-mobil').value = s.mobil;
+                document.getElementById('sk-pk').value = s.pk;
+                document.getElementById('sk-pb').value = s.pb;
+                document.getElementById('sk-tendik').value = s.tendik;
+                window.editingIndex = index;
+            } else {
+                document.getElementById('sk-nama').value = "";
+                document.getElementById('sk-pk').value = 0;
+                document.getElementById('sk-pb').value = 0;
+                document.getElementById('sk-tendik').value = 0;
+                window.editingIndex = null;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        }
+
+        function saveSchool() {
+            const name = document.getElementById('sk-nama').value.toUpperCase();
+            if (!name) return alert("Nama sekolah wajib diisi!");
+
+            const schoolData = {
+                nama: name,
+                mobil: document.getElementById('sk-mobil').value,
+                pk: parseInt(document.getElementById('sk-pk').value) || 0,
+                pb: parseInt(document.getElementById('sk-pb').value) || 0,
+                tendik: parseInt(document.getElementById('sk-tendik').value) || 0,
+                status: 'pending', // pending, ready, done
+                isLibur: false,
+                readyTime: null,
+                doneTime: null
+            };
+
+            if (window.editingIndex !== null) {
+                schools[window.editingIndex] = { ...schools[window.editingIndex], ...schoolData };
+            } else {
+                schools.push(schoolData);
+            }
+
+            saveData();
+            closeModal();
+        }
+
+        // --- RENDER LOGIC ---
+        function renderSchools() {
+            const query = document.getElementById('admin-search').value.toLowerCase();
+            
+            // Stats Calculation
+            const activeSchools = schools.filter(s => !s.isLibur);
+            const totalPorsi = activeSchools.reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+            const doneCount = activeSchools.filter(s => s.status === 'done').length;
+            
+            // Update Admin Stats
+            document.getElementById('stat-sk').innerText = activeSchools.length;
+            document.getElementById('stat-porsi').innerText = totalPorsi;
+            document.getElementById('stat-done').innerText = `${doneCount} / ${activeSchools.length - doneCount}`;
+            document.getElementById('stat-ready-dapur').innerText = manualReadyCount;
+            const adminProgress = activeSchools.length ? (doneCount / activeSchools.length) * 100 : 0;
+            document.getElementById('admin-pb').style.width = adminProgress + "%";
+
+            // Render Admin List
+            const adminList = document.getElementById('admin-list');
+            adminList.innerHTML = "";
+            schools.forEach((s, i) => {
+                if (s.nama.toLowerCase().includes(query)) {
+                    const total = s.pk + s.pb + s.tendik;
+                    adminList.innerHTML += `
+                        <div class="item-card ${s.isLibur ? 'libur' : ''}">
+                            <h3>${s.nama}</h3>
+                            <div class="porsi-badge-row">
+                                <span class="badge">PK: ${s.pk}</span>
+                                <span class="badge">PB: ${s.pb}</span>
+                                <span class="badge">TD: ${s.tendik}</span>
+                                <span class="badge badge-total">${total} PORSI</span>
+                                <span class="badge" style="background:var(--primary); color:white">${s.mobil}</span>
+                            </div>
+                            <div style="font-size:11px; color:var(--text-sub); font-weight:700">
+                                STATUS: ${s.status.toUpperCase()} ${s.doneTime ? '• ' + s.doneTime : ''}
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn btn-sm" onclick="openFormModal(${i})">EDIT</button>
+                                <button class="btn btn-sm" style="background:#f1f5f9" onclick="toggleLibur(${i})">${s.isLibur ? 'AKTIFKAN' : 'LIBUR'}</button>
+                                <button class="btn btn-sm" style="background:#fee2e2; color:var(--danger)" onclick="confirmDelete(${i})">HAPUS</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            // Render Pemorsian List
+            const pmList = document.getElementById('pm-list');
+            pmList.innerHTML = "";
+            const pmActive = activeSchools.filter(s => s.status !== 'done');
+            pmActive.forEach((s, i) => {
+                const total = s.pk + s.pb + s.tendik;
+                const ikat = Math.floor(total / 5);
+                const sisa = total % 5;
+                pmList.innerHTML += `
+                    <div class="item-card">
+                        <div style="display:flex; justify-content:space-between">
+                            <h3 style="margin:0">${s.nama}</h3>
+                            <span class="badge" style="margin:0">${s.mobil}</span>
+                        </div>
+                        <div class="porsi-badge-row" style="margin-top:10px">
+                            <span class="badge">PK: ${s.pk} | PB: ${s.pb}</span>
+                            <span class="badge badge-total">${ikat} Ikat + ${sisa}</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-sm btn-primary" onclick="siapkanPorsi(${schools.indexOf(s)})">SIAPKAN</button>
+                            <button class="btn btn-sm" style="background:var(--success); color:white" onclick="kirimKeMobil(${schools.indexOf(s)})">SIAP KIRIM</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Render Mobil List
+            const mbList = document.getElementById('mb-list');
+            mbList.innerHTML = "";
+            const mobilData = schools.filter(s => !s.isLibur && s.mobil === currentMobil);
+            const mbDoneCount = mobilData.filter(s => s.status === 'done').length;
+            
+            document.getElementById('mb-total').innerText = mobilData.length;
+            document.getElementById('mb-done').innerText = mbDoneCount;
+            document.getElementById('mb-pb').style.width = (mbDoneCount/mobilData.length)*100 + "%";
+
+            if (mobilData.length === 0) {
+                mbList.innerHTML = `<div style="text-align:center; padding:50px; opacity:0.5; font-weight:800">DATA SEKOLAH KOSONG</div>`;
+            } else {
+                mobilData.forEach((s, i) => {
+                    const total = s.pk + s.pb + s.tendik;
+                    const isDisabled = s.status !== 'ready';
+                    mbList.innerHTML += `
+                        <div class="item-card ${s.status === 'done' ? 'libur' : ''}">
+                            <h3>${s.nama}</h3>
+                            <div class="porsi-badge-row">
+                                <span class="badge">TOTAL: ${total}</span>
+                                <span class="badge" style="background:${s.status === 'ready' ? 'var(--success)' : 'var(--warning)'}; color:white">
+                                    ${s.status === 'pending' ? 'DIPROSES DAPUR' : s.status === 'ready' ? 'SIAP DIKIRIM' : 'SELESAI'}
+                                </span>
+                            </div>
+                            ${s.doneTime ? `<div style="font-size:10px; font-weight:700">TIBA: ${s.doneTime}</div>` : ''}
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-primary" ${isDisabled ? 'disabled style="opacity:0.3"' : ''} onclick="selesaiKirim(${schools.indexOf(s)})">
+                                    KONFIRMASI SELESAI
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // --- ACTION LOGIC ---
+
+        function siapkanPorsi(index) {
+            const s = schools[index];
+            const total = s.pk + s.pb + s.tendik;
+            const ikat = Math.floor(total / 5);
+            const sisa = total % 5;
+            
+            document.getElementById('pm-cur-prep').innerText = s.nama;
+            document.getElementById('pm-ikat').innerText = `${ikat} Ikat + ${sisa}`;
+        }
+
+        function kirimKeMobil(index) {
+            createUndo('Status pengiriman sekolah berhasil diperbarui', () => {
+                const now = new Date();
+                schools[index].status = 'ready';
+                schools[index].readyTime = now.toLocaleDateString() + ' ' + now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                saveData();
+            });
+        }
+
+        function selesaiKirim(index) {
+            createUndo('Pengiriman telah selesai', () => {
+                const now = new Date();
+                schools[index].status = 'done';
+                schools[index].doneTime = now.toLocaleDateString() + ' ' + now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                saveData();
+            });
+        }
+
+        function toggleLibur(index) {
+            schools[index].isLibur = !schools[index].isLibur;
+            saveData();
+        }
+
+        function confirmDelete(index) {
+            createUndo(`Sekolah ${schools[index].nama} dihapus`, () => {
+                schools.splice(index, 1);
+                saveData();
+            });
+        }
+
+        function updateManualReady() {
+            const val = document.getElementById('manual-ready').value;
+            manualReadyCount = val || 0;
+            saveData();
+            alert("Stok porsi di pemorsian diperbarui");
+        }
+
+        // --- UNDO SYSTEM ---
+        function createUndo(msg, callback) {
+            if (undoTimeout) executeUndoNow(); 
+            
+            undoStack = callback;
+            document.getElementById('undo-msg').innerText = msg;
+            document.getElementById('undo-toast').style.display = 'flex';
+            
+            let timeLeft = 5;
+            document.getElementById('undo-timer').innerText = timeLeft;
+            
+            undoTimeout = setInterval(() => {
+                timeLeft--;
+                document.getElementById('undo-timer').innerText = timeLeft;
+                if (timeLeft <= 0) executeUndoNow();
+            }, 1000);
+        }
+
+        function executeUndoNow() {
+            clearInterval(undoTimeout);
+            undoTimeout = null;
+            if (undoStack) undoStack();
+            undoStack = null;
+            document.getElementById('undo-toast').style.display = 'none';
+        }
+
+        function executeUndo() {
+            clearInterval(undoTimeout);
+            undoTimeout = null;
+            undoStack = null;
+            document.getElementById('undo-toast').style.display = 'none';
+            alert("Aksi dibatalkan");
+            renderSchools();
+        }
+
+        // Inisialisasi Aplikasi
+        init();
     </script>
 </body>
 </html>
