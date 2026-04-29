@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik Pro Elite v13</title>
+    <title>Logistik Pro Elite v14</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,32 +18,28 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); overflow-x: hidden; }
 
-        /* HEADER & NAVIGASI ATAS */
         .header { background: var(--dark); color: white; padding: 40px 25px 60px; border-radius: 0 0 40px 40px; position: sticky; top: 0; z-index: 100; }
         .header h1 { margin: 0; font-size: 22px; font-weight: 800; max-width: 65%; line-height: 1.2; }
         .header p { margin: 5px 0 0; opacity: 0.6; font-size: 12px; }
 
         .top-nav { position: absolute; top: 35px; right: 20px; display: flex; gap: 10px; z-index: 110; }
         .nav-btn { 
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(10px); 
-            color: white; 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); 
+            color: white; border: 1px solid rgba(255, 255, 255, 0.1); 
             width: 42px; height: 42px; border-radius: 12px; 
             display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; font-size: 18px; transition: 0.2s;
+            cursor: pointer; font-size: 18px; 
         }
-        .nav-btn:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.2); }
 
-        /* LAYOUT */
         .page { display: none; padding-bottom: 50px; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* DASHBOARD STYLE */
         .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: -30px 20px 10px; position: relative; z-index: 101; }
         .stat-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
-        .stat-card small { display: block; color: #64748b; font-size: 10px; font-weight: 800; margin-bottom: 4px; }
-        .stat-card b { font-size: 18px; font-weight: 800; }
+        .stat-card small { display: block; color: #64748b; font-size: 9px; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; }
+        .stat-card b { font-size: 14px; font-weight: 800; color: var(--dark); line-height: 1.2; display: block; }
 
         .progress-area { margin: 0 20px 15px; }
         .progress-text { font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 5px; display: flex; justify-content: space-between; }
@@ -51,23 +47,17 @@
         .pb-fill { height: 100%; background: var(--grad); width: 0%; transition: 0.5s; }
 
         .filter-row { display: flex; gap: 8px; margin: 0 20px 12px; }
-        .btn-filter { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; font-weight: 700; font-size: 11px; color: #64748b; cursor: pointer; }
+        .btn-filter { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; font-weight: 700; font-size: 10px; color: #64748b; cursor: pointer; }
         .btn-filter.active { background: var(--dark); color: white; border-color: var(--dark); }
 
         .search-box { margin: 0 20px 20px; }
         .input-search { width: 100%; padding: 14px 18px; border-radius: 15px; border: 2px solid #f1f5f9; background: white; font-family: inherit; font-weight: 600; font-size: 13px; }
 
-        /* CARD DESIGN */
         .card { background: white; border-radius: 22px; padding: 20px; margin: 12px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; position: relative; }
-        .card h3 { margin: 0 0 10px; font-size: 16px; font-weight: 800; text-transform: uppercase; padding-right: 30px; }
-        .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; background: #f8fafc; border: 1px solid #f1f5f9; color: #64748b; margin-right: 4px; }
-        .btn-dots { position: absolute; top: 18px; right: 15px; background: none; border: none; font-size: 22px; color: #cbd5e1; cursor: pointer; padding: 5px; }
-
+        .card h3 { margin: 0 0 10px; font-size: 16px; font-weight: 800; text-transform: uppercase; }
+        
         .btn-action { border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; padding: 12px; font-size: 11px; flex: 1; display: flex; align-items: center; justify-content: center; }
-        .btn-libur { background: #f1f5f9; color: #64748b; }
-        .btn-hapus { background: #fee2e2; color: var(--danger); }
 
-        /* MODALS */
         .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .modal { background: white; padding: 30px; border-radius: 30px; width: 100%; max-width: 400px; text-align: center; }
         .input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #f1f5f9; background: #f8fafc; font-family: inherit; font-weight: 600; margin-bottom: 15px; }
@@ -112,24 +102,21 @@
 
     <div id="page-admin" class="page">
         <div class="header">
-            <h1>Admin Panel</h1><p id="a-status">Data Terpusat</p>
-            <div class="top-nav">
-                <div class="nav-btn" onclick="location.reload()">🏠</div>
-                <div class="nav-btn" onclick="openFormAdd()">➕</div>
-            </div>
+            <h1>Admin Panel</h1><p>Kelola Data</p>
+            <div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div><div class="nav-btn" onclick="openFormAdd()">➕</div></div>
         </div>
         <div class="stats-container">
-            <div class="stat-card"><small>TOTAL PORSI</small><b id="st-total">0</b></div>
-            <div class="stat-card"><small>TERKIRIM</small><b id="st-done-porsi">0</b></div>
+            <div class="stat-card"><small>TOTAL PORSI</small><b id="adm-total">0</b></div>
+            <div class="stat-card"><small>TERKIRIM</small><b id="adm-done">0</b></div>
         </div>
         <div class="progress-area">
-            <div class="progress-text"><span id="st-count-text">0 Selesai</span><span id="st-percent">0%</span></div>
-            <div class="pb-bg"><div id="pb-fill" class="pb-fill"></div></div>
+            <div class="progress-text"><span id="adm-count-text">0/0 Selesai</span><span id="adm-percent">0%</span></div>
+            <div class="pb-bg"><div id="adm-pb" class="pb-fill"></div></div>
         </div>
         <div class="filter-row">
-            <button class="btn-filter active" id="f-all" onclick="filterMobil('all')">SEMUA</button>
-            <button class="btn-filter" id="f-m1" onclick="filterMobil('Mobil 1')">MOBIL 1</button>
-            <button class="btn-filter" id="f-m2" onclick="filterMobil('Mobil 2')">MOBIL 2</button>
+            <button class="btn-filter active" id="adm-f-all" onclick="setFilter('all','admin')">SEMUA</button>
+            <button class="btn-filter" id="adm-f-m1" onclick="setFilter('Mobil 1','admin')">M1</button>
+            <button class="btn-filter" id="adm-f-m2" onclick="setFilter('Mobil 2','admin')">M2</button>
         </div>
         <div class="search-box"><input type="text" id="admin-search" class="input-search" placeholder="Cari sekolah..." oninput="renderAdmin()"></div>
         <div id="list-admin"></div>
@@ -137,17 +124,34 @@
 
     <div id="page-pemorsian" class="page">
         <div class="header">
-            <h1>Pemorsian</h1><p>Daftar Persiapan</p>
+            <h1>Pemorsian</h1><p>Dashboard Produksi</p>
             <div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div>
         </div>
+        <div class="stats-container">
+            <div class="stat-card">
+                <small>SIAP KIRIM</small>
+                <b id="p-stat-ready" style="color:var(--success)">PK: 0 | PB: 0</b>
+            </div>
+            <div class="stat-card">
+                <small>BELUM SIAP</small>
+                <b id="p-stat-pending" style="color:var(--danger)">PK: 0 | PB: 0</b>
+            </div>
+        </div>
+        <div class="progress-area">
+            <div class="progress-text"><span id="p-count-text">0/0 Sekolah Siap</span><span id="p-percent">0%</span></div>
+            <div class="pb-bg"><div id="p-pb" class="pb-fill"></div></div>
+        </div>
+        <div class="filter-row">
+            <button class="btn-filter active" id="p-f-all" onclick="setFilter('all','pemorsian')">SEMUA</button>
+            <button class="btn-filter" id="p-f-m1" onclick="setFilter('Mobil 1','pemorsian')">MOBIL 1</button>
+            <button class="btn-filter" id="p-f-m2" onclick="setFilter('Mobil 2','pemorsian')">MOBIL 2</button>
+        </div>
+        <div class="search-box"><input type="text" id="p-search" class="input-search" placeholder="Cari antrean..." oninput="renderPemorsian()"></div>
         <div id="list-pemorsian"></div>
     </div>
 
     <div id="page-mobil" class="page">
-        <div class="header">
-            <h1 id="mb-head">Mobil</h1><p>Status Pengiriman</p>
-            <div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div>
-        </div>
+        <div class="header"><h1 id="mb-head">Mobil</h1><div class="top-nav"><div class="nav-btn" onclick="location.reload()">🏠</div></div></div>
         <div id="list-mobil"></div>
     </div>
 
@@ -155,32 +159,25 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxKTFPwPDoh-wNDPnkde0IqxiLGGLux_rPSBQaVCy0kbtaXPWkOE7RWoW8IgWXD2s0v/exec";
         const PINS = { admin:"1111", pemorsian:"2222", mobil1:"3331", mobil2:"3332" };
         let schools = [];
-        let currentRole = "";
-        let currentMobil = "";
-        let filterSel = "all";
-        let editIndex = null;
+        let currentRole = "", currentMobil = "", filterAdm = "all", filterP = "all";
 
         async function fetchSchools() {
             try {
                 const res = await fetch(WEB_APP_URL);
                 const data = await res.json();
                 schools = data.map(s => ({
-                    ...s,
-                    pk: parseInt(s.pk) || 0, pb: parseInt(s.pb) || 0, tendik: parseInt(s.tendik) || 0,
-                    status: String(s.status || "pending").trim().toLowerCase(),
+                    ...s, pk: parseInt(s.pk)||0, pb: parseInt(s.pb)||0, tendik: parseInt(s.tendik)||0,
+                    status: String(s.status||"pending").trim().toLowerCase(),
                     islibur: String(s.islibur).trim().toUpperCase() === "TRUE"
                 }));
-                document.getElementById('h-status').innerText = "Koneksi Terhubung";
+                document.getElementById('h-status').innerText = "Koneksi Stabil";
                 renderAll();
-            } catch(e) { 
-                document.getElementById('h-status').innerText = "Mode Offline (Data Gagal)";
-                // Tetap izinkan navigasi walau gagal ambil data
-            }
+            } catch(e) { document.getElementById('h-status').innerText = "Mode Offline"; }
         }
 
         function renderAdmin() {
             const list = document.getElementById('list-admin');
-            const search = (document.getElementById('admin-search').value || "").toUpperCase();
+            const search = document.getElementById('admin-search').value.toUpperCase();
             list.innerHTML = "";
             let tP=0, dP=0, tS=0, dS=0;
 
@@ -189,139 +186,114 @@
                     tS++; tP += (s.pk+s.pb+s.tendik);
                     if(s.status === 'done') { dS++; dP += (s.pk+s.pb+s.tendik); }
                 }
-                if(s.nama.includes(search) && (filterSel === 'all' || s.mobil === filterSel)) {
-                    list.innerHTML += `
-                    <div class="card" style="${s.islibur ? 'opacity:0.6; background:#f1f5f9' : ''}">
-                        <button class="btn-dots" onclick="openFormEdit(${i})">⋮</button>
+                if(s.nama.includes(search) && (filterAdm === 'all' || s.mobil === filterAdm)) {
+                    list.innerHTML += `<div class="card" style="${s.islibur?'opacity:0.5':''}">
+                        <button style="position:absolute;right:15px;top:15px;background:none;border:none;font-size:20px;color:#cbd5e1" onclick="openFormEdit(${i})">⋮</button>
                         <h3>${s.nama}</h3>
-                        <div style="margin-bottom:15px">
-                            <span class="badge">PK: ${s.pk}</span><span class="badge">PB: ${s.pb}</span><span class="badge">TD: ${s.tendik}</span>
-                            <span class="badge" style="background:var(--primary); color:white; border:none">${s.mobil}</span>
-                        </div>
+                        <div style="margin-bottom:10px"><span class="badge">PK: ${s.pk}</span><span class="badge">PB: ${s.pb}</span><span class="badge">${s.mobil}</span></div>
                         <div style="display:flex; gap:8px">
-                            <button class="btn-action btn-libur" onclick="updateLibur(${i})">${s.islibur?'AKTIFKAN':'SET LIBUR'}</button>
-                            <button class="btn-action btn-hapus" onclick="hapusSekolah('${s.id}')">HAPUS</button>
+                            <button class="btn-action" style="background:#f1f5f9" onclick="updateLibur(${i})">${s.islibur?'AKTIFKAN':'LIBUR'}</button>
+                            <button class="btn-action" style="background:#fee2e2;color:var(--danger)" onclick="hapusSekolah('${s.id}')">HAPUS</button>
                         </div>
                     </div>`;
                 }
             });
-            document.getElementById('st-total').innerText = tP;
-            document.getElementById('st-done-porsi').innerText = dP;
-            document.getElementById('st-count-text').innerText = `${dS}/${tS} Selesai`;
-            const pct = tS > 0 ? Math.round((dS/tS)*100) : 0;
-            document.getElementById('st-percent').innerText = pct + "%";
-            document.getElementById('pb-fill').style.width = pct + "%";
-        }
-
-        function openFormAdd() {
-            editIndex = null;
-            document.getElementById('modal-title').innerText = "🏫 Tambah Sekolah";
-            document.getElementById('in-nama').value = ""; document.getElementById('in-pk').value = ""; 
-            document.getElementById('in-pb').value = ""; document.getElementById('in-tendik').value = "";
-            document.getElementById('modal-overlay').style.display='flex';
-            document.getElementById('form-modal').style.display='block';
-        }
-
-        function openFormEdit(index) {
-            editIndex = index;
-            const s = schools[index];
-            document.getElementById('modal-title').innerText = "✏️ Edit Sekolah";
-            document.getElementById('in-nama').value = s.nama;
-            document.getElementById('in-mobil').value = s.mobil;
-            document.getElementById('in-pk').value = s.pk;
-            document.getElementById('in-pb').value = s.pb;
-            document.getElementById('in-tendik').value = s.tendik;
-            document.getElementById('modal-overlay').style.display='flex';
-            document.getElementById('form-modal').style.display='block';
-        }
-
-        async function handleSave() {
-            const nama = document.getElementById('in-nama').value.toUpperCase();
-            const mobil = document.getElementById('in-mobil').value;
-            const pk = parseInt(document.getElementById('in-pk').value) || 0;
-            const pb = parseInt(document.getElementById('in-pb').value) || 0;
-            const td = parseInt(document.getElementById('in-tendik').value) || 0;
-            const action = (editIndex !== null) ? "editData" : "addData";
-            const targetId = (editIndex !== null) ? schools[editIndex].id : "";
-
-            if(editIndex !== null) schools[editIndex] = { ...schools[editIndex], nama, mobil, pk, pb, tendik:td };
-            else schools.push({ id: Date.now().toString(), nama, mobil, pk, pb, tendik:td, status:'pending', islibur:false });
-
-            renderAll(); closeModal();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action, id: targetId, nama, mobil, pk, pb, tendik:td}) });
-        }
-
-        async function updateStatus(id, stat) {
-            const s = schools.find(x => x.id === id);
-            if(s) { s.status = stat; renderAll(); }
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", id, status:stat}) });
-        }
-
-        async function updateLibur(i) {
-            const s = schools[i];
-            s.islibur = !s.islibur; renderAll();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", id:s.id, islibur:s.islibur}) });
-        }
-
-        async function hapusSekolah(id) {
-            if(!confirm("Hapus data sekolah ini?")) return;
-            schools = schools.filter(s => s.id !== id); renderAll();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"delete", id}) });
-        }
-
-        function verifyLogin() {
-            if(document.getElementById('pin-input').value === PINS[currentRole]) {
-                closeModal();
-                if(currentRole === 'admin') navigate('admin');
-                else if(currentRole === 'pemorsian') navigate('pemorsian');
-                else { currentMobil = (currentRole === 'mobil1') ? 'Mobil 1' : 'Mobil 2'; document.getElementById('mb-head').innerText = currentMobil; navigate('mobil'); }
-            } else {
-                alert("PIN SALAH");
-            }
-            document.getElementById('pin-input').value = "";
-        }
-
-        function navigate(p) {
-            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-            document.getElementById('page-'+p).classList.add('active');
-        }
-
-        function filterMobil(m) {
-            filterSel = m;
-            document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-            if(m==='all') document.getElementById('f-all').classList.add('active');
-            else if(m==='Mobil 1') document.getElementById('f-m1').classList.add('active');
-            else document.getElementById('f-m2').classList.add('active');
-            renderAdmin();
+            document.getElementById('adm-total').innerText = tP;
+            document.getElementById('adm-done').innerText = dP;
+            document.getElementById('adm-count-text').innerText = `${dS}/${tS} Selesai`;
+            let pct = tS>0?Math.round((dS/tS)*100):0;
+            document.getElementById('adm-percent').innerText = pct+"%";
+            document.getElementById('adm-pb').style.width = pct+"%";
         }
 
         function renderPemorsian() {
-            const list = document.getElementById('list-pemorsian'); list.innerHTML = "";
-            schools.filter(s => !s.islibur && s.status === 'pending').forEach(s => {
-                const total = s.pk+s.pb+s.tendik;
-                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><p style="font-weight:800; color:var(--primary)">${Math.floor(total/5)} IKAT + ${total%5} SISA</p><button class="btn-action" style="background:var(--success); color:white; width:100%" onclick="updateStatus('${s.id}','ready')">SIAP KIRIM</button></div>`;
+            const list = document.getElementById('list-pemorsian');
+            const search = document.getElementById('p-search').value.toUpperCase();
+            list.innerHTML = "";
+            
+            let readyPK=0, readyPB=0, pendPK=0, pendPB=0, totalS=0, doneS=0;
+
+            schools.filter(s => !s.islibur).forEach(s => {
+                totalS++;
+                if(s.status !== 'pending') {
+                    doneS++; readyPK += s.pk; readyPB += s.pb;
+                } else {
+                    pendPK += s.pk; pendPB += s.pb;
+                }
+
+                if(s.status === 'pending' && s.nama.includes(search) && (filterP === 'all' || s.mobil === filterP)) {
+                    const pkI = Math.floor(s.pk/5), pkS = s.pk%5;
+                    const pbI = Math.floor(s.pb/5), pbS = s.pb%5;
+                    list.innerHTML += `<div class="card">
+                        <h3>${s.nama}</h3>
+                        <div style="margin-bottom:15px; border-left:4px solid var(--primary); padding-left:12px">
+                            <p style="margin:4px 0; font-size:13px; font-weight:700">PK: <span style="color:var(--primary)">${pkI} IKAT + ${pkS}</span></p>
+                            <p style="margin:4px 0; font-size:13px; font-weight:700">PB: <span style="color:var(--primary)">${pbI} IKAT + ${pbS}</span></p>
+                        </div>
+                        <button class="btn-action" style="background:var(--success); color:white; width:100%" onclick="updateStatus('${s.id}','ready')">SIAP KIRIM</button>
+                    </div>`;
+                }
             });
+
+            // Update Dashboard Pemorsian
+            document.getElementById('p-stat-ready').innerText = `PK: ${Math.floor(readyPK/5)}I+${readyPK%5} | PB: ${Math.floor(readyPB/5)}I+${readyPB%5}`;
+            document.getElementById('p-stat-pending').innerText = `PK: ${Math.floor(pendPK/5)}I+${pendPK%5} | PB: ${Math.floor(pendPB/5)}I+${pendPB%5}`;
+            document.getElementById('p-count-text').innerText = `${doneS}/${totalS} Sekolah Siap`;
+            let pct = totalS>0?Math.round((doneS/totalS)*100):0;
+            document.getElementById('p-percent').innerText = pct+"%";
+            document.getElementById('p-pb').style.width = pct+"%";
         }
 
+        function setFilter(m, page) {
+            if(page==='admin') { filterAdm = m; document.querySelectorAll('#page-admin .btn-filter').forEach(b=>b.classList.remove('active')); renderAdmin(); }
+            else { filterP = m; document.querySelectorAll('#page-pemorsian .btn-filter').forEach(b=>b.classList.remove('active')); renderPemorsian(); }
+            event.target.classList.add('active');
+        }
+
+        // --- FUNGSI STANDAR (Login, CRUD, dsb) ---
+        function openLogin(r) { currentRole=r; document.getElementById('modal-overlay').style.display='flex'; document.getElementById('login-modal').style.display='block'; }
+        function closeModal() { document.getElementById('modal-overlay').style.display='none'; document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
+        function verifyLogin() {
+            if(document.getElementById('pin-input').value === PINS[currentRole]) {
+                closeModal();
+                if(currentRole==='admin') navigate('admin');
+                else if(currentRole==='pemorsian') navigate('pemorsian');
+                else { currentMobil=(currentRole==='mobil1')?'Mobil 1':'Mobil 2'; document.getElementById('mb-head').innerText=currentMobil; navigate('mobil'); }
+            } else alert("PIN SALAH");
+            document.getElementById('pin-input').value="";
+        }
+        function navigate(p) { document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); }
+        
+        async function updateStatus(id, stat) {
+            const s = schools.find(x=>x.id===id); if(s){ s.status=stat; renderAll(); }
+            await fetch(WEB_APP_URL,{method:"POST", body:JSON.stringify({action:"update", id, status:stat})});
+        }
+        async function updateLibur(i) {
+            const s = schools[i]; s.islibur=!s.islibur; renderAll();
+            await fetch(WEB_APP_URL,{method:"POST", body:JSON.stringify({action:"update", id:s.id, islibur:s.islibur})});
+        }
+        async function hapusSekolah(id) {
+            if(!confirm("Hapus?")) return; schools=schools.filter(s=>s.id!==id); renderAll();
+            await fetch(WEB_APP_URL,{method:"POST", body:JSON.stringify({action:"delete", id})});
+        }
+        function openFormAdd() { editIndex=null; document.getElementById('modal-title').innerText="🏫 Tambah"; document.querySelectorAll('#form-modal input').forEach(i=>i.value=""); document.getElementById('modal-overlay').style.display='flex'; document.getElementById('form-modal').style.display='block'; }
+        function openFormEdit(i) { editIndex=i; const s=schools[i]; document.getElementById('in-nama').value=s.nama; document.getElementById('in-pk').value=s.pk; document.getElementById('in-pb').value=s.pb; document.getElementById('in-tendik').value=s.tendik; document.getElementById('modal-overlay').style.display='flex'; document.getElementById('form-modal').style.display='block'; }
+        async function handleSave() {
+            const nama=document.getElementById('in-nama').value.toUpperCase(), mobil=document.getElementById('in-mobil').value;
+            const pk=parseInt(document.getElementById('in-pk').value)||0, pb=parseInt(document.getElementById('in-pb').value)||0, td=parseInt(document.getElementById('in-tendik').value)||0;
+            const action=editIndex!==null?"editData":"addData", targetId=editIndex!==null?schools[editIndex].id:Date.now().toString();
+            if(editIndex!==null) schools[editIndex]={...schools[editIndex], nama, mobil, pk, pb, tendik:td};
+            else schools.push({id:targetId, nama, mobil, pk, pb, tendik:td, status:'pending', islibur:false});
+            renderAll(); closeModal();
+            await fetch(WEB_APP_URL,{method:"POST", body:JSON.stringify({action, id:targetId, nama, mobil, pk, pb, tendik:td})});
+        }
         function renderMobil() {
             const list = document.getElementById('list-mobil'); list.innerHTML = "";
             schools.filter(s => s.mobil === currentMobil && !s.islibur).forEach(s => {
-                const isReady = s.status === 'ready';
-                const isDone = s.status === 'done';
-                let btnCol = isDone ? '#10b981' : (isReady ? '#4f46e5' : '#cbd5e1');
-                
-                list.innerHTML += `
-                <div class="card">
-                    <h3>${s.nama}</h3>
-                    <button class="btn-action" style="width:100%; color:white; background:${btnCol}" ${!isReady || isDone ? 'disabled' : ''} onclick="updateStatus('${s.id}','done')">
-                        ${isDone ? '✓ TERKIRIM' : (isReady ? 'KONFIRMASI TIBA' : 'MENUNGGU DAPUR')}
-                    </button>
-                </div>`;
+                const isReady = s.status === 'ready', isDone = s.status === 'done';
+                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><button class="btn-action" style="width:100%; color:white; background:${isDone?'#10b981':(isReady?'#4f46e5':'#cbd5e1')}" ${!isReady||isDone?'disabled':''} onclick="updateStatus('${s.id}','done')">${isDone?'✓ TERKIRIM':(isReady?'KONFIRMASI TIBA':'MENUNGGU')}</button></div>`;
             });
         }
-
-        function openLogin(r) { currentRole = r; document.getElementById('modal-overlay').style.display = 'flex'; document.getElementById('login-modal').style.display = 'block'; }
-        function closeModal() { document.getElementById('modal-overlay').style.display='none'; document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
         function renderAll() { renderAdmin(); renderPemorsian(); renderMobil(); }
         window.onload = fetchSchools;
     </script>
