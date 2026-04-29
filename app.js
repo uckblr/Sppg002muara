@@ -1,5 +1,5 @@
 // GANTI DENGAN URL WEB APP GOOGLE SHEETS ANDA
-const CLOUD_URL = "ISI_URL_WEB_APP_ANDA_DISINI";
+const CLOUD_URL = "https://script.google.com/macros/s/AKfycbxaUThKB7mGR4YgNJgTaliHGE7EjG5OFJROTA9EoXEYWCKYRlVBjqKUPp-Aw4Vll5hh/exec";
 
 let data = JSON.parse(localStorage.getItem("logistik_db") || "[]");
 let filterSekarang = "Semua";
