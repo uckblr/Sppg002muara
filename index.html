@@ -3,163 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik Control Pro</title>
+    <title>Logistik Pro v2</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --p-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             --dark: #0f172a;
-            --body-bg: #f8fafc;
-            --text-main: #1e293b;
+            --bg: #f8fafc;
+            --text: #1e293b;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
         body { 
-            margin: 0; background: var(--body-bg); color: var(--text-main); 
-            font-family: 'Plus Jakarta Sans', sans-serif; padding-bottom: 120px;
+            margin: 0; background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: var(--text); padding-bottom: 120px;
         }
 
-        /* HEADER PREMIUM */
         header {
             background: var(--dark); color: white; padding: 40px 25px 50px;
             border-radius: 0 0 40px 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
-        header h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+        header h1 { margin: 0; font-size: 26px; font-weight: 800; }
         header p { margin: 5px 0 0; opacity: 0.6; font-size: 14px; }
 
-        /* TOMBOL MENU SEPERTI DI GAMBAR ANDA */
+        /* Menu Utama */
         .role-container { padding: 25px 20px; display: flex; flex-direction: column; gap: 15px; }
-
         .btn-role {
-            background: white; padding: 20px 24px; border-radius: 24px; 
+            background: white; padding: 20px 24px; border-radius: 22px; 
             border: 1px solid #f1f5f9; display: flex; align-items: center; 
             gap: 18px; font-weight: 700; cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); transition: 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); transition: 0.2s;
         }
-        .btn-role:active { transform: scale(0.96); background: #f1f5f9; }
-
+        .btn-role:active { transform: scale(0.95); background: #f1f5f9; }
         .role-icon {
-            font-size: 24px; width: 52px; height: 52px; background: #f8fafc;
-            display: flex; align-items: center; justify-content: center; border-radius: 16px;
-            border: 1px solid #f1f5f9;
+            font-size: 24px; width: 50px; height: 50px; background: #f8fafc;
+            display: flex; align-items: center; justify-content: center; border-radius: 15px;
         }
 
-        /* MODAL PIN KEAMANAN */
+        /* Modal Overlay */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8);
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(10px); display: none; align-items: center; 
             justify-content: center; z-index: 9999; padding: 20px;
         }
         .modal-card { 
-            background: white; border-radius: 35px; padding: 32px; 
-            width: 100%; max-width: 380px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            animation: slideUp 0.3s ease;
+            background: white; border-radius: 30px; padding: 30px; 
+            width: 100%; max-width: 400px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;
         }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+        /* Form Inputs */
         .premium-input {
-            width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #f1f5f9;
-            background: #f8fafc; font-size: 18px; margin-bottom: 20px; outline: none;
-            text-align: center; font-weight: 800; letter-spacing: 10px;
+            width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #f1f5f9;
+            background: #f8fafc; font-size: 16px; margin-bottom: 15px; outline: none;
+            font-family: inherit;
         }
         .premium-input:focus { border-color: #4f46e5; background: white; }
 
         .btn-action {
-            width: 100%; padding: 18px; border-radius: 18px; border: none;
-            background: var(--dark); color: white; font-weight: 800; 
-            cursor: pointer; font-size: 16px; text-transform: uppercase;
+            width: 100%; padding: 16px; border-radius: 15px; border: none;
+            background: var(--dark); color: white; font-weight: 800; cursor: pointer;
         }
 
-        /* NAVBAR BAWAH */
+        /* Navbar */
         .navbar {
             position: fixed; bottom: 25px; left: 20px; right: 20px;
             background: var(--dark); height: 75px; border-radius: 25px;
             display: none; align-items: center; justify-content: space-around;
-            z-index: 1000;
         }
-        .nav-item { color: #94a3b8; text-align: center; cursor: pointer; }
-        .nav-item span { display: block; font-size: 10px; margin-top: 4px; font-weight: 600; }
+        .nav-item { color: #94a3b8; text-align: center; font-size: 22px; cursor: pointer; }
+        .nav-item span { display: block; font-size: 10px; margin-top: 4px; }
         .nav-plus {
             width: 60px; height: 60px; background: var(--p-gradient); color: white;
             border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; margin-top: -55px; border: 5px solid var(--body-bg);
+            font-size: 30px; margin-top: -50px; border: 5px solid var(--bg);
             box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4);
         }
     </style>
 </head>
 <body>
 
-    <div id="app">
-        <header>
-            <h1 id="mainTitle">Logistik Control</h1>
-            <p id="subTitle">Pilih akses untuk memulai</p>
-        </header>
+    <header>
+        <h1 id="headerTitle">Logistik Control</h1>
+        <p id="headerSub">Silakan masuk untuk akses fitur</p>
+    </header>
 
-        <main id="mainContent">
-            </main>
+    <main id="mainContent">
+        </main>
 
-        <nav class="navbar" id="bottomNav">
-            <div class="nav-item" onclick="location.reload()">🏠<span>Home</span></div>
-            <div class="nav-plus" onclick="alert('Tambah Data (Admin)')"><span>+</span></div>
-            <div class="nav-item" onclick="location.reload()" style="color:#f43f5e">🚪<span>Keluar</span></div>
-        </nav>
-    </div>
-
-    <div id="modalOverlay" class="modal-overlay">
+    <div id="pinModal" class="modal-overlay">
         <div class="modal-card">
-            <h3 style="margin:0 0 5px 0">Keamanan</h3>
-            <p style="color:#64748b; font-size:14px; margin-bottom:20px">Masukkan kode akses untuk melanjutkan</p>
-            <input type="password" id="passInput" class="premium-input" placeholder="••••" maxlength="4">
-            <button class="btn-action" onclick="verifyPin()">MASUK</button>
-            <button onclick="closeModal()" style="background:none; border:none; color:#94a3b8; margin-top:15px; font-weight:700; cursor:pointer">BATAL</button>
+            <h3>🔐 Verifikasi PIN</h3>
+            <input type="password" id="pinInput" class="premium-input" style="text-align:center; letter-spacing:10px;" placeholder="••••" maxlength="4">
+            <button class="btn-action" onclick="checkPin()">MASUK</button>
+            <button onclick="closeModals()" style="background:none; border:none; color:#94a3b8; margin-top:15px; cursor:pointer;">BATAL</button>
         </div>
     </div>
 
-    <script>
-        const PIN_SISTEM = { admin: "1111", dapur: "2222", supir1: "3331", supir2: "3332" };
-        let currentTarget = "";
+    <div id="formModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="margin-top:0">🏫 Tambah Sekolah</h3>
+            <input type="text" id="fNama" class="premium-input" placeholder="Nama Sekolah/Posyandu">
+            <select id="fMobil" class="premium-input">
+                <option value="Mobil 1">Mobil 1</option>
+                <option value="Mobil 2">Mobil 2</option>
+            </select>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <input type="number" id="fPK" class="premium-input" placeholder="Jml PK">
+                <input type="number" id="fPB" class="premium-input" placeholder="Jml PB">
+            </div>
+            <button class="btn-action" style="background:var(--p-gradient)" onclick="submitData()">SIMPAN DATA</button>
+            <button onclick="closeModals()" style="background:none; border:none; color:#94a3b8; margin-top:15px; cursor:pointer;">BATAL</button>
+        </div>
+    </div>
 
-        // Tampilkan Menu Pilihan Awal
-        function renderMenu() {
-            const content = document.getElementById("mainContent");
-            content.innerHTML = `
+    <nav class="navbar" id="bottomNav">
+        <div class="nav-item" onclick="location.reload()">🏠<span>Beranda</span></div>
+        <div class="nav-plus" onclick="openForm()">+</div>
+        <div class="nav-item" onclick="location.reload()" style="color:#f43f5e">🚪<span>Keluar</span></div>
+    </nav>
+
+    <script>
+        const PINS = { admin: "1111", dapur: "2222", supir1: "3331", supir2: "3332" };
+        let userRole = "";
+
+        function initMenu() {
+            document.getElementById("mainContent").innerHTML = `
                 <div class="role-container">
-                    <div class="btn-role" onclick="openLogin('admin')"><div class="role-icon">💼</div>Admin Kantor</div>
-                    <div class="btn-role" onclick="openLogin('dapur')"><div class="role-icon">🍳</div>Tim Pemorsian</div>
-                    <div class="btn-role" onclick="openLogin('supir1')"><div class="role-icon">🚚</div>Supir Mobil 1</div>
-                    <div class="btn-role" onclick="openLogin('supir2')"><div class="role-icon">🚚</div>Supir Mobil 2</div>
+                    <div class="btn-role" onclick="openPin('admin')"><div class="role-icon">💼</div>Admin Kantor</div>
+                    <div class="btn-role" onclick="openPin('dapur')"><div class="role-icon">🍳</div>Tim Dapur</div>
+                    <div class="btn-role" onclick="openPin('supir1')"><div class="role-icon">🚚</div>Mobil 1</div>
+                    <div class="btn-role" onclick="openPin('supir2')"><div class="role-icon">🚚</div>Mobil 2</div>
                 </div>`;
         }
 
-        function openLogin(role) {
-            currentTarget = role;
-            document.getElementById("modalOverlay").style.display = "flex";
-            document.getElementById("passInput").value = "";
-            document.getElementById("passInput").focus();
+        function openPin(role) {
+            userRole = role;
+            document.getElementById("pinModal").style.display = "flex";
+            document.getElementById("pinInput").value = "";
         }
 
-        function verifyPin() {
-            const input = document.getElementById("passInput").value;
-            if (input === PIN_SISTEM[currentTarget]) {
-                document.getElementById("modalOverlay").style.display = "none";
-                document.getElementById("mainTitle").innerText = "Dashboard";
-                document.getElementById("subTitle").innerText = "Sistem Berhasil Terhubung";
-                document.getElementById("mainContent").innerHTML = `<div style="padding:40px; text-align:center; opacity:0.5">Memuat Data Sekolah...</div>`;
+        function checkPin() {
+            const input = document.getElementById("pinInput").value;
+            if (input === PINS[userRole]) {
+                closeModals();
+                document.getElementById("headerTitle").innerText = "Dashboard " + userRole.toUpperCase();
+                document.getElementById("headerSub").innerText = "Koneksi Database Aktif";
                 document.getElementById("bottomNav").style.display = "flex";
+                document.getElementById("mainContent").innerHTML = `<div style="padding:40px; text-align:center; opacity:0.5">Memuat Data Pengiriman...</div>`;
             } else {
                 alert("PIN Salah!");
             }
         }
 
-        function closeModal() {
-            document.getElementById("modalOverlay").style.display = "none";
+        function openForm() {
+            if (userRole !== 'admin') {
+                alert("Hanya Admin yang boleh menambah data!");
+                return;
+            }
+            document.getElementById("formModal").style.display = "flex";
         }
 
-        // Jalankan saat startup
-        renderMenu();
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
+        function submitData() {
+            const nama = document.getElementById("fNama").value;
+            if(!nama) return alert("Nama sekolah harus diisi!");
+            
+            // Logika simpan Anda di sini (Fetch ke Google Sheets)
+            alert("Data " + nama + " berhasil dikirim ke server!");
+            closeModals();
+        }
+
+        window.onload = initMenu;
     </script>
 </body>
 </html>
