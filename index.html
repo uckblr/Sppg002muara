@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik Pro v3</title>
+    <title>Logistik Pro Premium</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="container">
         <div id="mainDashboard"></div>
-
         <div id="dynamicContent"></div>
     </div>
 
@@ -18,41 +17,51 @@
         <div class="modal-content">
             <h3>Input Data Sekolah</h3>
             <div class="input-group">
-                <label>Nama Sekolah</label>
-                <input type="text" id="sekolahNama" placeholder="Masukkan nama sekolah...">
+                <label>NAMA SEKOLAH</label>
+                <input type="text" id="sekolahNama" placeholder="Contoh: SD Negeri 01">
             </div>
             <div class="input-group">
-                <label>Pilih Mobil</label>
+                <label>ALOKASI MOBIL</label>
                 <select id="mobilPilih">
                     <option value="Mobil 1">Mobil 1</option>
                     <option value="Mobil 2">Mobil 2</option>
                 </select>
             </div>
-            <div class="input-row-label">Rincian Porsi (Ikat/Sisa)</div>
+            <div class="input-row-label">RINCIAN PORSI (IKAT / SISA)</div>
             <div class="input-grid">
-                <div class="grid-box"><span>PK Ikat</span><input type="number" id="pki" value="0"></div>
-                <div class="grid-box"><span>PK Sisa</span><input type="number" id="pks" value="0"></div>
-                <div class="grid-box"><span>PB Ikat</span><input type="number" id="pbi" value="0"></div>
-                <div class="grid-box"><span>PB Sisa</span><input type="number" id="pbs" value="0"></div>
+                <div class="grid-box"><span>PK Ikat</span><input type="number" id="pki" value="0" onclick="this.select()"></div>
+                <div class="grid-box"><span>PK Sisa</span><input type="number" id="pks" value="0" onclick="this.select()"></div>
+                <div class="grid-box"><span>PB Ikat</span><input type="number" id="pbi" value="0" onclick="this.select()"></div>
+                <div class="grid-box"><span>PB Sisa</span><input type="number" id="pbs" value="0" onclick="this.select()"></div>
             </div>
-            <button class="btn-primary" onclick="tambahData()">SIMPAN DATA</button>
+            <button class="btn-primary" onclick="tambahData()">SIMPAN KE CLOUD</button>
             <button class="btn-text" onclick="tutupModal()">BATAL</button>
         </div>
     </div>
 
     <div id="passModal" class="modal">
         <div class="modal-content modal-sm">
-            <h3 id="passTitle">Keamanan</h3>
-            <p id="passSub">Masukkan kode akses untuk melanjutkan</p>
-            <input type="password" id="passInput" class="pass-field" placeholder="••••">
-            <button class="btn-primary" id="btnConfirmPass">MASUK</button>
+            <h3>Verifikasi Akses</h3>
+            <p>Masukkan kode keamanan</p>
+            <input type="password" id="passInput" class="pass-field" placeholder="••••" maxlength="4">
+            <button class="btn-primary" id="btnConfirmPass">KONFIRMASI</button>
             <button class="btn-text" onclick="tutupPassModal()">BATAL</button>
         </div>
     </div>
 
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-sm">
+            <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
+            <h3>Hapus Data?</h3>
+            <p style="font-size: 13px; color: #64748b;">Data ini akan dihapus permanen dari cloud. Tindakan ini tidak bisa dibatalkan.</p>
+            <button class="btn-danger" id="btnConfirmDelete">YA, HAPUS</button>
+            <button class="btn-text" onclick="tutupDeleteModal()">BATAL</button>
+        </div>
+    </div>
+
     <nav class="navbar" id="bottomNav" style="display:none">
-        <div class="nav-item" onclick="location.reload()">🏠<span>Home</span></div>
-        <div id="btnPlusAdmin" class="nav-plus" onclick="bukaModal()" style="display:none">+</div>
+        <div class="nav-item" onclick="location.reload()">🏠<span>Beranda</span></div>
+        <div id="btnPlusAdmin" class="nav-plus" onclick="bukaModal()">+</div>
         <div class="nav-item" onclick="logout()" style="color:#ef4444">🚪<span>Keluar</span></div>
     </nav>
 
