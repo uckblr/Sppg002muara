@@ -3,66 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik Pro Premium</title>
+    <title>Logistik Pro Elite</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="container">
-        <div id="mainDashboard"></div>
-        <div id="dynamicContent"></div>
+    <div id="app">
+        <header id="mainDashboard"></header>
+
+        <div id="searchArea" class="search-container" style="display:none">
+            <input type="text" id="searchInput" placeholder="Cari nama sekolah..." oninput="handleSearch()">
+        </div>
+
+        <main id="mainContent"></main>
+
+        <div id="undoToast" class="undo-toast">
+            <span id="undoMsg">Data dihapus</span>
+            <button onclick="executeUndo()">UNDO (5s)</button>
+        </div>
     </div>
 
-    <div id="inputModal" class="modal">
-        <div class="modal-content">
-            <h3>Input Data Sekolah</h3>
+    <div id="modalOverlay" class="modal-overlay">
+        <div id="passModal" class="modal-card modal-sm">
+            <div class="modal-icon"><i class="fas fa-lock"></i></div>
+            <h3>Verifikasi Akses</h3>
+            <input type="password" id="passInput" class="premium-input" placeholder="••••" maxlength="4">
+            <button class="btn-confirm" id="btnConfirmPass">MASUK</button>
+            <button class="btn-cancel" onclick="closeModal()">BATAL</button>
+        </div>
+
+        <div id="inputModal" class="modal-card">
+            <h3>Tambah Data Sekolah</h3>
             <div class="input-group">
-                <label>NAMA SEKOLAH</label>
-                <input type="text" id="sekolahNama" placeholder="Contoh: SD Negeri 01">
+                <label>Nama Sekolah</label>
+                <input type="text" id="skNama" class="premium-input" placeholder="Masukkan Nama...">
             </div>
             <div class="input-group">
-                <label>ALOKASI MOBIL</label>
-                <select id="mobilPilih">
+                <label>Alokasi Mobil</label>
+                <select id="skMobil" class="premium-input">
                     <option value="Mobil 1">Mobil 1</option>
                     <option value="Mobil 2">Mobil 2</option>
                 </select>
             </div>
-            <div class="input-row-label">RINCIAN PORSI (IKAT / SISA)</div>
-            <div class="input-grid">
-                <div class="grid-box"><span>PK Ikat</span><input type="number" id="pki" value="0" onclick="this.select()"></div>
-                <div class="grid-box"><span>PK Sisa</span><input type="number" id="pks" value="0" onclick="this.select()"></div>
-                <div class="grid-box"><span>PB Ikat</span><input type="number" id="pbi" value="0" onclick="this.select()"></div>
-                <div class="grid-box"><span>PB Sisa</span><input type="number" id="pbs" value="0" onclick="this.select()"></div>
+            <div class="input-row">
+                <div class="input-group"><label>PK</label><input type="number" id="skPK" value="0"></div>
+                <div class="input-group"><label>PB</label><input type="number" id="skPB" value="0"></div>
+                <div class="input-group"><label>Tendik</label><input type="number" id="skTendik" value="0"></div>
             </div>
-            <button class="btn-primary" onclick="tambahData()">SIMPAN KE CLOUD</button>
-            <button class="btn-text" onclick="tutupModal()">BATAL</button>
-        </div>
-    </div>
-
-    <div id="passModal" class="modal">
-        <div class="modal-content modal-sm">
-            <h3>Verifikasi Akses</h3>
-            <p>Masukkan kode keamanan</p>
-            <input type="password" id="passInput" class="pass-field" placeholder="••••" maxlength="4">
-            <button class="btn-primary" id="btnConfirmPass">KONFIRMASI</button>
-            <button class="btn-text" onclick="tutupPassModal()">BATAL</button>
-        </div>
-    </div>
-
-    <div id="deleteModal" class="modal">
-        <div class="modal-content modal-sm">
-            <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
-            <h3>Hapus Data?</h3>
-            <p style="font-size: 13px; color: #64748b;">Data ini akan dihapus permanen dari cloud. Tindakan ini tidak bisa dibatalkan.</p>
-            <button class="btn-danger" id="btnConfirmDelete">YA, HAPUS</button>
-            <button class="btn-text" onclick="tutupDeleteModal()">BATAL</button>
+            <button class="btn-confirm" onclick="saveSekolah()">SIMPAN DATA</button>
+            <button class="btn-cancel" onclick="closeModal()">BATAL</button>
         </div>
     </div>
 
     <nav class="navbar" id="bottomNav" style="display:none">
-        <div class="nav-item" onclick="location.reload()">🏠<span>Beranda</span></div>
-        <div id="btnPlusAdmin" class="nav-plus" onclick="bukaModal()">+</div>
-        <div class="nav-item" onclick="logout()" style="color:#ef4444">🚪<span>Keluar</span></div>
+        <div class="nav-item" onclick="changePage('home')"><i class="fas fa-home"></i><span>Beranda</span></div>
+        <div id="adminAction" class="nav-plus" onclick="openInputModal()">+</div>
+        <div class="nav-item" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i><span>Keluar</span></div>
     </nav>
 
     <script src="app.js"></script>
