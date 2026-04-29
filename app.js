@@ -1,4 +1,4 @@
-const DB_URL = "URL_DATABASE_ANDA";
+const DB_URL = "https://script.google.com/macros/s/AKfycbxaUThKB7mGR4YgNJgTaliHGE7EjG5OFJROTA9EoXEYWCKYRlVBjqKUPp-Aw4Vll5hh/exec";
 const PASS_CONFIG = { admin: "1111", dapur: "2222", "Mobil 1": "3331", "Mobil 2": "3332" };
 
 let rawData = [];
