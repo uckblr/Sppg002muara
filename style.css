@@ -89,3 +89,12 @@ body {
 .modal input, .modal select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 10px; }
 .btn-primary-v2 { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; margin-top: 10px; }
 .btn-cancel { width: 100%; padding: 10px; border: none; background: none; color: #64748b; margin-top: 5px; }
+
+.info-role { background: #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; }
+.btn-role { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 12px; background: #3b82f6; color: white; font-weight: bold; }
+.btn-ready { background: #a855f7; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; margin-top: 10px; }
+.btn-done { background: #10b981; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; margin-top: 10px; }
+.action-area { margin-top: 10px; }
+.item.ready { border-left: 6px solid #a855f7; background: #faf5ff; }
+.status-tag { font-size: 10px; font-weight: bold; color: #94a3b8; margin-top: 5px; }
+
