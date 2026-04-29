@@ -5,60 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Logistik Pro Elite</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div id="app">
         <header id="mainDashboard">
-            <h2 style="margin:0">Logistik Pro</h2>
-            <p style="margin:0;opacity:0.6;font-size:12px">Elite Management System</p>
+            <div class="header-loader"></div>
         </header>
 
         <div id="searchArea" class="search-container" style="display:none">
-            <input type="text" id="searchInput" class="search-input" placeholder="Cari nama sekolah..." oninput="handleSearch()">
+            <input type="text" id="searchInput" class="premium-input search-box" placeholder="Cari nama sekolah..." oninput="handleSearch()">
         </div>
 
         <main id="mainContent">
-            <div style="padding:20px; text-align:center; opacity:0.5;">Memuat Sistem...</div>
+            <div class="loading-state">Memuat Sistem...</div>
         </main>
 
         <div id="undoToast" class="undo-toast">
-            <span>Data dihapus</span>
-            <button onclick="executeUndo()">UNDO</button>
+            <span id="undoMsg">Data dihapus</span>
+            <button class="btn-undo" onclick="executeUndo()">UNDO</button>
         </div>
     </div>
 
     <div id="modalOverlay" class="modal-overlay">
         <div id="passModal" class="modal-card modal-sm" style="display:none">
-            <div style="font-size:30px; margin-bottom:10px;">🔐</div>
-            <h3 id="passTitle">Akses Terbatas</h3>
-            <p style="font-size:12px; color:#64748b; margin-bottom:15px;">Masukkan kode keamanan untuk mode ini</p>
-            <input type="password" id="passInput" class="premium-input" placeholder="••••" maxlength="4" style="text-align:center; letter-spacing:8px;">
-            <button class="btn-primary" id="btnConfirmPass">VERIFIKASI</button>
+            <div class="modal-icon">🔐</div>
+            <h3>Keamanan</h3>
+            <p>Masukkan kode akses 4 digit</p>
+            <input type="password" id="passInput" class="premium-input pass-input" placeholder="••••" maxlength="4">
+            <button class="btn-gradient" id="btnConfirmPass">VERIFIKASI</button>
             <button class="btn-text" onclick="closeModal()">BATAL</button>
         </div>
 
         <div id="inputModal" class="modal-card" style="display:none">
-            <h3>Tambah Data Sekolah</h3>
-            <input type="text" id="skNama" class="premium-input" placeholder="NAMA SEKOLAH (AUTO BESAR)">
-            <select id="skMobil" class="premium-input">
-                <option value="Mobil 1">Mobil 1</option>
-                <option value="Mobil 2">Mobil 2</option>
-            </select>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-                <div><small>PK</small><input type="number" id="skPK" class="premium-input" value="0"></div>
-                <div><small>PB</small><input type="number" id="skPB" class="premium-input" value="0"></div>
-                <div><small>TDK</small><input type="number" id="skTendik" class="premium-input" value="0"></div>
+            <h3 style="margin-top:0">Tambah Sekolah</h3>
+            <div class="input-group">
+                <label>NAMA SEKOLAH</label>
+                <input type="text" id="skNama" class="premium-input" placeholder="Contoh: SD NEGERI 01">
             </div>
-            <button class="btn-primary" onclick="saveSekolah()">SIMPAN DATA</button>
+            <div class="input-group">
+                <label>ALOKASI MOBIL</label>
+                <select id="skMobil" class="premium-input">
+                    <option value="Mobil 1">Mobil 1</option>
+                    <option value="Mobil 2">Mobil 2</option>
+                </select>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group"><label>PK</label><input type="number" id="skPK" class="premium-input" value="0"></div>
+                <div class="input-group"><label>PB</label><input type="number" id="skPB" class="premium-input" value="0"></div>
+                <div class="input-group"><label>TDK</label><input type="number" id="skTendik" class="premium-input" value="0"></div>
+            </div>
+            <button class="btn-gradient" onclick="saveSekolah()">SIMPAN DATA</button>
             <button class="btn-text" onclick="closeModal()">BATAL</button>
         </div>
     </div>
 
     <nav class="navbar" id="bottomNav" style="display:none">
-        <div onclick="location.reload()">🏠<br><span style="font-size:10px">Home</span></div>
-        <div class="nav-plus" onclick="openInputModal()">+</div>
-        <div onclick="logout()" style="color:red">🚪<br><span style="font-size:10px">Keluar</span></div>
+        <div class="nav-item" onclick="location.reload()">🏠<span>Beranda</span></div>
+        <div class="nav-plus" onclick="openInputModal()"><span>+</span></div>
+        <div class="nav-item logout" onclick="logout()">🚪<span>Keluar</span></div>
     </nav>
 
     <script src="app.js"></script>
