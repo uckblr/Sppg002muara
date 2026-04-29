@@ -7,36 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+<body>
     <div class="container">
-        <div class="dashboard card">
-            <div class="stat">
-                <span class="label">Sisa Belum Terdistribusi</span>
-                <h2 id="totalSisa">0</h2>
-            </div>
-            <div class="stat">
-                <span class="label">Total Target</span>
-                <h2 id="totalTarget">0</h2>
-            </div>
-        </div>
+        <div id="statsArea"></div>
 
-        <div class="filter-group">
-            <button class="filter-btn active" onclick="setFilter('Semua')">Semua</button>
-            <button class="filter-btn" onclick="setFilter('Mobil 1')">Mobil 1</button>
-            <button class="filter-btn" onclick="setFilter('Mobil 2')">Mobil 2</button>
-        </div>
-
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Cari sekolah..." oninput="render()">
-        </div>
-
-        <div id="listContainer" class="list-container">
-            </div>
+        <div id="listContainer" class="list-container"></div>
     </div>
 
     <div id="inputModal" class="modal">
         <div class="modal-content">
-            <h3>Input Data Sekolah</h3>
+            <h3 style="margin-top:0">Input Data Sekolah</h3>
             <input type="text" id="sekolahNama" placeholder="Nama Sekolah">
             <select id="mobilPilih">
                 <option value="Mobil 1">Mobil 1</option>
@@ -48,15 +28,15 @@
                 <div><label>PB (Ikat)</label><input type="number" id="pbi" value="0"></div>
                 <div><label>PB (Sisa)</label><input type="number" id="pbs" value="0"></div>
             </div>
-            <button class="btn-primary-v2" onclick="tambahData()">Simpan ke Cloud</button>
+            <button class="btn-role admin" onclick="tambahData()">Simpan ke Cloud</button>
             <button class="btn-cancel" onclick="tutupModal()">Batal</button>
         </div>
     </div>
 
-    <nav class="navbar">
-        <div class="nav-item active" onclick="tampilHalaman('list')">🏠<span>Daftar</span></div>
-        <div class="nav-plus" onclick="bukaModal()">+</div>
-        <div class="nav-item" onclick="tampilHalaman('history')">🕒<span>History</span></div>
+    <nav class="navbar" id="mainNav" style="display:none">
+        <div class="nav-item active" onclick="location.reload()">🏠<span>Daftar</span></div>
+        <div id="plusButton" class="nav-plus" onclick="bukaModal()" style="display:none">+</div>
+        <div class="nav-item" onclick="logout()">🚪<span>Keluar</span></div>
     </nav>
 
     <script src="app.js"></script>
