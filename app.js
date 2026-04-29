@@ -1,4 +1,4 @@
-const CLOUD_URL = "URL_WEB_APP_ANDA"; // Masukkan URL Anda di sini
+const CLOUD_URL = "https://script.google.com/macros/s/AKfycbxaUThKB7mGR4YgNJgTaliHGE7EjG5OFJROTA9EoXEYWCKYRlVBjqKUPp-Aw4Vll5hh/exec"; // Masukkan URL Anda di sini
 
 let data = [];
 let roleSekarang = localStorage.getItem("user_role") || "pilih";
