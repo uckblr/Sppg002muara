@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Logistik Pro Elite v6</title>
+    <title>Logistik Pro Elite v7</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,7 +18,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); overflow-x: hidden; }
 
-        /* UI HEADER & LAYOUT */
+        /* UI HEADER */
         .header { background: var(--dark); color: white; padding: 40px 25px 60px; border-radius: 0 0 40px 40px; position: sticky; top: 0; z-index: 100; }
         .header h1 { margin: 0; font-size: 24px; font-weight: 800; }
         .header p { margin: 5px 0 0; opacity: 0.6; font-size: 13px; }
@@ -27,26 +27,38 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CARDS & STATS */
-        .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: -30px 20px 20px; position: relative; z-index: 101; }
+        /* STATS & PROGRESS */
+        .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: -30px 20px 10px; position: relative; z-index: 101; }
         .stat-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
         .stat-card small { display: block; color: #64748b; font-size: 10px; font-weight: 800; margin-bottom: 4px; }
         .stat-card b { font-size: 18px; font-weight: 800; }
 
+        .progress-area { margin: 0 20px 15px; }
+        .progress-text { font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .pb-bg { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+        .pb-fill { height: 100%; background: var(--grad); width: 0%; transition: 0.5s; }
+
+        /* FILTERS & SEARCH */
+        .filter-row { display: flex; gap: 8px; margin: 0 20px 12px; }
+        .btn-filter { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; font-weight: 700; font-size: 11px; color: #64748b; cursor: pointer; }
+        .btn-filter.active { background: var(--dark); color: white; border-color: var(--dark); }
+
+        .search-box { margin: 0 20px 20px; position: relative; }
+        .input-search { width: 100%; padding: 14px 18px; border-radius: 15px; border: 2px solid #f1f5f9; background: white; font-family: inherit; font-weight: 600; font-size: 13px; }
+
+        /* LIST CARDS */
         .card { background: white; border-radius: 22px; padding: 20px; margin: 12px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
         .card h3 { margin: 0 0 10px; font-size: 16px; font-weight: 800; text-transform: uppercase; }
+        .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; background: #f8fafc; border: 1px solid #f1f5f9; color: #64748b; margin-right: 4px; }
         
-        /* BUTTONS & INPUTS */
-        .btn { border: none; border-radius: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .btn-role { width: 100%; background: white; padding: 22px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; justify-content: flex-start; gap: 15px; font-size: 16px; }
-        .btn-primary { background: var(--grad); color: white; width: 100%; padding: 18px; }
-        .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; background: #f1f5f9; margin-right: 5px; display: inline-block; }
+        .btn-action { border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; padding: 12px; font-size: 11px; flex: 1; }
+        .btn-libur { background: #f1f5f9; color: #64748b; }
+        .btn-hapus { background: #fee2e2; color: var(--danger); }
 
-        .input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #f1f5f9; background: #f8fafc; font-family: inherit; font-weight: 600; margin-bottom: 15px; }
-
-        /* OVERLAYS */
+        /* OVERLAYS & NAV */
         .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .modal { background: white; padding: 30px; border-radius: 30px; width: 100%; max-width: 400px; text-align: center; }
+        .input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #f1f5f9; background: #f8fafc; font-family: inherit; font-weight: 600; margin-bottom: 15px; }
 
         .navbar { position: fixed; bottom: 25px; left: 20px; right: 20px; background: var(--dark); height: 75px; border-radius: 25px; display: none; align-items: center; justify-content: space-around; z-index: 900; }
         .nav-item { color: #64748b; text-align: center; cursor: pointer; font-size: 10px; font-weight: 700; }
@@ -59,9 +71,8 @@
         <div id="login-modal" class="modal" style="display:none">
             <h3 style="margin-top:0">🔑 Verifikasi PIN</h3>
             <input type="password" id="pin-input" class="input" style="text-align:center; letter-spacing:15px; font-size:24px" maxlength="4" placeholder="••••">
-            <button class="btn btn-primary" onclick="verifyLogin()">MASUK</button>
+            <button class="btn-action" style="background:var(--grad); color:white; width:100%; font-size:14px" onclick="verifyLogin()">MASUK</button>
         </div>
-
         <div id="form-modal" class="modal" style="display:none">
             <h3 style="margin-top:0">🏫 Sekolah Baru</h3>
             <input type="text" id="in-nama" class="input" placeholder="NAMA SEKOLAH">
@@ -74,39 +85,52 @@
                 <input type="number" id="in-pb" class="input" placeholder="PB">
                 <input type="number" id="in-tendik" class="input" placeholder="TD">
             </div>
-            <button class="btn btn-primary" onclick="saveSchool()">SIMPAN</button>
+            <button class="btn-action" style="background:var(--grad); color:white; width:100%; font-size:14px" onclick="saveSchool()">SIMPAN</button>
             <button onclick="closeModal()" style="background:none; border:none; margin-top:15px; color:#94a3b8;">BATAL</button>
         </div>
     </div>
 
     <div id="page-home" class="page active">
-        <div class="header"><h1>Logistik Control</h1><p>Manajemen Porsi Makanan</p></div>
+        <div class="header"><h1>Logistik Control</h1><p>Sistem Pemorsian Terpadu</p></div>
         <div style="padding:40px 25px">
-            <button class="btn btn-role" onclick="openLogin('admin')">💼 Admin Kantor</button>
-            <button class="btn btn-role" onclick="openLogin('pemorsian')">🍳 Tim Pemorsian</button>
-            <button class="btn btn-role" onclick="openLogin('mobil1')">🚚 Supir Mobil 1</button>
-            <button class="btn btn-role" onclick="openLogin('mobil2')">🚚 Supir Mobil 2</button>
+            <button class="btn-filter" style="width:100%; padding:20px; margin-bottom:12px; font-size:14px" onclick="openLogin('admin')">💼 Admin Kantor</button>
+            <button class="btn-filter" style="width:100%; padding:20px; margin-bottom:12px; font-size:14px" onclick="openLogin('pemorsian')">🍳 Tim Pemorsian</button>
+            <button class="btn-filter" style="width:100%; padding:20px; margin-bottom:12px; font-size:14px" onclick="openLogin('mobil1')">🚚 Supir Mobil 1</button>
+            <button class="btn-filter" style="width:100%; padding:20px; margin-bottom:12px; font-size:14px" onclick="openLogin('mobil2')">🚚 Supir Mobil 2</button>
         </div>
     </div>
 
     <div id="page-admin" class="page">
-        <div class="header"><h1>Admin Panel</h1><p id="st-info">Memuat data...</p></div>
+        <div class="header"><h1>Admin Panel</h1><p>Memuat data...</p></div>
+        
         <div class="stats-container">
             <div class="stat-card"><small>TOTAL PORSI</small><b id="st-total">0</b></div>
-            <div class="stat-card"><small>TERKIRIM</small><b id="st-done">0</b></div>
+            <div class="stat-card"><small>TERKIRIM</small><b id="st-done-porsi">0</b></div>
         </div>
+
+        <div class="progress-area">
+            <div class="progress-text">
+                <span id="st-count-text">0 sekolah selesai</span>
+                <span id="st-percent">0%</span>
+            </div>
+            <div class="pb-bg"><div id="pb-fill" class="pb-fill"></div></div>
+        </div>
+
+        <div class="filter-row">
+            <button class="btn-filter active" id="f-all" onclick="filterMobil('all')">SEMUA</button>
+            <button class="btn-filter" id="f-m1" onclick="filterMobil('Mobil 1')">MOBIL 1</button>
+            <button class="btn-filter" id="f-m2" onclick="filterMobil('Mobil 2')">MOBIL 2</button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="admin-search" class="input-search" placeholder="Cari nama sekolah..." oninput="renderAdmin()">
+        </div>
+
         <div id="list-admin"></div>
     </div>
 
-    <div id="page-pemorsian" class="page">
-        <div class="header"><h1>Pemorsian</h1><p id="pm-info">Klik Siapkan untuk rincian</p></div>
-        <div id="list-pemorsian"></div>
-    </div>
-
-    <div id="page-mobil" class="page">
-        <div class="header"><h1 id="mb-head">Mobil</h1><p>Daftar Pengantaran</p></div>
-        <div id="list-mobil"></div>
-    </div>
+    <div id="page-pemorsian" class="page"><div class="header"><h1>Pemorsian</h1></div><div id="list-pemorsian"></div></div>
+    <div id="page-mobil" class="page"><div class="header"><h1 id="mb-head">Mobil</h1></div><div id="list-mobil"></div></div>
 
     <nav class="navbar" id="nav">
         <div class="nav-item active" onclick="navigate('admin')">🏠<span>UTAMA</span></div>
@@ -119,86 +143,114 @@
         const PINS = { admin:"1111", pemorsian:"2222", mobil1:"3331", mobil2:"3332" };
         let schools = [];
         let currentRole = "";
-        let currentMobil = "";
+        let filterSel = "all";
 
         async function fetchSchools() {
             try {
                 const res = await fetch(WEB_APP_URL);
                 const data = await res.json();
-                
-                // --- PENYESUAIAN BERDASARKAN FOTO GOOGLE SHEETS ANDA ---
-                schools = data.map(s => {
-                    // Berdasarkan foto: Kolom H (ke-8) adalah STATUS, Kolom I (ke-9) adalah LIBUR
-                    let rawStatus = String(s.status || "pending").trim().toLowerCase();
-                    let rawLibur = String(s.islibur).trim().toUpperCase(); // TRUE atau FALSE
-
-                    return {
-                        ...s,
-                        pk: parseInt(s.pk) || 0,
-                        pb: parseInt(s.pb) || 0,
-                        tendik: parseInt(s.tendik) || 0,
-                        status: rawStatus, 
-                        islibur: (rawLibur === "TRUE") // Hanya anggap libur jika tulisannya benar-benar TRUE
-                    };
-                });
+                schools = data.map(s => ({
+                    ...s,
+                    pk: parseInt(s.pk) || 0, pb: parseInt(s.pb) || 0, tendik: parseInt(s.tendik) || 0,
+                    status: String(s.status || "pending").trim().toLowerCase(),
+                    islibur: String(s.islibur).trim().toUpperCase() === "TRUE"
+                }));
                 renderAll();
-            } catch(e) { alert("Gagal koneksi ke server"); }
+            } catch(e) { console.log("Error fetch"); }
         }
 
-        function renderAll() {
+        function filterMobil(m) {
+            filterSel = m;
+            document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+            if(m === 'all') document.getElementById('f-all').classList.add('active');
+            else if(m === 'Mobil 1') document.getElementById('f-m1').classList.add('active');
+            else document.getElementById('f-m2').classList.add('active');
             renderAdmin();
-            renderPemorsian();
-            renderMobil();
         }
 
-        // NAVIGATION & LOGIN
-        function navigate(p) {
-            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-            document.getElementById('page-'+p).classList.add('active');
-            document.getElementById('nav').style.display = (p === 'admin') ? 'flex' : 'none';
-        }
-
-        function openLogin(r) {
-            currentRole = r;
-            document.getElementById('modal-overlay').style.display = 'flex';
-            document.getElementById('login-modal').style.display = 'block';
-        }
-
-        function verifyLogin() {
-            if(document.getElementById('pin-input').value === PINS[currentRole]) {
-                closeModal();
-                if(currentRole === 'admin') navigate('admin');
-                else if(currentRole === 'pemorsian') navigate('pemorsian');
-                else { 
-                    currentMobil = (currentRole === 'mobil1') ? 'Mobil 1' : 'Mobil 2';
-                    document.getElementById('mb-head').innerText = currentMobil;
-                    navigate('mobil'); 
-                }
-            } else alert("PIN SALAH");
-            document.getElementById('pin-input').value = "";
-        }
-
-        // ADMIN
         function renderAdmin() {
             const list = document.getElementById('list-admin');
+            const search = document.getElementById('admin-search').value.toUpperCase();
             list.innerHTML = "";
-            let tP=0, done=0;
             
-            schools.forEach((s, i) => {
-                tP += (s.pk+s.pb+s.tendik);
-                if(s.status === 'done') done++;
-                list.innerHTML += `
-                <div class="card" style="${s.islibur ? 'opacity:0.5; background:#eee' : ''}">
-                    <h3>${s.nama}</h3>
-                    <span class="badge">PK: ${s.pk}</span><span class="badge">PB: ${s.pb}</span><span class="badge">TD: ${s.tendik}</span>
-                    <div style="margin-top:10px; display:flex; gap:5px">
-                        <button class="btn" style="flex:1; background:#f1f5f9; padding:8px; font-size:11px" onclick="updateLibur(${i})">${s.islibur?'AKTIFKAN':'SET LIBUR'}</button>
-                        <button class="btn" style="flex:1; background:#fee2e2; color:red; padding:8px; font-size:11px" onclick="hapusSekolah('${s.nama}')">HAPUS</button>
-                    </div>
-                </div>`;
+            let tP=0, dP=0, tS=0, dS=0;
+
+            // Hitung Stats (Hanya yang tidak libur)
+            schools.forEach(s => {
+                if(!s.islibur) {
+                    tS++;
+                    tP += (s.pk+s.pb+s.tendik);
+                    if(s.status === 'done') { dS++; dP += (s.pk+s.pb+s.tendik); }
+                }
             });
+
+            // Update Progress UI
             document.getElementById('st-total').innerText = tP;
-            document.getElementById('st-done').innerText = done;
+            document.getElementById('st-done-porsi').innerText = dP;
+            document.getElementById('st-count-text').innerText = `${dS} dari ${tS} sekolah selesai`;
+            const pct = tS > 0 ? Math.round((dS/tS)*100) : 0;
+            document.getElementById('st-percent').innerText = pct + "%";
+            document.getElementById('pb-fill').style.width = pct + "%";
+
+            // Render List dengan Filter
+            schools.forEach((s, i) => {
+                const matchSearch = s.nama.includes(search);
+                const matchMobil = filterSel === 'all' || s.mobil === filterSel;
+
+                if(matchSearch && matchMobil) {
+                    list.innerHTML += `
+                    <div class="card" style="${s.islibur ? 'opacity:0.5' : ''}">
+                        <h3>${s.nama}</h3>
+                        <div style="margin-bottom:15px">
+                            <span class="badge">PK: ${s.pk}</span>
+                            <span class="badge">PB: ${s.pb}</span>
+                            <span class="badge">TD: ${s.tendik}</span>
+                            <span class="badge" style="background:#4f46e5; color:white; border:none">${s.mobil}</span>
+                        </div>
+                        <div style="display:flex; gap:8px">
+                            <button class="btn-action btn-libur" onclick="updateLibur(${i})">${s.islibur?'AKTIFKAN':'SET LIBUR'}</button>
+                            <button class="btn-action btn-hapus" onclick="hapusSekolah('${s.nama}')">HAPUS</button>
+                        </div>
+                    </div>`;
+                }
+            });
+        }
+
+        // FUNGSI LAINNYA (Sama seperti v6 untuk fungsionalitas)
+        function renderPemorsian() {
+            const list = document.getElementById('list-pemorsian');
+            list.innerHTML = "";
+            schools.filter(s => !s.islibur && s.status === 'pending').forEach(s => {
+                const total = s.pk+s.pb+s.tendik;
+                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><p><b>${Math.floor(total/5)} IKAT + ${total%5} SISA</b></p><button class="btn-action" style="background:var(--success); color:white; width:100%" onclick="updateStatus('${s.nama}','ready')">SIAP KIRIM</button></div>`;
+            });
+        }
+
+        function renderMobil() {
+            const list = document.getElementById('list-mobil');
+            list.innerHTML = "";
+            schools.filter(s => s.mobil === currentMobil && !s.islibur).forEach(s => {
+                const isReady = s.status === 'ready';
+                list.innerHTML += `<div class="card"><h3>${s.nama}</h3><button class="btn-action" style="width:100%; color:white; background:${isReady?'var(--primary)':'#ccc'}" ${!isReady?'disabled':''} onclick="updateStatus('${s.nama}','done')">${s.status==='done'?'✓ SELESAI':'TIBA DI LOKASI'}</button></div>`;
+            });
+        }
+
+        async function updateStatus(nama, stat) {
+            const s = schools.find(x => x.nama === nama);
+            s.status = stat; renderAll();
+            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", nama, status:stat}) });
+        }
+
+        async function updateLibur(i) {
+            schools[i].islibur = !schools[i].islibur;
+            renderAll();
+            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", nama:schools[i].nama, islibur:schools[i].islibur}) });
+        }
+
+        async function hapusSekolah(nama) {
+            if(!confirm("Hapus?")) return;
+            schools = schools.filter(s => s.nama !== nama); renderAll();
+            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"delete", nama}) });
         }
 
         async function saveSchool() {
@@ -208,87 +260,30 @@
                 pk: parseInt(document.getElementById('in-pk').value) || 0,
                 pb: parseInt(document.getElementById('in-pb').value) || 0,
                 tendik: parseInt(document.getElementById('in-tendik').value) || 0,
-                status: 'pending',
-                islibur: false
+                status: 'pending', islibur: false
             };
-            schools.push(payload);
-            renderAll();
-            closeModal();
+            schools.push(payload); renderAll(); closeModal();
             await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"addData", ...payload}) });
         }
 
-        // PEMORSIAN
-        function renderPemorsian() {
-            const list = document.getElementById('list-pemorsian');
-            list.innerHTML = "";
-            // Filter: Hanya yang islibur === false dan status === pending
-            const data = schools.filter(s => s.islibur === false && s.status === 'pending');
-            
-            if(data.length === 0) {
-                list.innerHTML = "<p style='text-align:center; opacity:0.5; margin-top:30px'>Tidak ada data porsi aktif</p>";
-                return;
-            }
-
-            data.forEach(s => {
-                const total = s.pk+s.pb+s.tendik;
-                list.innerHTML += `
-                <div class="card">
-                    <h3>${s.nama} <span style="float:right; font-size:10px" class="badge">${s.mobil}</span></h3>
-                    <p style="font-weight:800; color:var(--primary)">${Math.floor(total/5)} IKAT + ${total%5} SISA (${total} Porsi)</p>
-                    <button class="btn btn-primary" style="background:var(--success)" onclick="setReady('${s.nama}')">SIAP KIRIM</button>
-                </div>`;
-            });
+        function navigate(p) {
+            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            document.getElementById('page-'+p).classList.add('active');
+            document.getElementById('nav').style.display = (p === 'admin') ? 'flex' : 'none';
         }
-
-        // MOBIL
-        function renderMobil() {
-            const list = document.getElementById('list-mobil');
-            list.innerHTML = "";
-            const data = schools.filter(s => s.mobil === currentMobil && s.islibur === false);
-            data.forEach(s => {
-                const isReady = s.status === 'ready';
-                list.innerHTML += `
-                <div class="card" style="${s.status==='done'?'opacity:0.5':''}">
-                    <h3>${s.nama}</h3>
-                    <button class="btn btn-primary" ${!isReady?'disabled style="background:#ccc"':''} onclick="setDone('${s.nama}')">
-                        ${s.status==='done'?'✓ SELESAI':'KONFIRMASI TIBA'}
-                    </button>
-                </div>`;
-            });
+        function openLogin(r) { currentRole = r; document.getElementById('modal-overlay').style.display = 'flex'; document.getElementById('login-modal').style.display = 'block'; }
+        function verifyLogin() {
+            if(document.getElementById('pin-input').value === PINS[currentRole]) {
+                closeModal();
+                if(currentRole === 'admin') navigate('admin');
+                else if(currentRole === 'pemorsian') navigate('pemorsian');
+                else { currentMobil = (currentRole === 'mobil1') ? 'Mobil 1' : 'Mobil 2'; document.getElementById('mb-head').innerText = currentMobil; navigate('mobil'); }
+            } else alert("PIN SALAH");
+            document.getElementById('pin-input').value = "";
         }
-
-        // ACTIONS
-        async function setReady(nama) {
-            const s = schools.find(x => x.nama === nama);
-            s.status = 'ready';
-            renderAll();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", nama, status:"ready"}) });
-        }
-
-        async function setDone(nama) {
-            const s = schools.find(x => x.nama === nama);
-            s.status = 'done';
-            renderAll();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", nama, status:"done", time: new Date().toLocaleTimeString()}) });
-        }
-
-        async function updateLibur(i) {
-            schools[i].islibur = !schools[i].islibur;
-            const s = schools[i];
-            renderAll();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"update", nama:s.nama, islibur:s.islibur}) });
-        }
-
-        async function hapusSekolah(nama) {
-            if(!confirm("Hapus data?")) return;
-            schools = schools.filter(s => s.nama !== nama);
-            renderAll();
-            await fetch(WEB_APP_URL, { method:"POST", body: JSON.stringify({action:"delete", nama}) });
-        }
-
         function openForm() { document.getElementById('modal-overlay').style.display='flex'; document.getElementById('form-modal').style.display='block'; }
         function closeModal() { document.getElementById('modal-overlay').style.display='none'; document.getElementById('login-modal').style.display='none'; document.getElementById('form-modal').style.display='none'; }
-
+        function renderAll() { renderAdmin(); renderPemorsian(); renderMobil(); }
         window.onload = fetchSchools;
     </script>
 </body>
