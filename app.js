@@ -1,4 +1,4 @@
-const CLOUD_URL = "https://script.google.com/macros/s/AKfycbxaUThKB7mGR4YgNJgTaliHGE7EjG5OFJROTA9EoXEYWCKYRlVBjqKUPp-Aw4Vll5hh/exec"; // Masukkan URL Anda di sini
+const CLOUD_URL = "https://script.google.com/macros/s/AKfycbxaUThKB7mGR4YgNJgTaliHGE7EjG5OFJROTA9EoXEYWCKYRlVBjqKUPp-Aw4Vll5hh/exec"; // GANTI DENGAN URL /exec ANDA
 
 let data = [];
 let roleSekarang = localStorage.getItem("user_role") || "pilih";
@@ -10,7 +10,7 @@ async function simpanKeCloud() {
     try {
         await fetch(CLOUD_URL, { method: 'POST', body: JSON.stringify(data) });
         tarikDataCloud();
-    } catch (e) { alert("Koneksi gagal"); }
+    } catch (e) { alert("Gagal koneksi cloud"); }
 }
 
 async function tarikDataCloud() {
@@ -18,23 +18,23 @@ async function tarikDataCloud() {
         let res = await fetch(CLOUD_URL);
         data = await res.json();
         render();
-    } catch (e) { console.log("Offline"); }
+    } catch (e) { console.log("Offline"); render(); }
 }
 
 function render() {
-    const container = document.getElementById("listContainer");
-    const statsArea = document.getElementById("statsArea");
-    const nav = document.getElementById("mainNav");
-    const plusBtn = document.getElementById("plusButton");
+    const headerArea = document.getElementById("headerArea");
+    const mainContent = document.getElementById("mainContent");
+    const bottomNav = document.getElementById("bottomNav");
+    const btnPlus = document.getElementById("btnPlusAdmin");
 
-    // 1. JIKA BELUM PILIH ROLE
+    // JIKA BELUM PILIH MODE (Tampilan Login)
     if (roleSekarang === "pilih") {
-        statsArea.innerHTML = "";
-        nav.style.display = "none";
-        container.innerHTML = `
-            <div style="text-align:center; padding: 40px 0 10px;">
-                <h2 style="margin-bottom:10px; font-weight:800;">Logistik App</h2>
-                <p style="color:#64748b; font-size:14px; padding:0 20px;">Silakan pilih mode akses untuk masuk ke sistem distribusi</p>
+        headerArea.innerHTML = "";
+        bottomNav.style.display = "none";
+        mainContent.innerHTML = `
+            <div style="text-align:center; padding: 40px 0 20px;">
+                <h2 style="font-weight:800; margin-bottom:5px;">Logistik App</h2>
+                <p style="color:#64748b; font-size:14px;">Silakan pilih mode akses sistem distribusi</p>
             </div>
             <div class="role-container">
                 <button class="btn-role admin" onclick="setRole('admin')">💼 ADMIN (KANTOR)</button>
@@ -46,47 +46,57 @@ function render() {
         return;
     }
 
-    // 2. JIKA SUDAH PILIH ROLE
-    nav.style.display = "flex";
+    // JIKA SUDAH PILIH MODE
+    bottomNav.style.display = "flex";
+    
+    // Header & Dashboard
     if (roleSekarang === "admin") {
-        plusBtn.style.display = "flex";
+        btnPlus.style.display = "flex";
         let sisa = data.filter(x => x.status !== 'done').length;
-        statsArea.innerHTML = `
+        headerArea.innerHTML = `
             <div class="dashboard">
                 <div class="stat"><span>Sisa</span><h2>${sisa}</h2></div>
                 <div class="stat"><span>Total</span><h2>${data.length}</h2></div>
             </div>
         `;
     } else {
-        plusBtn.style.display = "none";
-        statsArea.innerHTML = `<div style="padding:15px; background:white; border-radius:15px; margin-bottom:15px; font-weight:bold; text-align:center;">MODE: ${roleSekarang.toUpperCase()} ${mobilUser}</div>`;
+        btnPlus.style.display = "none";
+        headerArea.innerHTML = `
+            <div style="background:white; padding:15px; border-radius:15px; margin-bottom:20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                <small style="color:#94a3b8; font-weight:bold; text-transform:uppercase;">Mode Aktif</small>
+                <div style="font-weight:800; font-size:18px;">${roleSekarang.toUpperCase()} ${mobilUser}</div>
+            </div>
+        `;
     }
 
-    // Render List
-    container.innerHTML = "";
-    let filtered = data;
+    // List Sekolah
+    mainContent.innerHTML = "";
+    let listData = data;
     if (roleSekarang === "supir") {
-        filtered = data.filter(d => d.mobil === mobilUser && d.status !== 'pending');
+        listData = data.filter(d => d.mobil === mobilUser && d.status !== 'pending');
     }
 
-    filtered.forEach((d, idx) => {
-        let oriIdx = data.findIndex(x => x === d);
-        let action = "";
-        if (roleSekarang === "dapur" && d.status === 'pending') action = `<button class="btn-ready" onclick="ubahStatus(${oriIdx}, 'ready')">SIAP KIRIM ✅</button>`;
-        if (roleSekarang === "supir" && d.status === 'ready') action = `<button class="btn-done" onclick="ubahStatus(${oriIdx}, 'done')">SELESAI ANTAR 📍</button>`;
-        if (roleSekarang === "admin") action = `<button class="btn-delete" onclick="hapusData(${oriIdx})">HAPUS</button>`;
+    if (listData.length === 0) {
+        mainContent.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:40px;">Belum ada data tersedia</div>`;
+    }
 
-        container.innerHTML += `
+    listData.forEach((d, idx) => {
+        let oriIdx = data.findIndex(x => x === d);
+        let btn = "";
+        if (roleSekarang === "dapur" && d.status === 'pending') btn = `<button class="btn-ready" onclick="ubahStatus(${oriIdx}, 'ready')">SIAP KIRIM ✅</button>`;
+        if (roleSekarang === "supir" && d.status === 'ready') btn = `<button class="btn-done" onclick="ubahStatus(${oriIdx}, 'done')">SELESAI ANTAR 📍</button>`;
+        if (roleSekarang === "admin") btn = `<button class="btn-delete" onclick="hapusData(${oriIdx})">HAPUS</button>`;
+
+        mainContent.innerHTML += `
             <div class="item ${d.status}">
                 <span class="item-title">${d.nama}</span>
                 <div class="item-sub">${d.mobil} | Total: ${d.total} Porsi</div>
-                ${action}
+                <div style="margin-top:10px;">${btn}</div>
             </div>
         `;
     });
 }
 
-/* FUNGSI CONTROL */
 function setRole(r, m = "") {
     roleSekarang = r;
     mobilUser = m;
@@ -106,7 +116,7 @@ function ubahStatus(i, s) {
 }
 
 function hapusData(i) {
-    if(confirm("Hapus?")) { data.splice(i, 1); simpanKeCloud(); }
+    if(confirm("Hapus data sekolah ini?")) { data.splice(i, 1); simpanKeCloud(); }
 }
 
 function bukaModal() { document.getElementById("inputModal").style.display = "flex"; }
@@ -114,7 +124,7 @@ function tutupModal() { document.getElementById("inputModal").style.display = "n
 
 function tambahData() {
     const nama = document.getElementById("sekolahNama").value;
-    if(!nama) return;
+    if(!nama) return alert("Isi nama sekolah");
     let pki = document.getElementById("pki").value, pks = document.getElementById("pks").value;
     let pbi = document.getElementById("pbi").value, pbs = document.getElementById("pbs").value;
     let tot = hitungPorsi(pki, pks) + hitungPorsi(pbi, pbs);
