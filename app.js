@@ -1,52 +1,44 @@
-const DB_URL = "https://script.google.com/macros/s/AKfycbxaUThKB7mGR4YgNJgTaliHGE7EjG5OFJROTA9EoXEYWCKYRlVBjqKUPp-Aw4Vll5hh/exec"; 
+const DB_URL = "https://script.google.com/macros/s/AKfycbxaUThKB7mGR4YgNJgTaliHGE7EjG5OFJROTA9EoXEYWCKYRlVBjqKUPp-Aw4Vll5hh/exec"; // Ganti dengan URL GAS Anda
 const PASSWORDS = { admin: "1111", dapur: "2222", supir1: "3331", supir2: "3332" };
 
-// Ambil data dari cache lokal agar saat buka langsung muncul (tidak kosong)
 let rawData = JSON.parse(localStorage.getItem("cache_data")) || [];
-let role = "pilih";
-let currentMobil = "";
-let searchQuery = "";
-let targetRole = "";
-let targetMobil = "";
+let role = "pilih", currentMobil = "", searchQuery = "", targetRole = "", targetMobil = "";
 
-// 1. FUNGSI LOAD DATA (DIPANGGIL DI AKHIR)
+// 1. DATA SYNC
 async function pullData() {
     try {
         const res = await fetch(DB_URL);
         const newData = await res.json();
         if (JSON.stringify(newData) !== JSON.stringify(rawData)) {
             rawData = newData;
-            localStorage.setItem("cache_data", JSON.stringify(rawData)); // Simpan ke cache
+            localStorage.setItem("cache_data", JSON.stringify(rawData));
             render();
         }
-    } catch (e) { console.log("Offline mode"); render(); }
+    } catch (e) { render(); }
 }
 
-// 2. SISTEM MODAL PASSWORD (PENGGANTI PROMPT BROWSER)
+async function pushData() {
+    await fetch(DB_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(rawData) });
+}
+
+// 2. MODAL LOGIC
 function askPass(r, m = "") {
-    targetRole = r;
-    targetMobil = m;
+    targetRole = r; targetMobil = m;
     document.getElementById("modalOverlay").style.display = "flex";
     document.getElementById("passModal").style.display = "block";
-    document.getElementById("passInput").value = "";
     document.getElementById("passInput").focus();
 }
 
 document.getElementById("btnConfirmPass").onclick = function() {
     const p = document.getElementById("passInput").value;
     const key = targetRole === 'supir' ? (targetMobil === 'Mobil 1' ? 'supir1' : 'supir2') : targetRole;
-    
     if (p === PASSWORDS[key]) {
-        role = targetRole;
-        currentMobil = targetMobil;
-        closeModal();
-        render();
-    } else {
-        alert("Password Salah!");
-    }
+        role = targetRole; currentMobil = targetMobil;
+        closeModal(); render();
+    } else { alert("Kode Salah!"); }
 };
 
-// 3. RENDERER UTAMA
+// 3. RENDERER
 function render() {
     renderDashboard();
     renderContent();
@@ -55,21 +47,20 @@ function render() {
 function renderDashboard() {
     const dash = document.getElementById("mainDashboard");
     if (role === "pilih") {
-        dash.innerHTML = `<h2 style="margin:0">Logistik Pro</h2><p style="margin:0;opacity:0.6;font-size:12px">Elite Management System</p>`;
+        dash.innerHTML = `<h2>Logistik Control</h2><p style="opacity:0.6;font-size:12px">Pilih akses untuk memulai</p>`;
         return;
     }
-
     const tPorsi = rawData.reduce((a, b) => a + (b.isLibur ? 0 : (b.pk + b.pb + b.tendik)), 0);
     const tDone = rawData.filter(d => d.status === 'done' && !d.isLibur).reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
     const perc = tPorsi > 0 ? Math.round((tDone / tPorsi) * 100) : 0;
-
+    
     dash.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center">
-            <div><small>MODE: ${role.toUpperCase()} ${currentMobil}</small><h3>Dashboard</h3></div>
-            <h2>${perc}%</h2>
+            <div><small style="opacity:0.5;text-transform:uppercase">${role} ${currentMobil}</small><h3>Ringkasan Kerja</h3></div>
+            <h2 style="font-size:32px">${perc}%</h2>
         </div>
-        <div class="progress-bar" style="background:rgba(255,255,255,0.1); height:8px; border-radius:10px; overflow:hidden;">
-            <div style="background:#6366f1; height:100%; width:${perc}%; transition:1s;"></div>
+        <div style="background:rgba(255,255,255,0.1); height:10px; border-radius:20px; overflow:hidden; margin-top:10px">
+            <div style="background:#6366f1; height:100%; width:${perc}%; transition:1s cubic-bezier(0.4, 0, 0.2, 1)"></div>
         </div>
     `;
 }
@@ -78,23 +69,14 @@ function renderContent() {
     const main = document.getElementById("mainContent");
     if (role === "pilih") {
         main.innerHTML = `
-            <div class="role-container" style="padding:20px; display:flex; flex-direction:column; gap:15px;">
-                <div class="btn-role" onclick="askPass('admin')" style="background:white; padding:20px; border-radius:20px; border:1px solid #e2e8f0; display:flex; align-items:center; gap:15px; font-weight:bold;">
-                    <span style="font-size:24px;">💼</span> Admin Kantor
-                </div>
-                <div class="btn-role" onclick="askPass('dapur')" style="background:white; padding:20px; border-radius:20px; border:1px solid #e2e8f0; display:flex; align-items:center; gap:15px; font-weight:bold;">
-                    <span style="font-size:24px;">🍳</span> Tim Pemorsian
-                </div>
-                <div class="btn-role" onclick="askPass('supir', 'Mobil 1')" style="background:white; padding:20px; border-radius:20px; border:1px solid #e2e8f0; display:flex; align-items:center; gap:15px; font-weight:bold;">
-                    <span style="font-size:24px;">🚚</span> Supir Mobil 1
-                </div>
-                <div class="btn-role" onclick="askPass('supir', 'Mobil 2')" style="background:white; padding:20px; border-radius:20px; border:1px solid #e2e8f0; display:flex; align-items:center; gap:15px; font-weight:bold;">
-                    <span style="font-size:24px;">🚚</span> Supir Mobil 2
-                </div>
+            <div style="padding:20px; display:flex; flex-direction:column; gap:15px">
+                <div class="btn-role" onclick="askPass('admin')"><div class="role-icon">💼</div>Admin Kantor</div>
+                <div class="btn-role" onclick="askPass('dapur')"><div class="role-icon">🍳</div>Tim Pemorsian</div>
+                <div class="btn-role" onclick="askPass('supir', 'Mobil 1')"><div class="role-icon">🚚</div>Supir Mobil 1</div>
+                <div class="btn-role" onclick="askPass('supir', 'Mobil 2')"><div class="role-icon">🚚</div>Supir Mobil 2</div>
             </div>`;
         return;
     }
-
     document.getElementById("searchArea").style.display = "block";
     document.getElementById("bottomNav").style.display = "flex";
     
@@ -102,34 +84,47 @@ function renderContent() {
     if (role === "supir") filtered = rawData.filter(d => d.mobil === currentMobil);
     if (searchQuery) filtered = filtered.filter(d => d.nama.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    const getIkat = (n) => `${Math.floor(n/5)} Ikat + ${n%5}`;
+    const getIkat = (n) => `${Math.floor(n/5)} Ikt + ${n%5}`;
 
-    main.innerHTML = filtered.map(d => {
-        const i = rawData.findIndex(x => x === d);
-        return `
-            <div class="card-sk" style="background:white; margin:10px 20px; padding:20px; border-radius:24px; box-shadow:0 4px 6px rgba(0,0,0,0.02); border:1px solid #f1f5f9; position:relative;">
-                <div style="position:absolute; top:20px; right:20px; font-size:10px; font-weight:bold; color:#6366f1;">${d.status.toUpperCase()}</div>
-                <h4 style="margin:0; text-transform:uppercase;">${d.nama}</h4>
-                <p style="font-size:11px; color:#64748b; margin:10px 0;">
-                    PK: ${d.pk} (${getIkat(d.pk)}) | PB: ${d.pb} (${getIkat(d.pb)}) | TDK: ${d.tendik}<br>
-                    <b>TOTAL: ${d.pk + d.pb + d.tendik} PORSI</b>
-                </p>
-                ${renderButtons(d, i)}
-            </div>`;
-    }).join("");
+    main.innerHTML = filtered.map((d, i) => `
+        <div class="card-sk">
+            <div style="display:flex; justify-content:space-between">
+                <h4 style="text-transform:uppercase">${d.nama}</h4>
+                <span style="font-size:10px; font-weight:800; color:#6366f1">${d.status.toUpperCase()}</span>
+            </div>
+            <div style="font-size:11px; color:#64748b; margin:12px 0; line-height:1.6">
+                PK: ${d.pk} (${getIkat(d.pk)}) | PB: ${d.pb} (${getIkat(d.pb)}) | TDK: ${d.tendik}<br>
+                <b style="color:var(--dark); font-size:14px">TOTAL: ${d.pk + d.pb + d.tendik} PORSI</b>
+            </div>
+            ${renderActionBtn(d, rawData.indexOf(d))}
+        </div>
+    `).join("");
 }
 
-function renderButtons(d, i) {
-    if (role === 'admin') return `<button onclick="confirmHapus(${i})" style="width:100%; padding:10px; border:none; background:#fee2e2; color:red; border-radius:12px; font-weight:bold;">HAPUS</button>`;
-    if (role === 'dapur') return `<button onclick="statusSiap(${i})" style="width:100%; padding:12px; border:none; background:#0f172a; color:white; border-radius:12px; font-weight:bold;">SIAP KIRIM</button>`;
-    if (role === 'supir') return `<button onclick="statusDone(${i})" ${d.status !== 'ready' ? 'disabled style="opacity:0.3"' : ''} style="width:100%; padding:12px; border:none; background:#10b981; color:white; border-radius:12px; font-weight:bold;">SELESAI</button>`;
+function renderActionBtn(d, i) {
+    if (role === 'admin') return `<button onclick="confirmHapus(${i})" class="btn-gradient" style="background:var(--danger)">HAPUS SEKOLAH</button>`;
+    if (role === 'dapur') return `<button onclick="updateStatus(${i}, 'ready')" class="btn-gradient">SIAP DIKIRIM</button>`;
+    if (role === 'supir') return `<button onclick="updateStatus(${i}, 'done')" class="btn-gradient" style="background:var(--success)" ${d.status !== 'ready' ? 'disabled style="opacity:0.3"' : ''}>KONFIRMASI SELESAI</button>`;
 }
 
-// 4. HELPERS & MODALS
+// 4. LOGIC
+function updateStatus(i, s) {
+    rawData[i].status = s;
+    render(); pushData();
+}
+
+function saveSekolah() {
+    const nama = document.getElementById("skNama").value.toUpperCase();
+    const pk = parseInt(document.getElementById("skPK").value) || 0;
+    const pb = parseInt(document.getElementById("skPB").value) || 0;
+    const mb = document.getElementById("skMobil").value;
+    rawData.push({ nama, pk, pb, tendik: 0, mobil: mb, status: 'pending', isLibur: false });
+    closeModal(); render(); pushData();
+}
+
 function closeModal() {
     document.getElementById("modalOverlay").style.display = "none";
-    document.getElementById("passModal").style.display = "none";
-    document.getElementById("inputModal").style.display = "none";
+    document.querySelectorAll(".modal-card").forEach(m => m.style.display = "none");
 }
 
 function openInputModal() {
@@ -137,13 +132,9 @@ function openInputModal() {
     document.getElementById("inputModal").style.display = "block";
 }
 
-function handleSearch() {
-    searchQuery = document.getElementById("searchInput").value;
-    render();
-}
+function handleSearch() { searchQuery = document.getElementById("searchInput").value; render(); }
+function logout() { localStorage.removeItem("cache_data"); location.reload(); }
 
-function logout() { location.reload(); }
-
-// Jalankan render awal dari cache, lalu tarik data terbaru dari cloud
 render();
 pullData();
+setInterval(pullData, 20000);
