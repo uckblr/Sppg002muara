@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistem Logistik Distribusi v2.0</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="dashboard card">
+            <div class="stat">
+                <span class="label">Sisa Belum Terdistribusi</span>
+                <h2 id="totalSisa">0</h2>
+            </div>
+            <div class="stat">
+                <span class="label">Total Target</span>
+                <h2 id="totalTarget">0</h2>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <button class="filter-btn active" onclick="setFilter('Semua')">Semua</button>
+            <button class="filter-btn" onclick="setFilter('Mobil 1')">Mobil 1</button>
+            <button class="filter-btn" onclick="setFilter('Mobil 2')">Mobil 2</button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Cari sekolah..." oninput="render()">
+        </div>
+
+        <div id="listContainer" class="list-container">
+            </div>
+    </div>
+
+    <div id="inputModal" class="modal">
+        <div class="modal-content">
+            <h3>Input Data Sekolah</h3>
+            <input type="text" id="sekolahNama" placeholder="Nama Sekolah">
+            <select id="mobilPilih">
+                <option value="Mobil 1">Mobil 1</option>
+                <option value="Mobil 2">Mobil 2</option>
+            </select>
+            <div class="input-grid">
+                <div><label>PK (Ikat)</label><input type="number" id="pki" value="0"></div>
+                <div><label>PK (Sisa)</label><input type="number" id="pks" value="0"></div>
+                <div><label>PB (Ikat)</label><input type="number" id="pbi" value="0"></div>
+                <div><label>PB (Sisa)</label><input type="number" id="pbs" value="0"></div>
+            </div>
+            <button class="btn-primary-v2" onclick="tambahData()">Simpan ke Cloud</button>
+            <button class="btn-cancel" onclick="tutupModal()">Batal</button>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-item active" onclick="tampilHalaman('list')">🏠<span>Daftar</span></div>
+        <div class="nav-plus" onclick="bukaModal()">+</div>
+        <div class="nav-item" onclick="tampilHalaman('history')">🕒<span>History</span></div>
+    </nav>
+
+    <script src="app.js"></script>
+</body>
+</html>
