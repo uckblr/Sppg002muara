@@ -277,9 +277,9 @@
                     id: s.id, nama: s.nama, mobil: s.mobil, pk: parseInt(s.pk)||0, pb: parseInt(s.pb)||0, tendik: parseInt(s.tendik)||0,
                     status: String(s.status||"pending").toLowerCase()
                 }));
-                document.getElementById('h-status').innerText = "Online ✅";
+                document.getElementById('h-status').innerText = "Online";
                 if(currentRole) renderApp();
-            } catch(e) { document.getElementById('h-status').innerText = "Offline ❌"; }
+            } catch(e) { document.getElementById('h-status').innerText = "Offline"; }
             finally { showLoading(false); }
         }
 
