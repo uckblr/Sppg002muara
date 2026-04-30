@@ -1,395 +1,159 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UCKBLR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --grad: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            --dark: #0f172a;
-            --danger: #ef4444;
-            --success: #10b981;
-            --bg: #f8fafc;
-            --warning: #f59e0b;
-            --m1-color: #3b82f6; 
-            --m2-color: #ec4899;
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); overflow-x: hidden; }
-
-        .header { background: var(--dark); color: white; padding: 40px 25px 60px; border-radius: 0 0 40px 40px; position: sticky; top: 0; z-index: 100; }
-        .header h1 { margin: 0; font-size: 22px; font-weight: 800; }
-        .top-nav { position: absolute; top: 35px; right: 20px; display: flex; gap: 10px; z-index: 110; }
-        .nav-btn { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255, 255, 255, 0.1); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-
-        .page { display: none; padding-bottom: 50px; animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: -30px 20px 10px; position: relative; z-index: 101; }
-        .stat-card { background: white; padding: 12px; border-radius: 18px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; text-align: center; }
-        .stat-card small { display: block; color: #64748b; font-size: 8px; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; }
-        .stat-card b { font-size: 13px; font-weight: 800; }
-
-        .progress-container { margin: 15px 20px; background: white; padding: 15px; border-radius: 20px; border: 1px solid #f1f5f9; }
-        .pb-bg { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin-top: 8px; }
-        .pb-fill { height: 100%; background: var(--grad); width: 0%; transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        .card { background: white; border-radius: 22px; padding: 20px; margin: 12px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; position: relative; }
-        .badge { padding: 4px 8px; background: #f1f5f9; border-radius: 8px; font-size: 10px; font-weight: 700; margin-right: 4px; color: #64748b; }
-        .total-badge { padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; color: white; min-width: 35px; text-align: center; }
-        .status-pill { padding: 3px 8px; border-radius: 6px; font-size: 9px; font-weight: 800; text-transform: uppercase; color: white; margin-left: 6px; vertical-align: middle; }
-        .btn-action { border: none; border-radius: 14px; font-weight: 700; cursor: pointer; padding: 14px; font-size: 12px; width: 100%; margin-top: 15px; text-transform: uppercase; transition: 0.2s; }
-
-        .search-box { margin: 0 20px 10px; position: relative; }
-        .input-search { width: 100%; padding: 14px 18px; border-radius: 15px; border: 1px solid #e2e8f0; background: white; font-family: inherit; font-weight: 600; font-size: 13px; }
-        .filter-row { display: flex; gap: 8px; margin: 15px 20px; }
-        .btn-filter { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; font-weight: 700; font-size: 10px; color: #64748b; cursor: pointer; }
-        .btn-filter.active { background: var(--dark); color: white; border-color: var(--dark); }
-
-        .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal { background: white; padding: 25px; border-radius: 30px; width: 100%; max-width: 350px; transform: scale(0.9); animation: modalIn 0.2s forwards; }
-        @keyframes modalIn { to { transform: scale(1); } }
-        .input-pin { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #f1f5f9; background: #f8fafc; text-align: center; letter-spacing: 10px; font-size: 24px; font-weight: 800; margin-bottom: 15px; }
-        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 12px 25px; border-radius: 50px; font-size: 12px; font-weight: 700; z-index: 2000; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>UCKBLR</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+  <nav class="navbar">
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <span class="icon">📊</span><span class="text">Dasbor</span>
+    </div>
+    <div class="nav-item" onclick="showPage('data-sekolah', this)">
+      <span class="icon">🏫</span><span class="text">Sekolah</span>
+    </div>
+    <div class="nav-item" onclick="showPage('historis', this)">
+      <span class="icon">📜</span><span class="text">Histori</span>
+    </div>
+  </nav>
 
-    <div id="toast">Pesan sistem</div>
-
-    <div id="modal-overlay" class="overlay">
-        <div id="login-modal" class="modal" style="display:none; text-align:center">
-            <h3 style="margin-top:0">🔒 Akses PIN</h3>
-            <input type="password" id="pin-input" class="input-pin" maxlength="4" inputmode="numeric">
-            <button class="btn-action" style="background:var(--grad); color:white" onclick="verifyLogin()">KONFIRMASI</button>
-            <button onclick="closeModal()" style="background:none; border:none; margin-top:15px; color:#94a3b8; font-weight:700">BATAL</button>
+  <div class="container">
+    <section id="dashboard" class="page active">
+      <div class="card">
+        <div class="stat-row">
+          <div class="stat-item"><span class="label">Total Penerima</span><span id="targetView" class="value">0</span></div>
+          <div class="divider-v"></div>
+          <div class="stat-item"><span class="label">Terdistribusi</span><span id="terdistribusiView" class="value" style="color:var(--success)">0</span></div>
         </div>
-
-        <div id="alert-modal" class="modal" style="display:none; text-align:center">
-            <div id="alert-icon" style="font-size:40px; margin-bottom:10px">❌</div>
-            <h3 id="alert-title">Gagal</h3>
-            <p id="alert-msg" style="font-size:13px; color:#64748b"></p>
-            <button class="btn-action" style="background:var(--dark); color:white" onclick="closeModal()">SAYA MENGERTI</button>
+        <div style="text-align: center; margin-top: 12px;">
+          <span id="sekolahDoneCount" style="font-size: 11px; font-weight: 800; color: #475569; background: #f1f5f9; padding: 4px 12px; border-radius: 20px; border: 1px solid #e2e8f0; text-transform: uppercase;">0 sekolah selesai</span>
         </div>
+        <div class="progress-container" style="margin-top: 15px;">
+          <div id="progressBarDone" class="progress-done"></div>
+          <div id="progressBarReady" class="progress-ready"></div>
+        </div>
+        <div class="progress-legend">
+            <div class="legend-item"><span class="dot" style="background:var(--success)"></span> Terdistribusi</div>
+            <div class="legend-item"><span class="dot" style="background:var(--primary)"></span> Tersedia</div>
+            <div id="progressPercent">0%</div>
+        </div>
+      </div>
 
-        <div id="confirm-modal" class="modal" style="display:none; text-align:center">
-            <div style="font-size:40px; margin-bottom:10px">⚠️</div>
-            <h3 id="confirm-title">Konfirmasi</h3>
-            <p id="confirm-msg" style="font-size:13px; color:#64748b"></p>
-            <div style="display:flex; gap:10px; margin-top:15px">
-                <button class="btn-action" style="background:#f1f5f9; color:var(--dark); margin:0" onclick="closeModal()">BATAL</button>
-                <button id="confirm-yes-btn" class="btn-action" style="background:var(--dark); color:white; margin:0">YA, LANJUT</button>
+      <div class="card">
+        <div class="stat-row">
+          <div class="stat-item">
+            <span class="label">PK (Kirim/Total)</span>
+            <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
+              <span id="pkDoneView" class="value" style="color:var(--success); font-size: 18px;">0</span>
+              <span style="color: #cbd5e1; font-weight: 800;">/</span>
+              <span id="totalPKView" class="value" style="color:#ef4444; font-size: 18px;">0</span>
             </div>
-        </div>
-
-        <div id="form-modal" class="modal" style="display:none; max-width:400px">
-            <h3 id="modal-title">Data Sekolah</h3>
-            <input type="text" id="in-nama" class="input-pin" style="letter-spacing:normal; font-size:14px; text-align:left" placeholder="Nama Sekolah">
-            <select id="in-mobil" class="input-pin" style="letter-spacing:normal; font-size:14px; text-align:left">
-                <option value="Mobil 1">Mobil 1</option>
-                <option value="Mobil 2">Mobil 2</option>
-            </select>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px">
-                <input type="number" id="in-pk" class="input-pin" style="letter-spacing:normal; font-size:14px" placeholder="PK">
-                <input type="number" id="in-pb" class="input-pin" style="letter-spacing:normal; font-size:14px" placeholder="PB">
-                <input type="number" id="in-td" class="input-pin" style="letter-spacing:normal; font-size:14px" placeholder="T">
+            <div style="margin-top: 10px; background: #fef2f2; padding: 8px 4px; border-radius: 6px; border: 1px solid #fee2e2;">
+              <div style="font-size: 9px; font-weight: 800; color: #b91c1c;">SISA PK</div>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                <span id="pkSisaView" style="font-size: 18px; font-weight: 900; color: #ef4444;">0</span>
+                <span id="pkDetailIkat" style="font-size: 10px; font-weight: 700; color: #b91c1c;">0 iket + 0</span>
+              </div>
             </div>
-            <button class="btn-action" style="background:var(--grad); color:white" onclick="handleSave()">SIMPAN</button>
-            <button onclick="closeModal()" style="background:none; border:none; width:100%; margin-top:10px; color:#94a3b8">BATAL</button>
+          </div>
+          <div class="divider-v"></div>
+          <div class="stat-item">
+            <span class="label">PB (Kirim/Total)</span>
+            <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
+              <span id="pbDoneView" class="value" style="color:var(--success); font-size: 18px;">0</span>
+              <span style="color: #cbd5e1; font-weight: 800;">/</span>
+              <span id="totalPBView" class="value" style="color:#0284c7; font-size: 18px;">0</span>
+            </div>
+            <div style="margin-top: 10px; background: #f0f9ff; padding: 8px 4px; border-radius: 6px; border: 1px solid #e0f2fe;">
+              <div style="font-size: 9px; font-weight: 800; color: #0369a1;">SISA PB</div>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                <span id="pbSisaView" style="font-size: 18px; font-weight: 900; color: #0284c7;">0</span>
+                <span id="pbDetailIkat" style="font-size: 10px; font-weight: 700; color: #0369a1;">0 iket + 0</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="card">
+        <div class="stat-row">
+          <div class="stat-item"><span class="label">Belum Terdistribusi</span><span id="sisaTarget" class="value-dark">0</span></div>
+          <div class="divider-v"></div>
+          <div class="stat-item">
+            <span class="label">Tersedia</span>
+            <input type="number" id="readyInput" oninput="update()" placeholder="0">
+          </div>
+        </div>
+        <div class="divider-h"></div>
+        <div style="text-align:center"><span class="label">Kurang</span><br><span id="sisaReady" class="value-red" style="font-size:32px">0</span></div>
+      </div>
+
+      <div class="btn-group-row">
+        <button class="btn-reset" onclick="confirmReset()">RESET</button>
+        <button class="btn-archive" onclick="confirmArchive()">ARSIP</button>
+      </div>
+    </section>
+
+    <section id="data-sekolah" class="page">
+      <div class="card">
+    <input type="text" id="nama" placeholder="NAMA SEKOLAH..." style="margin-bottom:10px">
+    
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <label style="flex:1; background:#eff6ff; padding:10px; border-radius:10px; text-align:center; font-size:12px; font-weight:800; cursor:pointer; border:1px solid #bfdbfe;">
+            <input type="radio" name="mobil" value="Mobil 1" checked> Mobil 1
+        </label>
+        <label style="flex:1; background:#fff7ed; padding:10px; border-radius:10px; text-align:center; font-size:12px; font-weight:800; cursor:pointer; border:1px solid #fed7aa;">
+            <input type="radio" name="mobil" value="Mobil 2"> Mobil 2
+        </label>
     </div>
 
-    <div id="page-home" class="page active">
-        <div class="header"><h1>SPPG MUARA 002</h1><p id="h-status" style="font-size:12px; opacity:0.6">Menghubungkan...</p></div>
-        <div style="padding:40px 25px">
-            <button class="btn-filter" style="width:100%; padding:20px; margin-bottom:12px; font-size:14px" onclick="openLogin('admin')">ADMIN</button>
-            <button class="btn-filter" style="width:100%; padding:20px; margin-bottom:12px; font-size:14px" onclick="openLogin('pemorsian')">DIVISI PEMORSIAN</button>
-            <button class="btn-filter" style="width:100%; padding:20px; margin-bottom:12px; font-size:14px" onclick="openLogin('mobil1')">MOBIL 1</button>
-            <button class="btn-filter" style="width:100%; padding:20px; margin-bottom:12px; font-size:14px" onclick="openLogin('mobil2')">MOBIL 2</button>
-        </div>
+    <div class="dual-input"><input type="number" id="pk_i" placeholder="PK"><span>+</span><input type="number" id="pk_s" placeholder="S"></div>
+    <div class="dual-input"><input type="number" id="pb_i" placeholder="PB"><span>+</span><input type="number" id="pb_s" placeholder="S"></div>
+    <button class="btn-primary-v2" onclick="tambah()">SIMPAN DATA</button>
+</div>
+
+<div style="display:flex; gap:5px; margin-bottom:10px;">
+    <button onclick="filterMobil('Semua')" class="filter-btn active">Semua</button>
+    <button onclick="filterMobil('Mobil 1')" class="filter-btn" style="background:#bfdbfe; color:#1e40af;">Mobil 1</button>
+    <button onclick="filterMobil('Mobil 2')" class="filter-btn" style="background:#fed7aa; color:#9a3412;">Mobil 2</button>
+</div>
+
+      <div class="search-container"><input type="text" id="searchInput" placeholder="Cari sekolah..." onkeyup="render()"></div>
+      <div id="listActive"></div>
+    </section>
+
+    <section id="historis" class="page">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding: 0 5px;">
+        <h3 style="margin:0; font-weight: 800; color: #1e293b;">RIWAYAT</h3>
+        <button class="btn-clear" onclick="confirmClearHistory()">Hapus Semua</button>
+      </div>
+      <div id="listHistory"></div>
+    </section>
+  </div>
+
+  <div id="customModal" class="modal-overlay">
+    <div class="modal-box">
+      <div id="modalIcon" class="modal-icon">⚠️</div>
+      <h3 id="modalTitle">Konfirmasi</h3>
+      <p id="modalMessage">Apakah Anda yakin?</p>
+      <div class="modal-buttons">
+        <button class="btn-modal-batal" onclick="closeModal()">BATAL</button>
+        <button class="btn-modal-oke" id="modalConfirmBtn">OKE</button>
+      </div>
+    </div>
+  </div>
+
+    <div id="snackbar" class="snackbar">
+        <span>Data berhasil dihapus</span>
+        <button class="btn-undo" onclick="undoAction()">BATAL (UNDO)</button>
     </div>
 
-    <div id="page-admin" class="page">
-        <div class="header"><h1>Admin</h1><div class="top-nav"><div class="nav-btn" onclick="backToHome()">🏠</div><div class="nav-btn" onclick="openFormAdd()">➕</div></div></div>
-        <div class="stats-grid"><div class="stat-card"><small>TOTAL PENERIMA</small><b id="adm-t">0</b></div><div class="stat-card"><small>TERDISTRIBUSI</small><b id="adm-d" style="color:var(--success)">0</b></div><div class="stat-card"><small>BELUM TERDISTRIBUSI</small><b id="adm-p" style="color:var(--danger)">0</b></div></div>
-        <div class="progress-container">
-            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; color:#64748b"><span id="adm-c">0/0 Lokasi</span><span id="adm-pct">0%</span></div>
-            <div class="pb-bg"><div id="adm-bar" class="pb-fill"></div></div>
-        </div>
-        <div class="filter-row"><button class="btn-filter active" onclick="setFilterAdm('all')">SEMUA</button><button class="btn-filter" onclick="setFilterAdm('Mobil 1')">M1</button><button class="btn-filter" onclick="setFilterAdm('Mobil 2')">M2</button></div>
-        <div class="search-box"><input type="text" id="adm-search" class="input-search" placeholder="Cari rute..." oninput="renderAdmin()"></div>
-        <div id="list-admin"></div>
-    </div>
-
-    <div id="page-pemorsian" class="page">
-        <div class="header"><h1>DIVISI PEMORSIAN</h1><div class="top-nav"><div class="nav-btn" onclick="backToHome()">🏠</div></div></div>
-        <div class="stats-grid"><div class="stat-card"><small>TOTAL PENERIMA</small><b id="p-t">0</b></div><div class="stat-card"><small>TERSEDIA</small><b id="p-r" style="color:var(--success)">0</b></div><div class="stat-card"><small>BELUM TERSEDIA</small><b id="p-p" style="color:var(--danger)">0</b></div></div>
-        <div class="progress-container">
-            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; color:#64748b"><span id="pc">0/0 Lokasi</span><span id="ppct">0%</span></div>
-            <div class="pb-bg"><div id="pbar" class="pb-fill"></div></div>
-        </div>
-        <div class="filter-row"><button class="btn-filter active" onclick="setFilterP('all')">SEMUA</button><button class="btn-filter" onclick="setFilterP('Mobil 1')">M1</button><button class="btn-filter" onclick="setFilterP('Mobil 2')">M2</button></div>
-        <div class="search-box"><input type="text" id="p-search" class="input-search" placeholder="Cari nama sekolah..." oninput="renderPemorsian()"></div>
-        <div id="list-pemorsian"></div>
-    </div>
-
-    <div id="page-mobil" class="page">
-        <div class="header"><h1 id="mb-head">DIVISI PENGIRIMAN</h1><div class="top-nav"><div class="nav-btn" onclick="backToHome()">🏠</div></div></div>
-        <div class="stats-grid"><div class="stat-card"><small>TOTAL DISTRIBUSI</small><b id="m-t">0</b></div><div class="stat-card"><small>TERDISTRIBUSI</small><b id="m-d" style="color:var(--success)">0</b></div><div class="stat-card"><small>BELUM TERDISTRIBUSI</small><b id="m-p" style="color:var(--danger)">0</b></div></div>
-        <div class="progress-container">
-            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; color:#64748b"><span id="mc">0/0 Lokasi</span><span id="mpct">0%</span></div>
-            <div class="pb-bg"><div id="mbar" class="pb-fill"></div></div>
-        </div>
-        <div class="search-box"><input type="text" id="mob-search" class="input-search" placeholder="Cari rute..." oninput="renderMobil()"></div>
-        <div id="list-mobil"></div>
-    </div>
-
-    <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxKTFPwPDoh-wNDPnkde0IqxiLGGLux_rPSBQaVCy0kbtaXPWkOE7RWoW8IgWXD2s0v/exec";
-        const PINS = { admin:"1111", pemorsian:"2222", mobil1:"3331", mobil2:"3332" };
-        let schools = [], currentRole = "", filterAdm = "all", filterP = "all", currentMobil = "", editIndex = null;
-        let lastBackPress = 0;
-
-        // CEK LOGIN SAAT REFRESH
-        function checkSession() {
-            const savedRole = localStorage.getItem('userRole');
-            if(savedRole) {
-                currentRole = savedRole;
-                const p = (currentRole==='admin'?'admin':(currentRole==='pemorsian'?'pemorsian':'mobil'));
-                navigate(p);
-                if(currentRole.includes('mobil')) {
-                    currentMobil = currentRole==='mobil1'?'Mobil 1':'Mobil 2';
-                    document.getElementById('mb-head').innerText = currentMobil;
-                }
-            }
-        }
-
-        window.history.pushState(null, null, window.location.href);
-        window.onpopstate = function() {
-            window.history.pushState(null, null, window.location.href);
-            let now = Date.now();
-            if (now - lastBackPress < 2000) {
-                if (currentRole !== "") backToHome();
-                else window.history.back();
-            } else { showToast("Tekan sekali lagi untuk kembali"); }
-            lastBackPress = now;
-        };
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg; t.style.display = 'block';
-            setTimeout(() => { t.style.display = 'none'; }, 2000);
-        }
-
-        function backToHome() { 
-            currentRole = ""; 
-            localStorage.removeItem('userRole'); // Hapus session saat klik Home
-            document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); 
-            document.getElementById('page-home').classList.add('active'); 
-        }
-
-        async function fetchSchools() {
-            try {
-                
-const data = await res.json();
-schools = data
-    .filter(s => s.nama && s.nama.trim() !== "") // FILTER BARIS KOSONG
-    .map(s => ({
-        ...s, 
-        pk: parseInt(s.pk)||0, 
-        pb: parseInt(s.pb)||0, 
-        tendik: parseInt(s.tendik)||0,
-        status: String(s.status||"pending").trim().toLowerCase(),
-        islibur: String(s.islibur).trim().toUpperCase() === "TRUE"
-    }));
-
-                document.getElementById('h-status').innerText = "Data Sinkron";
-                renderAll();
-            } catch(e) { document.getElementById('h-status').innerText = "Mode Offline"; }
-        }
-
-        function getMobilColor(mobil) { return mobil === "Mobil 1" ? "var(--m1-color)" : "var(--m2-color)"; }
-
-        function showCustomConfirm(title, msg, onConfirm) {
-            document.getElementById('confirm-title').innerText = title;
-            document.getElementById('confirm-msg').innerText = msg;
-            document.getElementById('modal-overlay').style.display = 'flex';
-            document.getElementById('confirm-modal').style.display = 'block';
-            document.getElementById('confirm-yes-btn').onclick = function() { onConfirm(); closeModal(); };
-        }
-
-        function renderAdmin() {
-            const list = document.getElementById('list-admin');
-            const search = document.getElementById('adm-search').value.toUpperCase();
-            list.innerHTML = "";
-            let t=0, d=0, ts=0, ds=0;
-            const sorted = [...schools].sort((a,b) => {
-                const getRank = (i) => i.islibur?4:(i.status==='ready'?1:(i.status==='pending'?2:3));
-                return getRank(a) - getRank(b);
-            });
-            sorted.forEach((s) => {
-                const tot = s.pk+s.pb+s.tendik;
-                if(!s.islibur) { t+=tot; ts++; if(s.status==='done'){d+=tot; ds++;} }
-                if(s.nama.toUpperCase().includes(search) && (filterAdm==='all' || s.mobil===filterAdm)) {
-                    const idx = schools.findIndex(x => x.id === s.id);
-                    let col = s.islibur?"#94a3b8":(s.status==='ready'?"var(--primary)":(s.status==='done'?"var(--success)":"var(--warning)"));
-                    list.innerHTML += `<div class="card" style="${s.islibur?'opacity:0.6':''}">
-                        <div style="display:flex; justify-content:space-between; align-items:center">
-                            <div style="display:flex; align-items:center"><h3 style="font-size:14px; margin:0">${s.nama}</h3><span class="status-pill" style="background:${col}">${s.islibur?'LIBUR':s.status.toUpperCase()}</span></div>
-                            <div style="display:flex; gap:8px; align-items:center"><button style="border:none; background:none; font-size:18px" onclick="openFormEdit(${idx})">📝</button><span class="total-badge" style="background:${col}">${tot}</span></div>
-                        </div>
-                        <div style="margin:12px 0"><span class="badge">PK: ${s.pk}</span><span class="badge">PB: ${s.pb}</span><span class="badge">T: ${s.tendik}</span><span class="badge" style="color:${getMobilColor(s.mobil)}; border: 1px solid ${getMobilColor(s.mobil)}">${s.mobil}</span></div>
-                        <div style="display:flex; gap:8px"><button class="btn-action" style="margin:0; background:#f1f5f9; flex:1" onclick="updateLibur(${idx})">${s.islibur?'AKTIFKAN':'💤 LIBUR'}</button><button class="btn-action" style="margin:0; background:#fee2e2; color:var(--danger); flex:1" onclick="hapusSekolah('${s.id}')">🗑️ HAPUS</button></div>
-                    </div>`;
-                }
-            });
-            document.getElementById('adm-t').innerText=t; document.getElementById('adm-d').innerText=d; document.getElementById('adm-p').innerText=t-d;
-            document.getElementById('adm-c').innerText=`${ds}/${ts} Lokasi`;
-            let pct = ts>0?Math.round((ds/ts)*100):0;
-            document.getElementById('adm-pct').innerText=pct+"%"; document.getElementById('adm-bar').style.width=pct+"%";
-        }
-
-        function renderPemorsian() {
-            const list = document.getElementById('list-pemorsian'); 
-            const search = document.getElementById('p-search').value.toUpperCase();
-            list.innerHTML = "";
-            let t=0, r=0, ts=0, ds=0;
-            const filtered = schools.filter(s => !s.islibur);
-            filtered.forEach(s => {
-                const tot = s.pk+s.pb+s.tendik; t+=tot; ts++;
-                if(s.status !== 'pending') { r+=tot; ds++; }
-                if(s.nama.toUpperCase().includes(search) && (filterP==='all' || s.mobil===filterP)) {
-                    const isD = s.status !== 'pending';
-                    list.innerHTML += `<div class="card" style="${isD?'opacity:0.6':''}">
-                        <div style="display:flex; justify-content:space-between; align-items:center">
-                            <h3 style="margin:0">${s.nama}</h3>
-                            <div style="display:flex; gap:5px; align-items:center"><span class="badge" style="background:${getMobilColor(s.mobil)}; color:white; margin:0">${s.mobil}</span><span class="total-badge" style="background:var(--dark)">${tot}</span></div>
-                        </div>
-                        <div style="margin:14px 0 8px">
-                            <span class="badge" style="color:var(--primary)">PK: ${Math.floor(s.pk/5)} Iket + ${s.pk%5}</span>
-                            <span class="badge" style="color:var(--primary)">PB: ${Math.floor(s.pb/5)} Iket + ${s.pb%5}</span>
-                            <span class="badge">T: ${s.tendik}</span>
-                        </div>
-                        <div style="margin-bottom:12px; font-size:11px; font-weight:800; color:#64748b">TOTAL PK: ${s.pk} | TOTAL PB: ${s.pb + s.tendik}</div>
-                        <button class="btn-action" style="background:${isD?'#f1f5f9':'var(--success)'}; color:${isD?'#64748b':'white'}" onclick="confirmStatus('${s.id}', '${isD?'pending':'ready'}', 'Apakah porsi ${s.nama} sudah siap?')">${isD?'UNDO (BATAL)':'KONFIRMASI SELESAI'}</button>
-                    </div>`;
-                }
-            });
-            document.getElementById('p-t').innerText=t; document.getElementById('p-r').innerText=r; document.getElementById('p-p').innerText=t-r;
-            document.getElementById('pc').innerText=`${ds}/${ts} Selesai`;
-            let pct = ts>0?Math.round((ds/ts)*100):0;
-            document.getElementById('ppct').innerText=pct+"%"; document.getElementById('pbar').style.width=pct+"%";
-        }
-
-        function renderMobil() {
-            const list = document.getElementById('list-mobil'); 
-            const search = document.getElementById('mob-search').value.toUpperCase();
-            list.innerHTML = "";
-            let t=0, d=0, ts=0, ds=0;
-            const sorted = schools.filter(s => s.mobil === currentMobil && !s.islibur).sort((a,b) => {
-                const order = { 'ready': 1, 'pending': 2, 'done': 3 };
-                return order[a.status] - order[b.status];
-            });
-            sorted.forEach(s => {
-                const tot = s.pk+s.pb+s.tendik; t+=tot; ts++;
-                const isR = s.status === 'ready', isD = s.status === 'done';
-                if(isD) { d+=tot; ds++; }
-                if(s.nama.toUpperCase().includes(search)) {
-                    list.innerHTML += `<div class="card" style="${isD?'opacity:0.6':''}">
-                        <div style="display:flex; justify-content:space-between; align-items:center">
-                            <h3>${s.nama}</h3>
-                            <div style="display:flex; gap:5px; align-items:center"><span class="badge" style="background:${getMobilColor(s.mobil)}; color:white; margin:0">${s.mobil}</span><span class="total-badge" style="background:var(--dark)">${tot}</span></div>
-                        </div>
-                        <div style="margin:14px 0 8px">
-                            <span class="badge" style="color:var(--primary)">PK: ${Math.floor(s.pk/5)} Iket + ${s.pk%5}</span>
-                            <span class="badge" style="color:var(--primary)">PB: ${Math.floor(s.pb/5)} Iket + ${s.pb%5}</span>
-                            <span class="badge">T: ${s.tendik}</span>
-                        </div>
-                        <div style="margin-bottom:12px; font-size:11px; font-weight:800; color:#64748b">TOTAL PK: ${s.pk} | TOTAL PB: ${s.pb + s.tendik}</div>
-                        <button class="btn-action" style="color:white; background:${isD?'#10b981':(isR?'var(--primary)':'#cbd5e1')}" ${!isR||isD?'disabled':''} onclick="confirmStatus('${s.id}','done', 'Konfirmasi: Logistik sudah sampai di ${s.nama}?')">${isD?'TERKIRIM BERHASIL':(isR?'KONFIRMASI TIBA':'MENUNGGU DAPUR')}</button>
-                    </div>`;
-                }
-            });
-            document.getElementById('m-t').innerText=t; document.getElementById('m-d').innerText=d; document.getElementById('m-p').innerText=t-d;
-            document.getElementById('mc').innerText=`${ds}/${ts} Selesai`;
-            let pct = ts>0?Math.round((ds/ts)*100):0;
-            document.getElementById('mpct').innerText=pct+"%"; document.getElementById('mbar').style.width=pct+"%";
-        }
-
-        function confirmStatus(id, stat, msg) { showCustomConfirm("Konfirmasi", msg, () => updateStatus(id, stat)); }
-        async function updateStatus(id, stat) {
-            const s = schools.find(x=>x.id===id); if(s){ s.status=stat; renderAll(); }
-            await fetch(WEB_APP_URL, {method:"POST", body:JSON.stringify({action:"update", id, status:stat})});
-        }
-        async function updateLibur(i) {
-            const s = schools[i]; 
-            showCustomConfirm("Update Jadwal", s.islibur?`Aktifkan ${s.nama}?`:`Liburkan ${s.nama}?`, async () => {
-                s.islibur=!s.islibur; renderAll();
-                await fetch(WEB_APP_URL,{method:"POST", body:JSON.stringify({action:"update", id:s.id, islibur:s.islibur})});
-            });
-        }
-        async function hapusSekolah(id) {
-            showCustomConfirm("Hapus", "Hapus permanen data ini?", async () => {
-                schools=schools.filter(s=>s.id!==id); renderAll();
-                await fetch(WEB_APP_URL,{method:"POST", body:JSON.stringify({action:"delete", id})});
-            });
-        }
-        function openFormAdd() { editIndex=null; document.getElementById('modal-title').innerText="Tambah"; document.querySelectorAll('#form-modal input').forEach(i=>i.value=""); document.getElementById('modal-overlay').style.display='flex'; document.getElementById('form-modal').style.display='block'; }
-        function openFormEdit(i) { editIndex=i; const s=schools[i]; document.getElementById('modal-title').innerText="Edit"; document.getElementById('in-nama').value=s.nama; document.getElementById('in-mobil').value=s.mobil; document.getElementById('in-pk').value=s.pk; document.getElementById('in-pb').value=s.pb; document.getElementById('in-td').value=s.tendik; document.getElementById('modal-overlay').style.display='flex'; document.getElementById('form-modal').style.display='block'; }
-        async function handleSave() {
-            const n=document.getElementById('in-nama').value.toUpperCase(), m=document.getElementById('in-mobil').value, pk=parseInt(document.getElementById('in-pk').value)||0, pb=parseInt(document.getElementById('in-pb').value)||0, td=parseInt(document.getElementById('in-td').value)||0;
-            if(!n) return alert("Nama wajib diisi!");
-            const id = editIndex!==null?schools[editIndex].id:Date.now().toString();
-            if(editIndex!==null) schools[editIndex]={...schools[editIndex], nama:n, mobil:m, pk, pb, tendik:td};
-            else schools.push({id, nama:n, mobil:m, pk, pb, tendik:td, status:'pending', islibur:false});
-            renderAll(); closeModal();
-            await fetch(WEB_APP_URL,{method:"POST", body:JSON.stringify({action:editIndex!==null?"editData":"addData", id, nama:n, mobil:m, pk, pb, tendik:td})});
-        }
-        function openLogin(r) { currentRole=r; document.getElementById('modal-overlay').style.display='flex'; document.getElementById('login-modal').style.display='block'; }
-        function closeModal() { document.getElementById('modal-overlay').style.display='none'; document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); document.getElementById('pin-input').value=""; }
-        
-        function verifyLogin() {
-            if(document.getElementById('pin-input').value === PINS[currentRole]) {
-                localStorage.setItem('userRole', currentRole); // Simpan login
-                closeModal(); 
-                const p = (currentRole==='admin'?'admin':(currentRole==='pemorsian'?'pemorsian':'mobil'));
-                navigate(p);
-                if(currentRole.includes('mobil')) { currentMobil=currentRole==='mobil1'?'Mobil 1':'Mobil 2'; document.getElementById('mb-head').innerText=currentMobil; renderMobil(); }
-            } else { customAlert("Gagal", "PIN salah.", "❌"); }
-        }
-
-        function customAlert(title, msg, icon) {
-            document.getElementById('login-modal').style.display = 'none';
-            document.getElementById('alert-icon').innerText = icon; 
-            document.getElementById('alert-title').innerText = title; 
-            document.getElementById('alert-msg').innerText = msg;
-            document.getElementById('modal-overlay').style.display = 'flex'; 
-            document.getElementById('alert-modal').style.display = 'block';
-        }
-        function navigate(p) { document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); }
-        function setFilterAdm(m) { filterAdm=m; event.target.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active')); event.target.classList.add('active'); renderAdmin(); }
-        function setFilterP(m) { filterP=m; event.target.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active')); event.target.classList.add('active'); renderPemorsian(); }
-        function renderAll() {
-    if (document.getElementById('page-admin').classList.contains('active')) {
-        renderAdmin();
-    } else if (document.getElementById('page-pemorsian').classList.contains('active')) {
-        renderPemorsian();
-    } else if (document.getElementById('page-mobil').classList.contains('active')) {
-        renderMobil();
-    }
-}
-
-        
-        window.onload = () => {
-            fetchSchools();
-            checkSession(); // Jalankan pengecekan session saat loading
-        };
-
-         setInterval(fetchSchools, 30000);
-    </script>
+    <script src="app.js"></script>
 </body>
-</html
+
+  <script src="app.js"></script>
+</body>
+</html>
