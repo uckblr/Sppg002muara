@@ -1,159 +1,459 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>UCKBLR</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UCKBLR - SPPG MUARA 002</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --grad: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --dark: #0f172a;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --holiday: #94a3b8;
+            --bg: #f8fafc;
+            --m1-color: #1d4ed8;
+            --m1-bg: #dbeafe;
+            --m2-color: #7c3aed;
+            --m2-bg: #f5f3ff;
+            --total-bg: #e0e7ff;
+            --total-text: #4338ca;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); overflow-y: auto; min-height: 100vh; }
+
+        /* OVERLAYS */
+        .loader-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 4000; flex-direction: column; }
+        .spinner { width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
+        .modal { background: white; padding: 20px; border-radius: 25px; width: 100%; max-width: 350px; display: none; animation: modalIn 0.2s forwards; }
+        @keyframes modalIn { from { transform: scale(0.9); } to { transform: scale(1); } }
+
+        /* HEADER & STATS */
+        .header { background: var(--dark); color: white; padding: 30px 20px 50px; border-radius: 0 0 35px 35px; position: relative; }
+        .header h1 { margin: 0; font-size: 16px; font-weight: 800; text-transform: uppercase; }
+        .top-nav { position: absolute; top: 25px; right: 20px; display: flex; gap: 8px; }
+        .nav-btn { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.1); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: -30px 15px 10px; position: relative; z-index: 101; }
+        .stat-card { background: white; padding: 10px; border-radius: 15px; border: 1px solid #f1f5f9; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .stat-card small { display: block; color: #64748b; font-size: 7px; font-weight: 800; margin-bottom: 2px; }
+        .stat-card b { font-size: 12px; font-weight: 800; }
+
+        .progress-section { margin: 10px 15px 15px; background: white; padding: 15px; border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .prog-label { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
+        .prog-bar-bg { height: 8px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+        .prog-bar-fill { height: 100%; background: var(--grad); width: 0%; transition: width 1s ease-in-out; }
+        .prog-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .prog-box { padding: 8px; border-radius: 10px; font-size: 10px; font-weight: 700; text-align: center; }
+
+        .search-area { margin: 0 15px 10px; }
+        .search-input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 2px solid #f1f5f9; font-size: 13px; font-weight: 600; outline: none; }
+        .filter-tabs { display: flex; gap: 6px; margin: 0 15px 12px; }
+        .tab { padding: 6px 15px; background: white; border-radius: 10px; font-size: 10px; font-weight: 800; color: #64748b; border: 1px solid #f1f5f9; cursor: pointer; }
+        .tab.active { background: var(--dark); color: white; }
+
+        .card { background: white; border-radius: 18px; padding: 12px 15px; margin: 8px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; position: relative; transition: all 0.3s ease; }
+        .card-pending { border-left: 4px solid var(--warning); }
+        .card-ready { border-left: 4px solid var(--primary); background: #f5f3ff; }
+        .card-holiday { border-left: 4px solid var(--holiday); background: #fcfcfc; opacity: 0.7; }
+        .card-done { border-left: 4px solid var(--success); background: #f0fdf4; opacity: 0.85; }
+
+        .menu-dot { position: absolute; top: 12px; right: 10px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #94a3b8; font-weight: 800; font-size: 20px; }
+        .badge-row { display: flex; gap: 5px; margin-bottom: 8px; padding-right: 25px; }
+        .badge { font-size: 8px; font-weight: 800; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; }
+        .badge-m1 { background: var(--m1-bg); color: var(--m1-color); }
+        .badge-m2 { background: var(--m2-bg); color: var(--m2-color); }
+        .badge-status-pending { background: var(--warning); color: white; }
+        .badge-status-ready { background: var(--primary); color: white; }
+        .badge-status-holiday { background: var(--holiday); color: white; }
+        .badge-status-done { background: var(--success); color: white; }
+
+        .porsi-box { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin: 8px 0; }
+        .porsi-item { text-align: center; padding: 6px 4px; border-radius: 8px; font-size: 10px; font-weight: 700; }
+        .item-pk { background: #fee2e2; color: #b91c1c; }
+        .item-pb { background: #dbeafe; color: #1d4ed8; }
+        .item-td { background: #f1f5f9; color: #475569; }
+        .item-total { background: var(--total-bg); color: var(--total-text); grid-column: span 3; font-size: 11px; padding: 6px; }
+        .ikat-text { display: block; font-size: 8px; font-weight: 400; margin-top: 1px; }
+
+        .btn-group { display: flex; gap: 6px; margin-top: 10px; }
+        .btn-mini { border: none; border-radius: 10px; font-weight: 700; cursor: pointer; padding: 8px; font-size: 10px; flex: 1; text-transform: uppercase; }
+        .btn-action { border: none; border-radius: 12px; font-weight: 700; cursor: pointer; padding: 12px; font-size: 12px; width: 100%; margin-top: 12px; text-transform: uppercase; }
+        #btn-m1.m-active { background: var(--m1-bg) !important; color: var(--m1-color) !important; border: 2px solid var(--m1-color) !important; }
+        #btn-m2.m-active { background: var(--m2-bg) !important; color: var(--m2-color) !important; border: 2px solid var(--m2-color) !important; }
+
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,0.9); color: white; padding: 10px 20px; border-radius: 50px; font-size: 11px; font-weight: 700; z-index: 5000; display: none; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+    </style>
 </head>
 <body>
-  <nav class="navbar">
-    <div class="nav-item active" onclick="showPage('dashboard', this)">
-      <span class="icon">📊</span><span class="text">Dasbor</span>
-    </div>
-    <div class="nav-item" onclick="showPage('data-sekolah', this)">
-      <span class="icon">🏫</span><span class="text">Sekolah</span>
-    </div>
-    <div class="nav-item" onclick="showPage('historis', this)">
-      <span class="icon">📜</span><span class="text">Histori</span>
-    </div>
-  </nav>
 
-  <div class="container">
-    <section id="dashboard" class="page active">
-      <div class="card">
-        <div class="stat-row">
-          <div class="stat-item"><span class="label">Total Penerima</span><span id="targetView" class="value">0</span></div>
-          <div class="divider-v"></div>
-          <div class="stat-item"><span class="label">Terdistribusi</span><span id="terdistribusiView" class="value" style="color:var(--success)">0</span></div>
-        </div>
-        <div style="text-align: center; margin-top: 12px;">
-          <span id="sekolahDoneCount" style="font-size: 11px; font-weight: 800; color: #475569; background: #f1f5f9; padding: 4px 12px; border-radius: 20px; border: 1px solid #e2e8f0; text-transform: uppercase;">0 sekolah selesai</span>
-        </div>
-        <div class="progress-container" style="margin-top: 15px;">
-          <div id="progressBarDone" class="progress-done"></div>
-          <div id="progressBarReady" class="progress-ready"></div>
-        </div>
-        <div class="progress-legend">
-            <div class="legend-item"><span class="dot" style="background:var(--success)"></span> Terdistribusi</div>
-            <div class="legend-item"><span class="dot" style="background:var(--primary)"></span> Tersedia</div>
-            <div id="progressPercent">0%</div>
-        </div>
-      </div>
+    <div id="loader" class="loader-overlay"><div class="spinner"></div></div>
+    <div id="toast">Pesan</div>
 
-      <div class="card">
-        <div class="stat-row">
-          <div class="stat-item">
-            <span class="label">PK (Kirim/Total)</span>
-            <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
-              <span id="pkDoneView" class="value" style="color:var(--success); font-size: 18px;">0</span>
-              <span style="color: #cbd5e1; font-weight: 800;">/</span>
-              <span id="totalPKView" class="value" style="color:#ef4444; font-size: 18px;">0</span>
+    <div id="modal-overlay" class="overlay">
+        <div id="login-modal" class="modal" style="text-align:center">
+            <h3 style="margin:0 0 15px 0; font-size: 16px;">Akses User</h3>
+            <input type="password" id="pin-input" style="width:100%; padding:12px; border-radius:12px; border:2px solid #f1f5f9; text-align:center; font-size:20px; letter-spacing:8px" maxlength="4" inputmode="numeric" oninput="checkPinAuto(this.value)">
+            <button onclick="closeModal()" style="background:none; border:none; color:#94a3b8; font-weight:700; margin-top:15px; font-size:11px">BATAL</button>
+        </div>
+
+        <div id="form-modal" class="modal">
+            <h3 id="modal-title" style="margin-top:0; font-size:16px;">Data Sekolah</h3>
+            <input type="text" id="in-nama" style="width:100%; padding:12px; border-radius:10px; border:2px solid #f1f5f9; margin-bottom:10px; font-weight:700" placeholder="Nama Sekolah">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px">
+                <button id="btn-m1" class="btn-action" onclick="selectMobil('Mobil 1')">MOBIL 1</button>
+                <button id="btn-m2" class="btn-action" onclick="selectMobil('Mobil 2')">MOBIL 2</button>
             </div>
-            <div style="margin-top: 10px; background: #fef2f2; padding: 8px 4px; border-radius: 6px; border: 1px solid #fee2e2;">
-              <div style="font-size: 9px; font-weight: 800; color: #b91c1c;">SISA PK</div>
-              <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                <span id="pkSisaView" style="font-size: 18px; font-weight: 900; color: #ef4444;">0</span>
-                <span id="pkDetailIkat" style="font-size: 10px; font-weight: 700; color: #b91c1c;">0 iket + 0</span>
-              </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                <input type="number" id="in-pk" style="width:100%; padding:12px; border-radius:10px; border:2px solid #f1f5f9; text-align:center" placeholder="PK">
+                <input type="number" id="in-pb" style="width:100%; padding:12px; border-radius:10px; border:2px solid #f1f5f9; text-align:center" placeholder="PB">
+                <input type="number" id="in-td" style="width:100%; padding:12px; border-radius:10px; border:2px solid #f1f5f9; text-align:center" placeholder="TD">
             </div>
-          </div>
-          <div class="divider-v"></div>
-          <div class="stat-item">
-            <span class="label">PB (Kirim/Total)</span>
-            <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
-              <span id="pbDoneView" class="value" style="color:var(--success); font-size: 18px;">0</span>
-              <span style="color: #cbd5e1; font-weight: 800;">/</span>
-              <span id="totalPBView" class="value" style="color:#0284c7; font-size: 18px;">0</span>
-            </div>
-            <div style="margin-top: 10px; background: #f0f9ff; padding: 8px 4px; border-radius: 6px; border: 1px solid #e0f2fe;">
-              <div style="font-size: 9px; font-weight: 800; color: #0369a1;">SISA PB</div>
-              <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                <span id="pbSisaView" style="font-size: 18px; font-weight: 900; color: #0284c7;">0</span>
-                <span id="pbDetailIkat" style="font-size: 10px; font-weight: 700; color: #0369a1;">0 iket + 0</span>
-              </div>
-            </div>
-          </div>
+            <button class="btn-action" style="background:var(--grad); color:white" onclick="handleSave()">SIMPAN DATA</button>
+            <button class="btn-action" style="background:#f1f5f9; color:#64748b; margin-top: 8px;" onclick="closeModal()">BATAL</button>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="stat-row">
-          <div class="stat-item"><span class="label">Belum Terdistribusi</span><span id="sisaTarget" class="value-dark">0</span></div>
-          <div class="divider-v"></div>
-          <div class="stat-item">
-            <span class="label">Tersedia</span>
-            <input type="number" id="readyInput" oninput="update()" placeholder="0">
-          </div>
+        <div id="status-modal" class="modal" style="text-align:center">
+            <h3 style="font-size:16px; margin-bottom:15px;">Ubah Status Sekolah</h3>
+            <button class="btn-action" style="background:var(--warning); color:white" onclick="updateStatusFromMenu('pending')">PENDING</button>
+            <button class="btn-action" style="background:var(--success); color:white" onclick="updateStatusFromMenu('done')">SELESAI</button>
+            <button class="btn-action" style="background:var(--holiday); color:white" onclick="updateStatusFromMenu('holiday')">LIBUR</button>
+            <button onclick="closeModal()" style="background:none; border:none; color:#94a3b8; font-weight:700; margin-top:15px; font-size:11px">BATAL</button>
         </div>
-        <div class="divider-h"></div>
-        <div style="text-align:center"><span class="label">Kurang</span><br><span id="sisaReady" class="value-red" style="font-size:32px">0</span></div>
-      </div>
 
-      <div class="btn-group-row">
-        <button class="btn-reset" onclick="confirmReset()">RESET</button>
-        <button class="btn-archive" onclick="confirmArchive()">ARSIP</button>
-      </div>
-    </section>
+        <div id="confirm-modal" class="modal" style="text-align:center">
+            <h3 id="confirm-title" style="font-size:16px; margin-bottom:10px;">Konfirmasi</h3>
+            <p id="confirm-msg" style="font-size:13px; color:#64748b; margin-bottom:20px;"></p>
+            <div style="display:flex; gap:8px">
+                <button class="btn-mini" style="background:#f1f5f9" onclick="closeModal()">TIDAK</button>
+                <button id="confirm-btn-ok" class="btn-mini" style="background:var(--primary); color:white">YA</button>
+            </div>
+        </div>
 
-    <section id="data-sekolah" class="page">
-      <div class="card">
-    <input type="text" id="nama" placeholder="NAMA SEKOLAH..." style="margin-bottom:10px">
-    
-    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-        <label style="flex:1; background:#eff6ff; padding:10px; border-radius:10px; text-align:center; font-size:12px; font-weight:800; cursor:pointer; border:1px solid #bfdbfe;">
-            <input type="radio" name="mobil" value="Mobil 1" checked> Mobil 1
-        </label>
-        <label style="flex:1; background:#fff7ed; padding:10px; border-radius:10px; text-align:center; font-size:12px; font-weight:800; cursor:pointer; border:1px solid #fed7aa;">
-            <input type="radio" name="mobil" value="Mobil 2"> Mobil 2
-        </label>
+        <div id="exit-modal" class="modal" style="text-align:center">
+            <h3 style="font-size:16px;">Keluar Menu?</h3>
+            <div style="display:flex; gap:8px; margin-top:15px">
+                <button class="btn-mini" style="background:#f1f5f9" onclick="closeModal()">BATAL</button>
+                <button class="btn-mini" style="background:var(--danger); color:white" onclick="confirmExit()">KELUAR</button>
+            </div>
+        </div>
     </div>
 
-    <div class="dual-input"><input type="number" id="pk_i" placeholder="PK"><span>+</span><input type="number" id="pk_s" placeholder="S"></div>
-    <div class="dual-input"><input type="number" id="pb_i" placeholder="PB"><span>+</span><input type="number" id="pb_s" placeholder="S"></div>
-    <button class="btn-primary-v2" onclick="tambah()">SIMPAN DATA</button>
-</div>
-
-<div style="display:flex; gap:5px; margin-bottom:10px;">
-    <button onclick="filterMobil('Semua')" class="filter-btn active">Semua</button>
-    <button onclick="filterMobil('Mobil 1')" class="filter-btn" style="background:#bfdbfe; color:#1e40af;">Mobil 1</button>
-    <button onclick="filterMobil('Mobil 2')" class="filter-btn" style="background:#fed7aa; color:#9a3412;">Mobil 2</button>
-</div>
-
-      <div class="search-container"><input type="text" id="searchInput" placeholder="Cari sekolah..." onkeyup="render()"></div>
-      <div id="listActive"></div>
-    </section>
-
-    <section id="historis" class="page">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding: 0 5px;">
-        <h3 style="margin:0; font-weight: 800; color: #1e293b;">RIWAYAT</h3>
-        <button class="btn-clear" onclick="confirmClearHistory()">Hapus Semua</button>
-      </div>
-      <div id="listHistory"></div>
-    </section>
-  </div>
-
-  <div id="customModal" class="modal-overlay">
-    <div class="modal-box">
-      <div id="modalIcon" class="modal-icon">⚠️</div>
-      <h3 id="modalTitle">Konfirmasi</h3>
-      <p id="modalMessage">Apakah Anda yakin?</p>
-      <div class="modal-buttons">
-        <button class="btn-modal-batal" onclick="closeModal()">BATAL</button>
-        <button class="btn-modal-oke" id="modalConfirmBtn">OKE</button>
-      </div>
-    </div>
-  </div>
-
-    <div id="snackbar" class="snackbar">
-        <span>Data berhasil dihapus</span>
-        <button class="btn-undo" onclick="undoAction()">BATAL (UNDO)</button>
+    <div id="page-home" style="display: block;">
+        <div class="header"><h1>SPPG MUARA 002</h1><p id="h-status" style="font-size:11px; opacity:0.6">Sinkronisasi...</p></div>
+        <div style="padding:20px">
+            <button class="btn-action" style="background:white; border:1px solid #e2e8f0; height:60px; margin-bottom:10px" onclick="openLogin('admin')">ADMIN</button>
+            <button class="btn-action" style="background:white; border:1px solid #e2e8f0; height:60px; margin-bottom:10px" onclick="openLogin('pemorsian')">DIVISI PEMORSIAN</button>
+            <button class="btn-action" style="background:white; border:1px solid #e2e8f0; height:60px; margin-bottom:10px" onclick="openLogin('mobil1')">MOBIL 1</button>
+            <button class="btn-action" style="background:white; border:1px solid #e2e8f0; height:60px; margin-bottom:10px" onclick="openLogin('mobil2')">MOBIL 2</button>
+        </div>
     </div>
 
-    <script src="app.js"></script>
-</body>
+    <div id="page-app" style="display: none;">
+        <div class="header">
+            <h1 id="app-title">TITLE</h1>
+            <div class="top-nav">
+                <div class="nav-btn" onclick="askExit()">🏠</div>
+                <div id="btn-add-wrapper" class="nav-btn" onclick="openFormAdd()" style="display:none">➕</div>
+            </div>
+        </div>
+        
+        <div id="stats-container"></div>
+        <div id="progress-container" class="progress-section"></div>
 
-  <script src="app.js"></script>
+        <div class="search-area"><input type="text" id="app-search" class="search-input" placeholder="Cari sekolah..." oninput="renderApp()"></div>
+        <div id="filter-wrapper" class="filter-tabs">
+            <div class="tab active" onclick="setFilter('all', this)">SEMUA</div>
+            <div class="tab" onclick="setFilter('Mobil 1', this)">MOBIL 1</div>
+            <div class="tab" onclick="setFilter('Mobil 2', this)">MOBIL 2</div>
+        </div>
+        <div id="list-container"></div>
+    </div>
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxKTFPwPDoh-wNDPnkde0IqxiLGGLux_rPSBQaVCy0kbtaXPWkOE7RWoW8IgWXD2s0v/exec";
+        const PINS = { admin:"1111", pemorsian:"2222", mobil1:"3331", mobil2:"3332" };
+        let schools = [], currentRole = "", selectedMobil = "Mobil 1", editIndex = null, filterMobil = "all", selectedSchoolId = null;
+        let backPressCount = 0;
+
+        // --- PROTEKSI BACK / SWIPE ---
+        function lockBackNavigation() {
+            window.history.pushState(null, null, window.location.href);
+            window.onpopstate = function() {
+                if (currentRole) {
+                    backPressCount++;
+                    if (backPressCount === 1) {
+                        showToast("Tekan sekali lagi untuk keluar");
+                        window.history.pushState(null, null, window.location.href);
+                    } else {
+                        askExit();
+                        backPressCount = 0;
+                        window.history.pushState(null, null, window.location.href);
+                    }
+                    setTimeout(() => { backPressCount = 0; }, 2000);
+                } else {
+                    window.history.back();
+                }
+            };
+        }
+
+        // --- CORE UI FUNCTIONS ---
+        function showLoading(s) { document.getElementById('loader').style.display = s ? 'flex' : 'none'; }
+        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000); }
+        function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+        
+        function selectMobil(m) {
+            selectedMobil = m;
+            document.getElementById('btn-m1').classList.toggle('m-active', m === 'Mobil 1');
+            document.getElementById('btn-m2').classList.toggle('m-active', m === 'Mobil 2');
+        }
+
+        function setFilter(m, el) {
+            filterMobil = m;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderApp();
+        }
+
+        function getIkat(n) { return n > 0 ? `${Math.floor(n/5)} Ikat${n%5>0?' + '+(n%5):''}` : '0 Ikat'; }
+
+        // --- LOGIKA STATISTIK DINAMIS ---
+        function renderStats(data) {
+            let activeData = data.filter(s => s.status !== 'holiday');
+            let totalPorsi = 0, donePorsi = 0, totalSekolah = 0, doneSekolah = 0;
+
+            if (currentRole === 'admin') {
+                totalSekolah = activeData.length;
+                doneSekolah = activeData.filter(s => s.status === 'done').length;
+                totalPorsi = activeData.reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+                donePorsi = activeData.filter(s => s.status === 'done').reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+            } 
+            else if (currentRole === 'pemorsian') {
+                totalSekolah = activeData.length;
+                doneSekolah = activeData.filter(s => s.status === 'ready' || s.status === 'done').length;
+                totalPorsi = activeData.reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+                donePorsi = activeData.filter(s => s.status === 'ready' || s.status === 'done').reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+            } 
+            else { 
+                const targetMobil = currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2';
+                let mobilData = activeData.filter(s => s.mobil === targetMobil);
+                totalSekolah = mobilData.length;
+                doneSekolah = mobilData.filter(s => s.status === 'done').length;
+                totalPorsi = mobilData.reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+                donePorsi = mobilData.filter(s => s.status === 'done').reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+            }
+
+            const perc = totalSekolah > 0 ? Math.round((doneSekolah / totalSekolah) * 100) : 0;
+
+            document.getElementById('stats-container').innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card"><small>TOTAL PENERIMA</small><b>${totalPorsi}</b></div>
+                    <div class="stat-card"><small>TERDISTRIBUSI</small><b style="color:var(--success)">${donePorsi}</b></div>
+                    <div class="stat-card"><small>BELUM TERDISTRIBUSI</small><b style="color:var(--danger)">${totalPorsi - donePorsi}</b></div>
+                </div>`;
+
+            document.getElementById('progress-container').innerHTML = `
+                <div class="prog-label"><span>PROGRESS</span><span>${perc}%</span></div>
+                <div class="prog-bar-bg"><div class="prog-bar-fill" style="width: ${perc}%"></div></div>
+                <div class="prog-detail">
+                    <div class="prog-box" style="background:#f0fdf4; color:#166534">SELESAI: ${doneSekolah} SEKOLAH</div>
+                    <div class="prog-box" style="background:#fffbeb; color:#92400e">BELUM SELESAI: ${totalSekolah - doneSekolah} SEKOLAH</div>
+                </div>`;
+        }
+
+        // --- DATABASE SYNC ---
+        async function fetchSchools() {
+            if(schools.length === 0) showLoading(true);
+            try {
+                const res = await fetch(WEB_APP_URL);
+                const data = await res.json();
+                schools = data.filter(s => s.nama && s.nama !== 'nama sekolah').map(s => ({
+                    id: s.id, nama: s.nama, mobil: s.mobil, pk: parseInt(s.pk)||0, pb: parseInt(s.pb)||0, tendik: parseInt(s.tendik)||0,
+                    status: String(s.status||"pending").toLowerCase()
+                }));
+                document.getElementById('h-status').innerText = "Online ✅";
+                if(currentRole) renderApp();
+            } catch(e) { document.getElementById('h-status').innerText = "Offline ❌"; }
+            finally { showLoading(false); }
+        }
+
+        // --- RENDER & SORTING ---
+        function renderApp() {
+            renderStats(schools);
+            const searchVal = document.getElementById('app-search').value.toLowerCase();
+            const c = document.getElementById('list-container'); c.innerHTML = "";
+            
+            let filtered = schools.filter(s => {
+                const searchMatch = s.nama.toLowerCase().includes(searchVal);
+                if(currentRole === 'admin' || currentRole === 'pemorsian') {
+                    const mobilMatch = filterMobil === 'all' || s.mobil === filterMobil;
+                    return mobilMatch && searchMatch;
+                } else {
+                    const targetMobil = currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2';
+                    return s.mobil === targetMobil && s.status !== 'holiday' && searchMatch;
+                }
+            });
+
+            // LOGIKA SORTING (Ready/Done pindah ke bawah)
+            filtered.sort((a, b) => {
+                if (currentRole === 'pemorsian') {
+                    const aReady = (a.status === 'ready' || a.status === 'done') ? 1 : 0;
+                    const bReady = (b.status === 'ready' || b.status === 'done') ? 1 : 0;
+                    return aReady - bReady;
+                } else if (currentRole.includes('mobil')) {
+                    const aDone = (a.status === 'done') ? 1 : 0;
+                    const bDone = (b.status === 'done') ? 1 : 0;
+                    return aDone - bDone;
+                } else {
+                    const rank = { "pending": 1, "ready": 2, "done": 3, "holiday": 4 };
+                    return rank[a.status] - rank[b.status];
+                }
+            });
+
+            filtered.forEach((s) => {
+                const total = s.pk + s.pb + s.tendik;
+                const mobilBadge = s.mobil === 'Mobil 1' ? 'badge-m1' : 'badge-m2';
+                let actionBtn = '';
+
+                if(currentRole === 'admin') {
+                    actionBtn = `
+                        <div class="btn-group">
+                            <button class="btn-mini" style="background:#f1f5f9" onclick="openFormEditById('${s.id}')">EDIT</button>
+                            <button class="btn-mini" style="background:#fee2e2; color:var(--danger)" onclick="askDelete('${s.id}')">HAPUS</button>
+                        </div>`;
+                } else if(currentRole === 'pemorsian') {
+                    const isReady = s.status === 'ready' || s.status === 'done';
+                    actionBtn = `<button class="btn-action" style="background:${isReady?'#f1f5f9': 'var(--primary)'}; color:${isReady?'#64748b':'white'}" onclick="updateStatusDirect('${s.id}', '${isReady?'pending':'ready'}')">${isReady?'UNDO':'SIAP'}</button>`;
+                } else if(currentRole.includes('mobil')) {
+                    if (s.status === 'done') {
+                        actionBtn = `<button class="btn-action" style="background:var(--success); color:white">TERDISTRIBUSI</button>`;
+                    } else if (s.status === 'ready') {
+                        actionBtn = `<button class="btn-action" style="background:var(--grad); color:white" onclick="updateStatusDirect('${s.id}', 'done')">SELESAI</button>`;
+                    } else {
+                        actionBtn = `<button class="btn-action" disabled style="background:#e2e8f0; color:#94a3b8; cursor:not-allowed">MENUNGGU PEMORSIAN</button>`;
+                    }
+                }
+
+                c.innerHTML += `
+                <div class="card card-${s.status}">
+                    ${currentRole === 'admin' ? `<div class="menu-dot" onclick="openStatusMenu('${s.id}')">⋮</div>` : ''}
+                    <div class="badge-row">
+                        <span class="badge ${mobilBadge}">${s.mobil}</span>
+                        <span class="badge badge-status-${s.status}">${s.status}</span>
+                    </div>
+                    <b style="font-size:14px;">${s.nama}</b>
+                    <div class="porsi-box">
+                        <div class="porsi-item item-pk">PK: ${s.pk}<span class="ikat-text">${getIkat(s.pk)}</span></div>
+                        <div class="porsi-item item-pb">PB: ${s.pb}<span class="ikat-text">${getIkat(s.pb)}</span></div>
+                        <div class="porsi-item item-td">TD: ${s.tendik}<span class="ikat-text">${getIkat(s.tendik)}</span></div>
+                        <div class="porsi-item item-total">TOTAL: ${total} PENERIMA</div>
+                    </div>
+                    ${actionBtn}
+                </div>`;
+            });
+        }
+
+        // --- CRUD ACTIONS ---
+        async function updateStatusDirect(id, newStatus) {
+            showLoading(true);
+            try {
+                await fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify({action:"update", id:id, status:newStatus}) });
+                await fetchSchools();
+                showToast("Status Berhasil Diperbarui");
+            } catch(e) { showLoading(false); showToast("Gagal Memperbarui"); }
+        }
+
+        async function handleSave() {
+            const n = document.getElementById('in-nama').value; if(!n) return;
+            closeModal(); showLoading(true);
+            const isEdit = editIndex !== null;
+            const data = {
+                action: isEdit ? "editData" : "addData",
+                id: isEdit ? editIndex : Date.now().toString(),
+                nama: n.toUpperCase(), mobil: selectedMobil,
+                pk: document.getElementById('in-pk').value, 
+                pb: document.getElementById('in-pb').value, 
+                tendik: document.getElementById('in-td').value,
+                status: isEdit ? schools.find(x=>x.id===editIndex).status : "pending"
+            };
+            try { 
+                await fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify(data) }); 
+                await fetchSchools(); 
+                showToast(isEdit ? "Data Berhasil Diedit" : "Data Berhasil Ditambah");
+            } catch(e){ showLoading(false); showToast("Gagal Menyimpan"); }
+        }
+
+        function askDelete(id) {
+            openCustomConfirm("Hapus Data?", "Data sekolah akan dihapus permanen.", async () => {
+                showLoading(true);
+                try {
+                    await fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify({action:"delete", id:id}) });
+                    await fetchSchools();
+                    showToast("Data Telah Dihapus");
+                } catch(e) { showLoading(false); showToast("Gagal Menghapus"); }
+            }, 'var(--danger)');
+        }
+
+        // --- LOGIN & NAV ---
+        function checkPinAuto(v) {
+            if(v.length === 4) {
+                if(v === PINS[currentRole]) {
+                    localStorage.setItem('userRole', currentRole);
+                    closeModal(); navigate(currentRole);
+                } else { showToast("PIN SALAH"); document.getElementById('pin-input').value=""; }
+            }
+        }
+        function openLogin(r) { currentRole=r; document.getElementById('modal-overlay').style.display='flex'; document.getElementById('login-modal').style.display='block'; document.getElementById('pin-input').value=""; document.getElementById('pin-input').focus(); }
+        function askExit() { document.getElementById('modal-overlay').style.display='flex'; document.getElementById('exit-modal').style.display='block'; }
+        function confirmExit() { closeModal(); localStorage.removeItem('userRole'); document.getElementById('page-app').style.display='none'; document.getElementById('page-home').style.display='block'; currentRole = ""; window.history.pushState(null, null, window.location.href); }
+        
+        function navigate(role) {
+            document.getElementById('page-home').style.display='none';
+            document.getElementById('page-app').style.display='block';
+            window.history.pushState(null, null, window.location.href);
+            const titles = { admin: "ADMIN", pemorsian: "DIVISI PEMORSIAN", mobil1: "MOBIL 1", mobil2: "MOBIL 2" };
+            document.getElementById('app-title').innerText = titles[role];
+            document.getElementById('btn-add-wrapper').style.display = (role === 'admin') ? 'flex' : 'none';
+            document.getElementById('filter-wrapper').style.display = (role === 'admin' || role === 'pemorsian') ? 'flex' : 'none';
+            renderApp();
+        }
+
+        function openStatusMenu(id) { selectedSchoolId = id; document.getElementById('modal-overlay').style.display = 'flex'; document.getElementById('status-modal').style.display = 'block'; }
+        async function updateStatusFromMenu(s) { closeModal(); await updateStatusDirect(selectedSchoolId, s); }
+        
+        function openCustomConfirm(title, msg, onConfirm, color = 'var(--primary)') {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-msg').innerText = msg;
+            const okBtn = document.getElementById('confirm-btn-ok');
+            okBtn.style.background = color;
+            okBtn.onclick = () => { closeModal(); onConfirm(); };
+            document.getElementById('modal-overlay').style.display = 'flex';
+            document.getElementById('confirm-modal').style.display = 'block';
+        }
+        function openFormAdd() { editIndex=null; document.querySelectorAll('#form-modal input').forEach(i=>i.value=""); selectMobil('Mobil 1'); document.getElementById('modal-overlay').style.display='flex'; document.getElementById('form-modal').style.display='block'; }
+        function openFormEditById(id) {
+            const s = schools.find(x => x.id === id);
+            if(!s) return;
+            editIndex = id;
+            document.getElementById('in-nama').value = s.nama;
+            document.getElementById('in-pk').value = s.pk;
+            document.getElementById('in-pb').value = s.pb;
+            document.getElementById('in-td').value = s.tendik;
+            selectMobil(s.mobil);
+            document.getElementById('modal-overlay').style.display='flex';
+            document.getElementById('form-modal').style.display='block';
+        }
+
+        window.onload = function() {
+            fetchSchools();
+            lockBackNavigation();
+        };
+    </script>
 </body>
 </html>
