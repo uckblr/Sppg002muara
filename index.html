@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UCKBLR - SPPG MUARA 002</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -29,23 +28,55 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); overflow-y: auto; min-height: 100vh; }
 
-        /* OVERLAYS */
-        .loader-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 4000; flex-direction: column; }
-        .spinner { width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        /* --- UPDATED LOADER & SPINNER --- */
+        .loader-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 4000; flex-direction: column; }
+        
+        .spinner { 
+            width: 40px; height: 40px; border: 2px solid transparent; 
+            border-top: 2px solid var(--primary); border-left: 2px solid var(--primary); 
+            border-radius: 50%; animation: spin 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; 
+            position: relative;
+        }
+        .spinner::after {
+            content: ''; position: absolute; inset: 5px; border: 2px solid transparent;
+            border-bottom: 2px solid #e2e8f0; border-right: 2px solid #e2e8f0;
+            border-radius: 50%; animation: spin-reverse 1s linear infinite;
+        }
+        
+        .loader-overlay p { 
+            margin-top: 20px; font-size: 9px; font-weight: 800; color: #94a3b8; 
+            letter-spacing: 3px; text-transform: uppercase; 
+        }
+        
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+
+        /* --- ONLINE DOT --- */
+        .online-dot {
+            height: 8px; width: 8px; background-color: var(--success);
+            border-radius: 50%; display: inline-block; margin-right: 6px;
+            box-shadow: 0 0 8px var(--success); animation: blink 1.5s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
         .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
         .modal { background: white; padding: 20px; border-radius: 25px; width: 100%; max-width: 350px; display: none; animation: modalIn 0.2s forwards; }
         @keyframes modalIn { from { transform: scale(0.9); } to { transform: scale(1); } }
 
-        /* HEADER & STATS */
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 50px 20px; background: white; margin: 15px; border-radius: 25px; border: 2px dashed #e2e8f0; animation: modalIn 0.3s ease; }
+        .empty-icon { font-size: 40px; margin-bottom: 10px; display: block; filter: grayscale(1); opacity: 0.5; }
+        .empty-state b { color: #64748b; font-size: 13px; letter-spacing: 1px; display: block; text-transform: uppercase; }
+
+        /* UI ELEMENTS */
         .header { background: var(--dark); color: white; padding: 30px 20px 50px; border-radius: 0 0 35px 35px; position: relative; }
-        .header h1 { margin: 0; font-size: 16px; font-weight: 800; text-transform: uppercase; }
+        .header h1 { margin: 0; font-size: 22px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
         .top-nav { position: absolute; top: 25px; right: 20px; display: flex; gap: 8px; }
         .nav-btn { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.1); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: -30px 15px 10px; position: relative; z-index: 101; }
         .stat-card { background: white; padding: 10px; border-radius: 15px; border: 1px solid #f1f5f9; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
-        .stat-card small { display: block; color: #64748b; font-size: 7px; font-weight: 800; margin-bottom: 2px; }
+        .stat-card small { display: block; color: #64748b; font-size: 7px; font-weight: 800; margin-bottom: 2px; text-transform: uppercase; }
         .stat-card b { font-size: 12px; font-weight: 800; }
 
         .progress-section { margin: 10px 15px 15px; background: white; padding: 15px; border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
@@ -56,16 +87,89 @@
         .prog-box { padding: 8px; border-radius: 10px; font-size: 10px; font-weight: 700; text-align: center; }
 
         .search-area { margin: 0 15px 10px; }
-        .search-input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 2px solid #f1f5f9; font-size: 13px; font-weight: 600; outline: none; }
+        .search-input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 2px solid #f1f5f9; font-size: 13px; font-weight: 600; outline: none; transition: 0.3s; }
+        .search-input:focus { border-color: var(--primary); background: white; }
         .filter-tabs { display: flex; gap: 6px; margin: 0 15px 12px; }
         .tab { padding: 6px 15px; background: white; border-radius: 10px; font-size: 10px; font-weight: 800; color: #64748b; border: 1px solid #f1f5f9; cursor: pointer; }
         .tab.active { background: var(--dark); color: white; }
 
-        .card { background: white; border-radius: 18px; padding: 12px 15px; margin: 8px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; position: relative; transition: all 0.3s ease; }
+        .card { background: white; border-radius: 18px; padding: 12px 15px; margin: 8px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; position: relative; transition: 0.2s; }
         .card-pending { border-left: 4px solid var(--warning); }
         .card-ready { border-left: 4px solid var(--primary); background: #f5f3ff; }
         .card-holiday { border-left: 4px solid var(--holiday); background: #fcfcfc; opacity: 0.7; }
         .card-done { border-left: 4px solid var(--success); background: #f0fdf4; opacity: 0.85; }
+
+    
+/* --- ANIMASI MENUNGGU (MODERN SHIMMER) --- */
+.waiting-container {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-text {
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Efek cahaya mengalir */
+.waiting-container::after {
+    content: "";
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.6) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    100% { transform: translateX(100%); }
+}
+
+/* --- DONE LABEL --- */
+.done-wrapper {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #bbf7d0;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.done-text {
+    color: #15803d;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+@keyframes popIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+        /* --- DONE TEXT STYLE --- */
+        .done-label { 
+            margin-top: 12px; padding: 12px; border-radius: 12px; background: #dcfce7; 
+            color: #166534; font-size: 12px; font-weight: 800; text-align: center;
+            display: block; border: 1.5px dashed #22c55e;
+        }
 
         .menu-dot { position: absolute; top: 12px; right: 10px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #94a3b8; font-weight: 800; font-size: 20px; }
         .badge-row { display: flex; gap: 5px; margin-bottom: 8px; padding-right: 25px; }
@@ -93,11 +197,27 @@
 
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,0.9); color: white; padding: 10px 20px; border-radius: 50px; font-size: 11px; font-weight: 700; z-index: 5000; display: none; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        
+        .footer-brand {
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
     </style>
 </head>
 <body>
 
-    <div id="loader" class="loader-overlay"><div class="spinner"></div></div>
+    <div id="loader" class="loader-overlay">
+        <div class="spinner"></div>
+        <p id="loader-text">MENGHUBUNGKAN...</p>
+    </div>
+    
     <div id="toast">Pesan</div>
 
     <div id="modal-overlay" class="overlay">
@@ -150,14 +270,14 @@
     </div>
 
     <div id="page-home" style="display: block;">
-        <div class="header"><h1>SPPG MUARA 002</h1><p id="h-status" style="font-size:11px; opacity:0.6">Sinkronisasi...</p></div>
+        <div class="header"><h1>SPPG MUARA 002</h1><p id="h-status" style="font-size:11px; opacity:0.6; display: flex; align-items: center;">Sinkronisasi...</p></div>
         <div style="padding:20px">
             <button class="btn-action" style="background:white; border:1px solid #e2e8f0; height:60px; margin-bottom:10px" onclick="openLogin('admin')">ADMIN</button>
             <button class="btn-action" style="background:white; border:1px solid #e2e8f0; height:60px; margin-bottom:10px" onclick="openLogin('pemorsian')">DIVISI PEMORSIAN</button>
             <button class="btn-action" style="background:white; border:1px solid #e2e8f0; height:60px; margin-bottom:10px" onclick="openLogin('mobil1')">MOBIL 1</button>
             <button class="btn-action" style="background:white; border:1px solid #e2e8f0; height:60px; margin-bottom:10px" onclick="openLogin('mobil2')">MOBIL 2</button>
         </div>
-    </div>
+        <div class="footer-brand"> @UCKBLR </div>
 
     <div id="page-app" style="display: none;">
         <div class="header">
@@ -171,7 +291,7 @@
         <div id="stats-container"></div>
         <div id="progress-container" class="progress-section"></div>
 
-        <div class="search-area"><input type="text" id="app-search" class="search-input" placeholder="Cari sekolah..." oninput="renderApp()"></div>
+        <div class="search-area"><input type="text" id="app-search" class="search-input" placeholder="Cari nama sekolah..." oninput="renderApp()"></div>
         <div id="filter-wrapper" class="filter-tabs">
             <div class="tab active" onclick="setFilter('all', this)">SEMUA</div>
             <div class="tab" onclick="setFilter('Mobil 1', this)">MOBIL 1</div>
@@ -186,29 +306,13 @@
         let schools = [], currentRole = "", selectedMobil = "Mobil 1", editIndex = null, filterMobil = "all", selectedSchoolId = null;
         let backPressCount = 0;
 
-        // --- PROTEKSI BACK / SWIPE ---
-        function lockBackNavigation() {
-            window.history.pushState(null, null, window.location.href);
-            window.onpopstate = function() {
-                if (currentRole) {
-                    backPressCount++;
-                    if (backPressCount === 1) {
-                        showToast("Tekan sekali lagi untuk keluar");
-                        window.history.pushState(null, null, window.location.href);
-                    } else {
-                        askExit();
-                        backPressCount = 0;
-                        window.history.pushState(null, null, window.location.href);
-                    }
-                    setTimeout(() => { backPressCount = 0; }, 2000);
-                } else {
-                    window.history.back();
-                }
-            };
-        }
-
         // --- CORE UI FUNCTIONS ---
-        function showLoading(s) { document.getElementById('loader').style.display = s ? 'flex' : 'none'; }
+        function showLoading(s, msg = "SINKRONISASI...") { 
+            const loader = document.getElementById('loader');
+            document.getElementById('loader-text').innerText = msg.toUpperCase();
+            loader.style.display = s ? 'flex' : 'none'; 
+        }
+        
         function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000); }
         function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
         
@@ -227,71 +331,78 @@
 
         function getIkat(n) { return n > 0 ? `${Math.floor(n/5)} Ikat${n%5>0?' + '+(n%5):''}` : '0 Ikat'; }
 
-        // --- LOGIKA STATISTIK DINAMIS ---
+        // --- STATS LOGIC ---
         function renderStats(data) {
-            let activeData = data.filter(s => s.status !== 'holiday');
-            let totalPorsi = 0, donePorsi = 0, totalSekolah = 0, doneSekolah = 0;
+    let activeData = data.filter(s => s.status !== 'holiday');
+    let totalPorsi = 0, donePorsi = 0, totalSekolah = 0, doneSekolah = 0;
 
-            if (currentRole === 'admin') {
-                totalSekolah = activeData.length;
-                doneSekolah = activeData.filter(s => s.status === 'done').length;
-                totalPorsi = activeData.reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
-                donePorsi = activeData.filter(s => s.status === 'done').reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
-            } 
-            else if (currentRole === 'pemorsian') {
-                totalSekolah = activeData.length;
-                doneSekolah = activeData.filter(s => s.status === 'ready' || s.status === 'done').length;
-                totalPorsi = activeData.reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
-                donePorsi = activeData.filter(s => s.status === 'ready' || s.status === 'done').reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
-            } 
-            else { 
-                const targetMobil = currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2';
-                let mobilData = activeData.filter(s => s.mobil === targetMobil);
-                totalSekolah = mobilData.length;
-                doneSekolah = mobilData.filter(s => s.status === 'done').length;
-                totalPorsi = mobilData.reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
-                donePorsi = mobilData.filter(s => s.status === 'done').reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
-            }
+    if (currentRole === 'admin') {
+        totalSekolah = activeData.length;
+        doneSekolah = activeData.filter(s => s.status === 'done').length;
+        totalPorsi = activeData.reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+        donePorsi = activeData.filter(s => s.status === 'done').reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+    } 
+    else if (currentRole === 'pemorsian') {
+        totalSekolah = activeData.length;
+        doneSekolah = activeData.filter(s => s.status === 'ready' || s.status === 'done').length;
+        totalPorsi = activeData.reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+        donePorsi = activeData.filter(s => s.status === 'ready' || s.status === 'done').reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+    } 
+    else { 
+        const targetMobil = currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2';
+        let mobilData = activeData.filter(s => s.mobil === targetMobil);
+        totalSekolah = mobilData.length;
+        doneSekolah = mobilData.filter(s => s.status === 'done').length;
+        totalPorsi = mobilData.reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+        donePorsi = mobilData.filter(s => s.status === 'done').reduce((a, b) => a + (b.pk + b.pb + b.tendik), 0);
+    }
 
-            const perc = totalSekolah > 0 ? Math.round((doneSekolah / totalSekolah) * 100) : 0;
+    const perc = totalSekolah > 0 ? Math.round((doneSekolah / totalSekolah) * 100) : 0;
 
-            document.getElementById('stats-container').innerHTML = `
-                <div class="stats-grid">
-                    <div class="stat-card"><small>TOTAL PENERIMA</small><b>${totalPorsi}</b></div>
-                    <div class="stat-card"><small>TERDISTRIBUSI</small><b style="color:var(--success)">${donePorsi}</b></div>
-                    <div class="stat-card"><small>BELUM TERDISTRIBUSI</small><b style="color:var(--danger)">${totalPorsi - donePorsi}</b></div>
-                </div>`;
+    // --- LOGIKA TEKS DINAMIS ---
+    const textSelesai = doneSekolah > 0 ? `${doneSekolah} SEKOLAH SELESAI` : "BELUM ADA SEKOLAH YANG DI SELESAIKAN";
+    const sisaSekolah = totalSekolah - doneSekolah;
+    const textBelum = sisaSekolah > 0 ? `${sisaSekolah} SEKOLAH BELUM SELESAI` : "SEMUA SELESAI";
 
-            document.getElementById('progress-container').innerHTML = `
-                <div class="prog-label"><span>PROGRESS</span><span>${perc}%</span></div>
-                <div class="prog-bar-bg"><div class="prog-bar-fill" style="width: ${perc}%"></div></div>
-                <div class="prog-detail">
-                    <div class="prog-box" style="background:#f0fdf4; color:#166534">SELESAI: ${doneSekolah} SEKOLAH</div>
-                    <div class="prog-box" style="background:#fffbeb; color:#92400e">BELUM SELESAI: ${totalSekolah - doneSekolah} SEKOLAH</div>
-                </div>`;
-        }
+    document.getElementById('stats-container').innerHTML = `
+        <div class="stats-grid">
+            <div class="stat-card"><small>TOTAL PENERIMA</small><b>${totalPorsi}</b></div>
+            <div class="stat-card"><small>TERDISTRIBUSI</small><b style="color:var(--success)">${donePorsi}</b></div>
+            <div class="stat-card"><small>SISA</small><b style="color:var(--danger)">${totalPorsi - donePorsi}</b></div>
+        </div>`;
 
-        // --- DATABASE SYNC ---
+    document.getElementById('progress-container').innerHTML = `
+        <div class="prog-label"><span>PROGRESS TOTAL</span><span>${perc}%</span></div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width: ${perc}%"></div></div>
+        <div class="prog-detail">
+            <div class="prog-box" style="background:#f0fdf4; color:#166534">${textSelesai}</div>
+            <div class="prog-box" style="background:#fffbeb; color:#92400e">${textBelum}</div>
+        </div>`;
+}
+
+
+        // --- DATA SYNC ---
         async function fetchSchools() {
-            if(schools.length === 0) showLoading(true);
+            if(schools.length === 0) showLoading(true, "MENYIAPKAN DATA...");
             try {
-                const res = await fetch(WEB_APP_URL);
+                const res = await fetch(WEB_APP_URL + "?t=" + Date.now());
                 const data = await res.json();
                 schools = data.filter(s => s.nama && s.nama !== 'nama sekolah').map(s => ({
                     id: s.id, nama: s.nama, mobil: s.mobil, pk: parseInt(s.pk)||0, pb: parseInt(s.pb)||0, tendik: parseInt(s.tendik)||0,
                     status: String(s.status||"pending").toLowerCase()
                 }));
-                document.getElementById('h-status').innerText = "Online";
+                document.getElementById('h-status').innerHTML = '<span class="online-dot"></span> ONLINE';
                 if(currentRole) renderApp();
-            } catch(e) { document.getElementById('h-status').innerText = "Offline"; }
+            } catch(e) { document.getElementById('h-status').innerText = "Offline ❌"; }
             finally { showLoading(false); }
         }
 
-        // --- RENDER & SORTING ---
+        // --- RENDER APP ---
         function renderApp() {
             renderStats(schools);
             const searchVal = document.getElementById('app-search').value.toLowerCase();
-            const c = document.getElementById('list-container'); c.innerHTML = "";
+            const c = document.getElementById('list-container'); 
+            c.innerHTML = "";
             
             let filtered = schools.filter(s => {
                 const searchMatch = s.nama.toLowerCase().includes(searchVal);
@@ -304,7 +415,15 @@
                 }
             });
 
-            // LOGIKA SORTING (Ready/Done pindah ke bawah)
+            if (filtered.length === 0) {
+                c.innerHTML = `
+                <div class="empty-state">
+                    <span class="empty-icon">📦</span>
+                    <b>TIDAK ADA DATA SEKOLAH</b>
+                </div>`;
+                return;
+            }
+
             filtered.sort((a, b) => {
                 if (currentRole === 'pemorsian') {
                     const aReady = (a.status === 'ready' || a.status === 'done') ? 1 : 0;
@@ -336,13 +455,27 @@
                     actionBtn = `<button class="btn-action" style="background:${isReady?'#f1f5f9': 'var(--primary)'}; color:${isReady?'#64748b':'white'}" onclick="updateStatusDirect('${s.id}', '${isReady?'pending':'ready'}')">${isReady?'UNDO':'SIAP'}</button>`;
                 } else if(currentRole.includes('mobil')) {
                     if (s.status === 'done') {
-                        actionBtn = `<button class="btn-action" style="background:var(--success); color:white">TERDISTRIBUSI</button>`;
+                        // Tombol hilang, ganti jadi text badge yang rapi
+                        actionBtn = `
+                        <div class="done-wrapper">
+                            <span class="done-text">✓ TERDISTRIBUSI</span>
+                        </div>`;
                     } else if (s.status === 'ready') {
-                        actionBtn = `<button class="btn-action" style="background:var(--grad); color:white" onclick="updateStatusDirect('${s.id}', 'done')">SELESAI</button>`;
+                        // Tombol muncul jika status ready
+                        actionBtn = `<button class="btn-action" style="background:var(--grad); color:white" onclick="updateStatusDirect('${s.id}', 'done')">KONFIRMASI SELESAI</button>`;
                     } else {
-                        actionBtn = `<button class="btn-action" disabled style="background:#e2e8f0; color:#94a3b8; cursor:not-allowed">MENUNGGU PEMORSIAN</button>`;
+                        // Animasi Shimmer (Pengganti jam pasir)
+                        actionBtn = `
+                        <div class="waiting-container">
+                            <div class="shimmer-text">
+                                <span style="width:8px; height:8px; border-radius:50%; background:#cbd5e1; display:inline-block"></span>
+                                Menunggu Pemorsian...
+                            </div>
+                        </div>`;
                     }
                 }
+
+         
 
                 c.innerHTML += `
                 <div class="card card-${s.status}">
@@ -363,20 +496,21 @@
             });
         }
 
-        // --- CRUD ACTIONS ---
+        // --- ACTIONS ---
         async function updateStatusDirect(id, newStatus) {
-            showLoading(true);
+            showLoading(true, "MEMPROSES PERUBAHAN...");
             try {
                 await fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify({action:"update", id:id, status:newStatus}) });
                 await fetchSchools();
-                showToast("Status Berhasil Diperbarui");
+                showToast("Status Diperbarui");
             } catch(e) { showLoading(false); showToast("Gagal Memperbarui"); }
         }
 
         async function handleSave() {
             const n = document.getElementById('in-nama').value; if(!n) return;
-            closeModal(); showLoading(true);
+            closeModal(); 
             const isEdit = editIndex !== null;
+            showLoading(true, isEdit ? "MENYIMPAN PERUBAHAN..." : "MENAMBAH SEKOLAH...");
             const data = {
                 action: isEdit ? "editData" : "addData",
                 id: isEdit ? editIndex : Date.now().toString(),
@@ -389,22 +523,22 @@
             try { 
                 await fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify(data) }); 
                 await fetchSchools(); 
-                showToast(isEdit ? "Data Berhasil Diedit" : "Data Berhasil Ditambah");
+                showToast("Data Berhasil Disimpan");
             } catch(e){ showLoading(false); showToast("Gagal Menyimpan"); }
         }
 
         function askDelete(id) {
             openCustomConfirm("Hapus Data?", "Data sekolah akan dihapus permanen.", async () => {
-                showLoading(true);
+                showLoading(true, "MENGHAPUS DATA...");
                 try {
                     await fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify({action:"delete", id:id}) });
                     await fetchSchools();
-                    showToast("Data Telah Dihapus");
+                    showToast("Data Dihapus");
                 } catch(e) { showLoading(false); showToast("Gagal Menghapus"); }
             }, 'var(--danger)');
         }
 
-        // --- LOGIN & NAV ---
+        // --- NAVIGATION & LOCK ---
         function checkPinAuto(v) {
             if(v.length === 4) {
                 if(v === PINS[currentRole]) {
@@ -426,6 +560,23 @@
             document.getElementById('btn-add-wrapper').style.display = (role === 'admin') ? 'flex' : 'none';
             document.getElementById('filter-wrapper').style.display = (role === 'admin' || role === 'pemorsian') ? 'flex' : 'none';
             renderApp();
+        }
+
+        function lockBackNavigation() {
+            window.history.pushState(null, null, window.location.href);
+            window.onpopstate = function() {
+                if (currentRole) {
+                    window.history.pushState(null, null, window.location.href);
+                    backPressCount++;
+                    if (backPressCount === 1) {
+                        showToast("GUNAKAN TOMBOL HOME UNTUK KELUAR");
+                    } else {
+                        askExit();
+                        backPressCount = 0;
+                    }
+                    setTimeout(() => { backPressCount = 0; }, 2000);
+                }
+            };
         }
 
         function openStatusMenu(id) { selectedSchoolId = id; document.getElementById('modal-overlay').style.display = 'flex'; document.getElementById('status-modal').style.display = 'block'; }
