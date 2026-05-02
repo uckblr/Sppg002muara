@@ -240,13 +240,25 @@ window.handleSave = async () => {
     const isEdit = editIndex !== null;
     const id = isEdit ? editIndex : Date.now().toString();
     window.showLoading(true, "Menyimpan...");
+
+    // Ambil data lama jika sedang mode EDIT
+    const existingSchool = isEdit ? schools.find(x => x.id === id) : null;
+
     const data = {
-        id: id, nama: n.toUpperCase(), mobil: selectedMobil,
+        id: id, 
+        nama: n.toUpperCase(), 
+        mobil: selectedMobil,
         pk: parseInt(document.getElementById('in-pk').value)||0, 
         pb: parseInt(document.getElementById('in-pb').value)||0, 
         tendik: parseInt(document.getElementById('in-td').value)||0,
-        status: isEdit ? schools.find(x=>x.id===id).status : "pending"
+        status: isEdit ? existingSchool.status : "pending",
+        
+        // JIKA EDIT: Pertahankan waktu lama agar tidak hilang
+        // JIKA BARU: Set jadi null (supaya tidak muncul di tampilan)
+        waktuReady: isEdit ? (existingSchool.waktuReady || null) : null,
+        waktuDone: isEdit ? (existingSchool.waktuDone || null) : null
     };
+
     try { 
         await set(ref(db, 'schools/' + id), data);
         window.showToast("Data Tersimpan");
