@@ -26,23 +26,32 @@ let selectedSchoolId = null;
 
 // --- FUNGSI RESET OTOMATIS (LOGIKA JAM 00.00) ---
 async function checkAndResetStatus() {
-    const today = new Date().toLocaleDateString('en-CA'); // Format YYYY-MM-DD
+    const today = new Date().toLocaleDateString('en-CA'); 
     const lastResetRef = ref(db, 'lastResetDate');
     const snap = await get(lastResetRef);
     
     if (!snap.exists() || snap.val() !== today) {
         const updates = {};
         schools.forEach(s => {
-            updates[`schools/${s.id}/status`] = 'pending';
-            updates[`schools/${s.id}/waktuReady`] = null;
-            updates[`schools/${s.id}/waktuDone`] = null;
+            // HANYA RESET YANG BUKAN HOLIDAY
+            if (s.status !== 'holiday') {
+                updates[`schools/${s.id}/status`] = 'pending';
+                updates[`schools/${s.id}/waktuReady`] = null;
+                updates[`schools/${s.id}/waktuDone`] = null;
+            } else {
+                // Yang holiday tetap holiday, tapi pastikan catatan waktu lama hilang
+                updates[`schools/${s.id}/waktuReady`] = null;
+                updates[`schools/${s.id}/waktuDone`] = null;
+            }
         });
+        
         if (Object.keys(updates).length > 0) {
             await update(ref(db), updates);
         }
         await set(lastResetRef, today);
     }
 }
+
 
 // --- CORE UI FUNCTIONS ---
 window.showLoading = (s, msg = "SINKRONISASI...") => { 
