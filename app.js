@@ -1,4 +1,4 @@
-// app.js - Full Firebase Integrated Version (Final Optimization with Dynamic Text)
+// app.js - Optimized Version with Auto-Reset, Timestamps, and Role-Based Sorting
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, set, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -23,6 +23,26 @@ let selectedMobil = "Mobil 1";
 let editIndex = null;
 let filterMobil = "all";
 let selectedSchoolId = null;
+
+// --- FUNGSI RESET OTOMATIS (LOGIKA JAM 00.00) ---
+async function checkAndResetStatus() {
+    const today = new Date().toLocaleDateString('en-CA'); // Format YYYY-MM-DD
+    const lastResetRef = ref(db, 'lastResetDate');
+    const snap = await get(lastResetRef);
+    
+    if (!snap.exists() || snap.val() !== today) {
+        const updates = {};
+        schools.forEach(s => {
+            updates[`schools/${s.id}/status`] = 'pending';
+            updates[`schools/${s.id}/waktuReady`] = null;
+            updates[`schools/${s.id}/waktuDone`] = null;
+        });
+        if (Object.keys(updates).length > 0) {
+            await update(ref(db), updates);
+        }
+        await set(lastResetRef, today);
+    }
+}
 
 // --- CORE UI FUNCTIONS ---
 window.showLoading = (s, msg = "SINKRONISASI...") => { 
@@ -66,39 +86,20 @@ function renderStats(data) {
     let activeData = data.filter(s => s.status !== 'holiday');
     let relevantData = [];
     
-    if (currentRole === 'mobil1') {
-        relevantData = activeData.filter(s => s.mobil === 'Mobil 1');
-    } else if (currentRole === 'mobil2') {
-        relevantData = activeData.filter(s => s.mobil === 'Mobil 2');
-    } else {
-        relevantData = activeData;
-    }
+    if (currentRole === 'mobil1') relevantData = activeData.filter(s => s.mobil === 'Mobil 1');
+    else if (currentRole === 'mobil2') relevantData = activeData.filter(s => s.mobil === 'Mobil 2');
+    else relevantData = activeData;
 
     let totalPorsi = relevantData.reduce((a, b) => a + (Number(b.pk) + Number(b.pb) + Number(b.tendik)), 0);
-    let doneSekolah = 0;
-    let donePorsi = 0;
-
-    if (currentRole === 'pemorsian') {
-        doneSekolah = relevantData.filter(s => s.status === 'ready' || s.status === 'done').length;
-        donePorsi = relevantData.filter(s => s.status === 'ready' || s.status === 'done').reduce((a, b) => a + (Number(b.pk) + Number(b.pb) + Number(b.tendik)), 0);
-    } else {
-        doneSekolah = relevantData.filter(s => s.status === 'done').length;
-        donePorsi = relevantData.filter(s => s.status === 'done').reduce((a, b) => a + (Number(b.pk) + Number(b.pb) + Number(b.tendik)), 0);
-    }
+    let doneSekolah = relevantData.filter(s => s.status === 'done').length;
+    let donePorsi = relevantData.filter(s => s.status === 'done').reduce((a, b) => a + (Number(b.pk) + Number(b.pb) + Number(b.tendik)), 0);
 
     const totalSekolah = relevantData.length;
     const perc = totalSekolah > 0 ? Math.round((doneSekolah / totalSekolah) * 100) : 0;
     const sisaSekolah = totalSekolah - doneSekolah;
 
-    // Logika teks kustom untuk status selesai
-    const textSelesai = doneSekolah === 0 
-        ? "BELUM ADA SEKOLAH YANG DISELESAIKAN" 
-        : `${doneSekolah} SEKOLAH DISELESAIKAN`;
-
-    // Logika teks kustom untuk status sisa
-    const textSisa = sisaSekolah === 0
-        ? "SEMUA SEKOLAH SUDAH SELESAI"
-        : `${sisaSekolah} SEKOLAH BELUM DISELESAIKAN`;
+    const textSelesai = doneSekolah === 0 ? "BELUM ADA SEKOLAH YANG DISELESAIKAN" : `${doneSekolah} SEKOLAH DISELESAIKAN`;
+    const textSisa = sisaSekolah === 0 ? "SEMUA SEKOLAH SUDAH SELESAI" : `${sisaSekolah} SEKOLAH BELUM DISELESAIKAN`;
 
     const statsContainer = document.getElementById('stats-container');
     if(statsContainer) {
@@ -116,12 +117,8 @@ function renderStats(data) {
             <div class="prog-label"><span>PROGRESS</span><span>${perc}%</span></div>
             <div class="prog-bar-bg"><div class="prog-bar-fill" style="width: ${perc}%"></div></div>
             <div class="prog-detail">
-                <div class="prog-box" style="background:#f0fdf4; color:#166534; font-size: 10px; flex: 1.5; text-align: center; font-weight: bold; padding: 8px 4px;">
-                    ${textSelesai}
-                </div>
-                <div class="prog-box" style="background:#fffbeb; color:#92400e; font-size: 10px; flex: 1.2; text-align: center; font-weight: bold; padding: 8px 4px;">
-                    ${textSisa}
-                </div>
+                <div class="prog-box" style="background:#f0fdf4; color:#166534; font-size: 10px; flex: 1.5; text-align: center; font-weight: bold; padding: 8px 4px;">${textSelesai}</div>
+                <div class="prog-box" style="background:#fffbeb; color:#92400e; font-size: 10px; flex: 1.2; text-align: center; font-weight: bold; padding: 8px 4px;">${textSisa}</div>
             </div>`;
     }
 }
@@ -129,42 +126,33 @@ function renderStats(data) {
 // --- FIREBASE SYNC ---
 function listenToSchools() {
     window.showLoading(true, "Sinkronisasi...");
-    const schoolRef = ref(db, 'schools');
-    onValue(schoolRef, (snapshot) => {
+    onValue(ref(db, 'schools'), (snapshot) => {
         const data = snapshot.val();
         schools = data ? Object.values(data) : [];
         const hStatus = document.getElementById('h-status');
         if(hStatus) hStatus.innerHTML = '<span class="online-dot"></span> ONLINE';
+        
+        checkAndResetStatus(); // Jalankan reset otomatis jika hari berganti
+        
         if(currentRole) window.renderApp();
         window.showLoading(false);
-    }, (error) => {
-        window.showLoading(false);
-        window.showToast("Koneksi Terputus");
     });
 }
 
 // --- RENDER APP ---
 window.renderApp = function() {
     renderStats(schools);
-    const searchInput = document.getElementById('app-search');
-    const searchVal = searchInput ? searchInput.value.toLowerCase() : "";
+    const searchVal = document.getElementById('app-search')?.value.toLowerCase() || "";
     const c = document.getElementById('list-container'); 
-    if(!c) return;
-    c.innerHTML = "";
+    if(!c) return; c.innerHTML = "";
     
     let filtered = schools.filter(s => {
         const searchMatch = s.nama.toLowerCase().includes(searchVal);
-        if (currentRole === 'pemorsian') {
-            const mobilMatch = filterMobil === 'all' || s.mobil === filterMobil;
-            return mobilMatch && searchMatch && s.status !== 'holiday';
+        if (currentRole === 'pemorsian' || currentRole === 'admin') {
+            return (filterMobil === 'all' || s.mobil === filterMobil) && searchMatch;
         } 
-        if (currentRole === 'admin') {
-            const mobilMatch = filterMobil === 'all' || s.mobil === filterMobil;
-            return mobilMatch && searchMatch;
-        } else {
-            const targetMobil = currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2';
-            return s.mobil === targetMobil && s.status !== 'holiday' && searchMatch;
-        }
+        const targetMobil = currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2';
+        return s.mobil === targetMobil && s.status !== 'holiday' && searchMatch;
     });
 
     if (filtered.length === 0) {
@@ -172,79 +160,75 @@ window.renderApp = function() {
         return;
     }
 
-    // URUTAN: Ready (1), Pending (2), Done (3), Holiday (4)
-        // LOGIKA URUTAN ADAPTIF
     filtered.sort((a, b) => {
-        let rank = {};
-        
-        if (currentRole === 'pemorsian') {
-            // Untuk Dapur: Pending dulu baru Ready
-            rank = { "pending": 1, "ready": 2, "done": 3, "holiday": 4 };
-        } else {
-            // Untuk Admin & Mobil: Ready dulu baru Pending
-            rank = { "ready": 1, "pending": 2, "done": 3, "holiday": 4 };
-        }
-        
+        let rank = (currentRole === 'pemorsian') 
+            ? { "pending": 1, "ready": 2, "done": 3, "holiday": 4 }
+            : { "ready": 1, "pending": 2, "done": 3, "holiday": 4 };
         return rank[a.status] - rank[b.status];
     });
 
-
     filtered.forEach((s) => {
         const total = Number(s.pk) + Number(s.pb) + Number(s.tendik);
-        const mobilBadge = s.mobil === 'Mobil 1' ? 'badge-m1' : 'badge-m2';
+        const infoWaktu = `
+            <div style="font-size:10px; color:#64748b; margin-top:5px; display:flex; gap:10px">
+                ${s.waktuReady ? `<span>🕒 SIAP: ${s.waktuReady}</span>` : ''}
+                ${s.waktuDone ? `<span>✅ SELESAI: ${s.waktuDone}</span>` : ''}
+            </div>`;
+
         let actionBtn = '';
-
         if(currentRole === 'admin') {
-            actionBtn = `
-                <div class="btn-group">
-                    <button class="btn-mini" style="background:#f1f5f9" onclick="openFormEditById('${s.id}')">EDIT</button>
-                    <button class="btn-mini" style="background:#fee2e2; color:var(--danger)" onclick="askDelete('${s.id}')">HAPUS</button>
-                </div>`;
+            actionBtn = `<div class="btn-group">
+                <button class="btn-mini" onclick="openFormEditById('${s.id}')">EDIT</button>
+                <button class="btn-mini" style="color:var(--danger)" onclick="askDelete('${s.id}')">HAPUS</button>
+            </div>`;
         } else if(currentRole === 'pemorsian') {
-            if (s.status === 'done') {
-                // Jika sudah diselesaikan sopir, jangan tampilkan tombol apapun
-                actionBtn = '<div class="done-wrapper"><span class="done-text">SELESAI</span></div>';
-            } else {
+            if (s.status === 'done') actionBtn = '<div class="done-wrapper"><span class="done-text">✓ SUDAH TERKIRIM</span></div>';
+            else {
                 const isReady = s.status === 'ready';
-                actionBtn = `
-                <button class="btn-action" 
-                    style="background:${isReady ? '#f1f5f9' : 'var(--primary)'}; 
-                           color:${isReady ? '#64748b' : 'white'}" 
-                    onclick="updateStatusDirect('${s.id}', '${isReady ? 'pending' : 'ready'}')">
-                    ${isReady ? 'BATAL SIAP' : 'SIAP KIRIM'}
-                </button>`;
+                actionBtn = `<button class="btn-action" style="background:${isReady?'#f1f5f9':'var(--primary)'}; color:${isReady?'#64748b':'white'}" onclick="updateStatusDirect('${s.id}', '${isReady?'pending':'ready'}')">${isReady?'BATAL SIAP':'SIAP KIRIM'}</button>`;
             }
-
         } else if(currentRole.includes('mobil')) {
             if (s.status === 'done') actionBtn = '<div class="done-wrapper"><span class="done-text">✓ TERDISTRIBUSI</span></div>';
             else if (s.status === 'ready') actionBtn = `<button class="btn-action" style="background:var(--grad); color:white" onclick="updateStatusDirect('${s.id}', 'done')">KONFIRMASI SELESAI</button>`;
             else actionBtn = '<div class="waiting-container"><div class="shimmer-text">Menunggu Pemorsian...</div></div>';
         }
 
-        c.innerHTML += `
+        
+               c.innerHTML += `
         <div class="card card-${s.status}">
             ${currentRole === 'admin' ? `<div class="menu-dot" onclick="openStatusMenu('${s.id}')">⋮</div>` : ''}
             <div class="badge-row">
-                <span class="badge ${mobilBadge}">${s.mobil}</span>
+                <span class="badge ${s.mobil==='Mobil 1'?'badge-m1':'badge-m2'}">${s.mobil}</span>
                 <span class="badge badge-status-${s.status}">${s.status.toUpperCase()}</span>
             </div>
             <b style="font-size:16px;">${s.nama}</b>
+            ${infoWaktu}
             <div class="porsi-box">
                 <div class="porsi-item item-pk">PK: ${s.pk}<span class="ikat-text">${getIkat(s.pk)}</span></div>
                 <div class="porsi-item item-pb">PB: ${s.pb}<span class="ikat-text">${getIkat(s.pb)}</span></div>
                 <div class="porsi-item item-td">TD: ${s.tendik}<span class="ikat-text">${getIkat(s.tendik)}</span></div>
-                <div class="porsi-item item-total" style="border-top:1px solid #eee; margin-top:5px; padding-top:5px"><b>TOTAL: ${total} PENERIMA</b></div>
+                <div class="porsi-item item-total" style="border-top:1px solid #eee; margin-top:5px; padding-top:5px">
+                    <b>TOTAL: ${total} PENERIMA</b>
+                </div>
             </div>
             ${actionBtn}
         </div>`;
+
     });
 };
 
 // --- ACTIONS ---
 window.updateStatusDirect = async (id, newStatus) => {
     window.showLoading(true, "Memproses...");
+    const skrg = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    const updates = { status: newStatus };
+    
+    if (newStatus === 'ready') updates.waktuReady = skrg;
+    else if (newStatus === 'done') updates.waktuDone = skrg;
+    else if (newStatus === 'pending') { updates.waktuReady = null; updates.waktuDone = null; }
+
     try {
-        await update(ref(db, 'schools/' + id), { status: newStatus });
+        await update(ref(db, 'schools/' + id), updates);
         window.showToast("Status Diperbarui");
     } catch(e) { window.showToast("Gagal Update"); }
     finally { window.showLoading(false); }
@@ -307,7 +291,7 @@ window.openLogin = (r) => {
     if(input) { input.value = ""; input.focus(); }
 };
 
-window.navigate = (role) => {
+window["navigate"] = (role) => {
     currentRole = role;
     document.getElementById('page-home').style.display='none';
     document.getElementById('page-app').style.display='block';
@@ -315,8 +299,6 @@ window.navigate = (role) => {
     document.getElementById('app-title').innerText = titles[role] || role.toUpperCase();
     document.getElementById('btn-add-wrapper').style.display = (role === 'admin') ? 'flex' : 'none';
     document.getElementById('filter-wrapper').style.display = (role === 'admin' || role === 'pemorsian') ? 'flex' : 'none';
-    
-    // ANTI-BACK: Catat state baru ke history
     history.pushState({ page: 'app' }, ''); 
     window.renderApp();
 };
@@ -382,22 +364,14 @@ window.openFormEditById = (id) => {
 // --- INIT ---
 window.onload = () => {
     listenToSchools();
-    
-    // ANTI-BACK LISTENER
-    window.addEventListener('popstate', (event) => {
+    window.addEventListener('popstate', () => {
         if (currentRole !== "") {
             history.pushState({ page: 'app' }, ''); 
             window.askExit(); 
         }
     });
-
     const searchInput = document.getElementById('app-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            window.renderApp();
-        });
-    }
-
+    if (searchInput) searchInput.addEventListener('input', () => window.renderApp());
     const savedRole = localStorage.getItem('userRole');
-    if(savedRole) window.navigate(savedRole);
+    if(savedRole) window["navigate"](savedRole);
 };
