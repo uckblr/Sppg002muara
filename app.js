@@ -69,6 +69,20 @@ window.showToast = (m) => {
         setTimeout(() => t.style.display = 'none', 2000); 
     }
 };
+window.showPopupNotify = (msg, color = "var(--primary)") => {
+    // Hapus notif lama jika masih ada
+    const old = document.querySelector('.realtime-notify');
+    if(old) old.remove();
+
+    const div = document.createElement('div');
+    div.className = 'realtime-notify';
+    div.style.borderLeftColor = color;
+    div.innerHTML = `<span>🔔</span> <span>${msg}</span>`;
+    document.body.appendChild(div);
+
+    // Otomatis hapus setelah 4 detik
+    setTimeout(() => div.remove(), 4000);
+};
 
 window.closeModal = () => { 
     document.getElementById('modal-overlay').style.display = 'none'; 
@@ -133,20 +147,49 @@ function renderStats(data) {
 }
 
 // --- FIREBASE SYNC ---
+let oldSchoolsData = null; // Penampung untuk membandingkan data
+
 function listenToSchools() {
     window.showLoading(true, "Sinkronisasi...");
     onValue(ref(db, 'schools'), (snapshot) => {
         const data = snapshot.val();
-        schools = data ? Object.values(data) : [];
+        const newSchools = data ? Object.values(data) : [];
+        
+        // --- LOGIKA NOTIFIKASI ---
+        if (oldSchoolsData && currentRole !== "") {
+            newSchools.forEach(newS => {
+                const oldS = oldSchoolsData.find(x => x.id === newS.id);
+                if (oldS && oldS.status !== newS.status) {
+                    
+                    // 1. Dapur klik SIAP KIRIM
+                    if (newS.status === 'ready') {
+                        // Muncul di Admin dan Mobil yang bersangkutan
+                        if (currentRole === 'admin' || (currentRole.includes('mobil') && newS.mobil === (currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2'))) {
+                            window.showPopupNotify(`${newS.nama} SIAP DI KIRIM`, "#3b82f6");
+                        }
+                    } 
+                    
+                    // 2. Sopir klik SELESAI
+                    else if (newS.status === 'done' && currentRole === 'admin') {
+                        // Muncul hanya di Admin
+                        window.showPopupNotify(`${newS.nama} SELESAI DI KIRIM`, "#22c55e");
+                    }
+                }
+            });
+        }
+        
+        oldSchoolsData = JSON.parse(JSON.stringify(newSchools)); // Simpan data sekarang untuk perbandingan berikutnya
+        schools = newSchools;
+        
         const hStatus = document.getElementById('h-status');
         if(hStatus) hStatus.innerHTML = '<span class="online-dot"></span> ONLINE';
         
-        checkAndResetStatus(); // Jalankan reset otomatis jika hari berganti
-        
+        checkAndResetStatus();
         if(currentRole) window.renderApp();
         window.showLoading(false);
     });
 }
+
 
 // --- RENDER APP ---
 window.renderApp = function() {
