@@ -171,27 +171,21 @@ function listenToSchools() {
         const newSchools = data ? Object.values(data) : [];
         
         // --- LOGIKA NOTIFIKASI ---
-        if (oldSchoolsData && currentRole !== "") {
-            newSchools.forEach(newS => {
-                const oldS = oldSchoolsData.find(x => x.id === newS.id);
-                if (oldS && oldS.status !== newS.status) {
-                    
-                    // 1. Dapur klik SIAP KIRIM
-                    if (newS.status === 'ready') {
-                        // Muncul di Admin dan Mobil yang bersangkutan
-                        if (currentRole === 'admin' || (currentRole.includes('mobil') && newS.mobil === (currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2'))) {
-                            window.showPopupNotify(`${newS.nama} SIAP DI KIRIM`, "#3b82f6");
-                        }
-                    } 
-                    
-                    // 2. Sopir klik SELESAI
-                    else if (newS.status === 'done' && currentRole === 'admin') {
-                        // Muncul hanya di Admin
-                        window.showPopupNotify(`${newS.nama} SELESAI DI KIRIM`, "#22c55e");
-                    }
-                }
-            });
-        }
+
+// 1. Dapur klik SIAP KIRIM
+if (newS.status === 'ready') {
+    if (currentRole === 'admin' || (currentRole.includes('mobil') && newS.mobil === (currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2'))) {
+        window.showPopupNotify(`${newS.nama} SIAP DI KIRIM`, "#3b82f6");
+        window.playNotifySound('ready'); // <--- TAMBAHKAN INI
+    }
+} 
+
+// 2. Sopir klik SELESAI
+else if (newS.status === 'done' && currentRole === 'admin') {
+    window.showPopupNotify(`${newS.nama} SELESAI DI KIRIM`, "#22c55e");
+    window.playNotifySound('done'); // <--- TAMBAHKAN INI
+}
+
         
         oldSchoolsData = JSON.parse(JSON.stringify(newSchools)); // Simpan data sekarang untuk perbandingan berikutnya
         schools = newSchools;
