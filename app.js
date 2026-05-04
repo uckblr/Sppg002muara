@@ -83,6 +83,21 @@ window.showPopupNotify = (msg, color = "var(--primary)") => {
     // Otomatis hapus setelah 4 detik
     setTimeout(() => div.remove(), 4000);
 };
+// Fungsi untuk memutar suara
+window.playNotifySound = (type) => {
+    let audioUrl = "";
+    
+    if (type === 'ready') {
+        // Suara lonceng/ding untuk "Siap Kirim"
+        audioUrl = "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
+    } else {
+        // Suara sukses/ting untuk "Selesai"
+        audioUrl = "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3";
+    }
+
+    const audio = new Audio(audioUrl);
+    audio.play().catch(e => console.log("Audio play diblokir browser: ", e));
+};
 
 window.closeModal = () => { 
     document.getElementById('modal-overlay').style.display = 'none'; 
