@@ -84,20 +84,31 @@ window.showPopupNotify = (msg, color = "var(--primary)") => {
     setTimeout(() => div.remove(), 4000);
 };
 // Fungsi untuk memutar suara
-window.playNotifySound = (type) => {
-    let audioUrl = "";
-    
-    if (type === 'ready') {
-        // Suara lonceng/ding untuk "Siap Kirim"
-        audioUrl = "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
-    } else {
-        // Suara sukses/ting untuk "Selesai"
-        audioUrl = "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3";
-    }
+// Kita siapkan objek audionya di luar agar bisa di-"pancing"
+let readySound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+let doneSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clime_up_the_ladder.ogg");
 
-    const audio = new Audio(audioUrl);
-    audio.play().catch(e => console.log("Audio play diblokir browser: ", e));
+// FUNGSI PANCINGAN: Harus dipanggil saat user interaksi pertama kali
+window.initAudio = () => {
+    readySound.play().then(() => {
+        readySound.pause();
+        readySound.currentTime = 0;
+        console.log("Audio Unlocked!");
+    }).catch(e => console.log("Menunggu interaksi..."));
 };
+
+window.playNotifySound = (type) => {
+    try {
+        if (type === 'ready') {
+            readySound.play();
+        } else {
+            doneSound.play();
+        }
+    } catch (e) {
+        console.error("Gagal putar suara:", e);
+    }
+};
+
 
 window.closeModal = () => { 
     document.getElementById('modal-overlay').style.display = 'none'; 
@@ -357,6 +368,7 @@ window.checkPinAuto = async (v) => {
 };
 
 window.openLogin = (r) => { 
+  window.initAudio();
     currentRole=r; 
     document.getElementById('modal-overlay').style.display='flex'; 
     document.getElementById('login-modal').style.display='block'; 
