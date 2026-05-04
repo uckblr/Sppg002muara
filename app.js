@@ -83,32 +83,6 @@ window.showPopupNotify = (msg, color = "var(--primary)") => {
     // Otomatis hapus setelah 4 detik
     setTimeout(() => div.remove(), 4000);
 };
-// Fungsi untuk memutar suara
-// Kita siapkan objek audionya di luar agar bisa di-"pancing"
-let readySound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-let doneSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clime_up_the_ladder.ogg");
-
-// FUNGSI PANCINGAN: Harus dipanggil saat user interaksi pertama kali
-window.initAudio = () => {
-    readySound.play().then(() => {
-        readySound.pause();
-        readySound.currentTime = 0;
-        console.log("Audio Unlocked!");
-    }).catch(e => console.log("Menunggu interaksi..."));
-};
-
-window.playNotifySound = (type) => {
-    try {
-        if (type === 'ready') {
-            readySound.play();
-        } else {
-            doneSound.play();
-        }
-    } catch (e) {
-        console.error("Gagal putar suara:", e);
-    }
-};
-
 
 window.closeModal = () => { 
     document.getElementById('modal-overlay').style.display = 'none'; 
@@ -182,21 +156,27 @@ function listenToSchools() {
         const newSchools = data ? Object.values(data) : [];
         
         // --- LOGIKA NOTIFIKASI ---
-
-// 1. Dapur klik SIAP KIRIM
-if (newS.status === 'ready') {
-    if (currentRole === 'admin' || (currentRole.includes('mobil') && newS.mobil === (currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2'))) {
-        window.showPopupNotify(`${newS.nama} SIAP DI KIRIM`, "#3b82f6");
-        window.playNotifySound('ready'); // <--- TAMBAHKAN INI
-    }
-} 
-
-// 2. Sopir klik SELESAI
-else if (newS.status === 'done' && currentRole === 'admin') {
-    window.showPopupNotify(`${newS.nama} SELESAI DI KIRIM`, "#22c55e");
-    window.playNotifySound('done'); // <--- TAMBAHKAN INI
-}
-
+        if (oldSchoolsData && currentRole !== "") {
+            newSchools.forEach(newS => {
+                const oldS = oldSchoolsData.find(x => x.id === newS.id);
+                if (oldS && oldS.status !== newS.status) {
+                    
+                    // 1. Dapur klik SIAP KIRIM
+                    if (newS.status === 'ready') {
+                        // Muncul di Admin dan Mobil yang bersangkutan
+                        if (currentRole === 'admin' || (currentRole.includes('mobil') && newS.mobil === (currentRole === 'mobil1' ? 'Mobil 1' : 'Mobil 2'))) {
+                            window.showPopupNotify(`${newS.nama} SIAP DI KIRIM`, "#3b82f6");
+                        }
+                    } 
+                    
+                    // 2. Sopir klik SELESAI
+                    else if (newS.status === 'done' && currentRole === 'admin') {
+                        // Muncul hanya di Admin
+                        window.showPopupNotify(`${newS.nama} SELESAI DI KIRIM`, "#22c55e");
+                    }
+                }
+            });
+        }
         
         oldSchoolsData = JSON.parse(JSON.stringify(newSchools)); // Simpan data sekarang untuk perbandingan berikutnya
         schools = newSchools;
@@ -368,7 +348,6 @@ window.checkPinAuto = async (v) => {
 };
 
 window.openLogin = (r) => { 
-  window.initAudio();
     currentRole=r; 
     document.getElementById('modal-overlay').style.display='flex'; 
     document.getElementById('login-modal').style.display='block'; 
